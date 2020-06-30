@@ -29,7 +29,7 @@ jobs:
     - name: Now zip the npm build # 
       uses: montudor/action-zip@v0.1.0
       with:
-        args: zip -qq -r ./release.zip ./
+        args: zip -qq -r ./release.zip ./build
 
     - name: Make release
       uses: marvinpinto/action-automatic-releases@latest
