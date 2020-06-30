@@ -33,12 +33,7 @@ jobs:
       uses: martinbeentjes/npm-get-version-action@master
 
     - name: Now change the current version in the manifest
-      # uses: jacobtomlinson/gha-find-replace@master
-      # with:
-      #   find: Annotate
-      #   replace: v${{ steps.package-version.outputs.current-version}} Annotate
-      #   include: ./build/manifest.json
-      run: sed -i 's/it!/it! v${{ steps.package-version.outputs.current-version}}/' build/manifest.json
+      run: sed -i 's/🚀 PROD — Annotate it!/Annotate it! v${{ steps.package-version.outputs.current-version}}/' build/manifest.json
 
     - name: Now zip the npm build
       uses: papeloto/action-zip@v1
