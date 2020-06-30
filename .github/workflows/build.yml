@@ -60,5 +60,5 @@ jobs:
         prerelease: true
         automatic_release_tag: latest
         files: |
-          release.zip
+          annotate-it-latest-release.zip
           
