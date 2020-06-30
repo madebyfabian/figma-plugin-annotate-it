@@ -50,7 +50,7 @@ jobs:
       uses: thedoctor0/zip-release@master
       with:
         filename: 'annotate-it-latest-release.zip'
-        path: './build'
+        path: './build/*.*'
 
 
     - name: Make release
