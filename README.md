@@ -11,3 +11,5 @@ Than open Figma and
 2. Go to "Plugins"
 3. Select the "+"-Button next to "Create your own plugin"
 4. Hit "Click to choose a manifest.json file" and go to `PATH_YOU_SAVED_THE_FOLDER/figma-plugin-annotate-it-master/`
+
+Test123
