@@ -39,19 +39,29 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+
     - run: npm ci
     - run: npm run build --if-present
 
 
     - name: Now zip the npm build
-      # uses: montudor/action-zip@v0.1.0
-      # with:
-      #   args: zip -qq -r ./release.zip ./build/*.*
-
       uses: papeloto/action-zip@v1
       with:
         files: build/
         dest: annotate-it-latest-release.zip
+
+
+    - name: Automated Version Bump
+      uses: phips28/gh-action-bump-version@master
+      with:
+        tag-prefix: ''
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+    - name: Now get the new version in package.json
+      id: package-version
+      uses: martinbeentjes/npm-get-version-action@master
 
 
     - name: Make release
@@ -59,7 +69,7 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         prerelease: true
-        automatic_release_tag: latest
+        automatic_release_tag: v${{ steps.package-version.outputs.current-version}}
         files: |
           annotate-it-latest-release.zip
           
