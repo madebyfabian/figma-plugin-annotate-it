@@ -1,11 +1,11 @@
 {
   "name": "figma-svelte",
-  "version": "0.1.1",
   "description": "",
   "main": "none.js",
   "scripts": {
     "start": "webpack-cli --mode=development --watch",
-    "build": "webpack-cli --mode=production"
+    "build": "webpack-cli --mode=production",
+    "release": "git push origin master:master"
   },
   "author": "Fabian Beer",
   "license": "Apache-2.0",
