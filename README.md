@@ -15,7 +15,7 @@ Than open Figma and
 3. Select the "+"-Button next to "Create your own plugin"
 4. Hit "Click to choose a manifest.json file" and choose `/annotate-it-vx.x.x/manifest.json` (the x stands for the version number, so for example `annotate-it-v1.0.0`)
 
-**Now you can use the plugin in any file!**
+**Now you can use the plugin in any file, by right click -> development -> Annotate it!**
 
 ### Feature requests? 😊 Questions?
 Just hit me on Twitter (@madebyfabian), via mail (hello@madebyfabian.com) or via an Issue.
