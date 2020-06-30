@@ -21,13 +21,6 @@ jobs:
         npm install --silent
         npm run build
 
-    - name: Now zip the npm build
-      uses: papeloto/action-zip@v1
-      with:
-        files: build/
-        dest: annotate-it-latest-release.zip
-
-
     - name: Automated Version Bump
       uses: phips28/gh-action-bump-version@master
       with:
@@ -35,11 +28,15 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-
     - name: Now get the new version in package.json
       id: package-version
       uses: martinbeentjes/npm-get-version-action@master
 
+    - name: Now zip the npm build
+      uses: papeloto/action-zip@v1
+      with:
+        files: build/
+        dest: annotate-it-v${{ steps.package-version.outputs.current-version}}.zip
 
     - name: Make release
       uses: marvinpinto/action-automatic-releases@latest
@@ -48,5 +45,5 @@ jobs:
         prerelease: false
         automatic_release_tag: v${{ steps.package-version.outputs.current-version}}
         files: |
-          annotate-it-latest-release.zip
+          annotate-it-v${{ steps.package-version.outputs.current-version}}.zip
           

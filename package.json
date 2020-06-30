@@ -25,11 +25,6 @@
       "@babel/plugin-proposal-optional-chaining"
     ]
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm version && git add -A"
-    }
-  },
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-optional-chaining": "^7.10.3",
