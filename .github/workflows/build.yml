@@ -19,17 +19,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+
+    # - name: Cache Node.js modules
+    #   uses: actions/cache@v2
+    #   env:
+    #     cache-name: cache-node-modules
+    #   with:
+    #     path: ~/.npm
+    #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-build-${{ env.cache-name }}-
+    #       ${{ runner.os }}-build-
+    #       ${{ runner.os }}-
+
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+
     - run: npm ci
     - run: npm run build --if-present
 
-    - name: Now zip the npm build # 
+
+    - name: Now zip the npm build
       uses: montudor/action-zip@v0.1.0
       with:
-        args: zip -qq -r ./release.zip ./build
+        args: zip -qq -r ./release.zip ./build/*
+
 
     - name: Make release
       uses: marvinpinto/action-automatic-releases@latest
