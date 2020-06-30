@@ -38,12 +38,18 @@ jobs:
         dest: annotate-it-latest-release.zip
 
 
-    - name: Automated Version Bump
-      uses: phips28/gh-action-bump-version@master
-      with:
-        tag-prefix: ''
+    # - name: Automated Version Bump
+    #   uses: phips28/gh-action-bump-version@master
+    #   with:
+    #     tag-prefix: ''
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Bump version and push tag
+      uses: anothrNick/github-tag-action@1.17.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        WITH_V: true
 
 
     - name: Now get the new version in package.json
