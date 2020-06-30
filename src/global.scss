@@ -1,0 +1,22 @@
+@import url('https://rsms.me/inter/inter.css');
+
+html { 
+  font-family: 'Inter var', sans-serif;
+  font-size: 16px;
+}
+
+*, *::after, *::before {
+  box-sizing: border-box;
+  font-size: 11px;
+}
+
+$lightblue: lightblue;
+
+body {
+  margin: 1rem;
+  padding: 0;
+  background: #fff;
+  overflow: hidden;
+  transform: translateZ(0);
+  background: $lightblue;
+}
