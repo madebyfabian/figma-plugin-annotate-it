@@ -1,4 +1,9 @@
 <script>
+  // Import routes
+  import routes from './router'
+  import Router from 'svelte-spa-router'
+
+
   // Import global styles.
   import './global.scss' 
 
@@ -9,13 +14,12 @@
 
 </script>
 
-<main>
-  <h1>Annotate it!</h1>
-  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
-</main>
+<body>
+  <Router {routes}/>
+</body>
 
 <style lang="scss">
-  main {
+  body {
     margin: 16px;
   }
   // $red: red;

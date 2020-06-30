@@ -52,6 +52,7 @@
     "webpack-messages": "^2.0.4"
   },
   "dependencies": {
-    "figma-plugin-ds-svelte": "^1.0.4"
+    "figma-plugin-ds-svelte": "^1.0.4",
+    "svelte-spa-router": "^2.2.0"
   }
 }
