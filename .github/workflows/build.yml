@@ -47,10 +47,11 @@ jobs:
       # uses: montudor/action-zip@v0.1.0
       # with:
       #   args: zip -qq -r ./release.zip ./build/*.*
-      uses: thedoctor0/zip-release@master
+
+      uses: papeloto/action-zip@v1
       with:
-        filename: 'annotate-it-latest-release.zip'
-        path: './build/*.*'
+        files: build/
+        dest: annotate-it-latest-release.zip
 
 
     - name: Make release
