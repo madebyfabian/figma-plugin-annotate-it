@@ -28,7 +28,7 @@ module.exports = ( env, argv ) => {
       alias: {
         svelte: path.resolve('node_modules', 'svelte')
       },
-      extensions: [ '.js', '.mjs', '.ts', '.svelte', '.scss', '.html' ],
+      extensions: [ '.mjs', '.js', '.ts', '.svelte', '.scss', '.html' ],
       mainFields: [ 'svelte', 'browser', 'module', 'main' ]
     },
     
@@ -42,19 +42,23 @@ module.exports = ( env, argv ) => {
         // Svelte
         {
           test: /\.svelte$/,
+          exclude: /node_modules\/svelte$/,
           use: {
             loader: 'svelte-loader',
             options: {
               ...svelteConfig, 
               emitCss: true,
-              hotReload: true
+              hotReload: true,
+              onwarn: (warning, handler) => {
+                // Leave blank to disable warnings
+              }
             }
           }
         },
         
         // JS and TS
         {
-          test: /\.jsx?$/,
+          test: /\.jsx?.$/,
           exclude: /node_modules/,
           use: [
             'babel-loader',
@@ -81,6 +85,19 @@ module.exports = ( env, argv ) => {
             'css-loader',
             'sass-loader'
           ]
+        },
+
+        // SVG
+        {
+          test: /\.svg$/,
+          use: [
+            {
+              loader: 'svg-url-loader',
+              options: {
+                limit: 10000,
+              },
+            },
+          ],
         }
       ]
     },

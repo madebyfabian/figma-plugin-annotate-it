@@ -1,31 +1,37 @@
 <script>
-  import './global.scss' // Import global styles.
-  let test = 'world'
+  // Import global styles.
+  import './global.scss' 
 
-  let obj = { haha: true }
-  console.log(obj?.omg)
+  // Import global styles from figma-components
+  import { GlobalCSS } from 'figma-plugin-ds-svelte'; 
+
+  // import { Button, Input, SelectMenu, Checkbox } from 'figma-plugin-ds-svelte';
+
 </script>
 
 <main>
-  <h1>Hello { test }!</h1>
-  <div>lol</div>
+  <h1>Annotate it!</h1>
+  <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit.</p>
 </main>
 
 <style lang="scss">
-  $red: red;
-
-  @mixin test {
-    color: blue;
-  }
-  
-  div {
-    height: 10px;
-  }
-  
   main {
-    h1 {
-      @include test;
-      background: $red;
-    }
+    margin: 16px;
   }
+  // $red: red;
+
+  // @mixin test {
+  //   color: blue;
+  // }
+  
+  // div {
+  //   height: 10px;
+  // }
+  
+  // main {
+  //   h1 {
+  //     @include test;
+  //     background: $red;
+  //   }
+  // }
 </style>

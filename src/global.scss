@@ -10,13 +10,8 @@ html {
   font-size: 11px;
 }
 
-$lightblue: lightblue;
-
 body {
-  margin: 1rem;
-  padding: 0;
   background: #fff;
   overflow: hidden;
   transform: translateZ(0);
-  background: $lightblue;
 }
