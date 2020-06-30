@@ -44,9 +44,13 @@ jobs:
 
 
     - name: Now zip the npm build
-      uses: montudor/action-zip@v0.1.0
+      # uses: montudor/action-zip@v0.1.0
+      # with:
+      #   args: zip -qq -r ./release.zip ./build/*.*
+      uses: thedoctor0/zip-release@master
       with:
-        args: zip -qq -r ./release.zip ./build/*.*
+        filename: 'annotate-it-latest-release.zip'
+        path: './build'
 
 
     - name: Make release
