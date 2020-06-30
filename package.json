@@ -1,12 +1,12 @@
 {
   "name": "figma-svelte",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "none.js",
   "scripts": {
     "start": "webpack-cli --mode=development --watch",
     "build": "webpack-cli --mode=production",
-    "release": "release-it"
+    "release": "dotenv release-it --dry-run"
   },
   "author": "Fabian Beer",
   "license": "Apache-2.0",
@@ -36,6 +36,7 @@
     "babel-preset-env": "^1.7.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.6.0",
+    "dotenv-cli": "^3.2.0",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.8.2",
@@ -54,8 +55,14 @@
   },
   "dependencies": {},
   "release-it": {
+    "git": {
+      "requireCleanWorkingDir": false
+    },
     "github": {
       "release": true
+    },
+    "npm": {
+      "publish": false
     }
   }
 }
