@@ -1,5 +1,6 @@
 {
   "name": "figma-svelte",
+  "version": "0.0.0",
   "description": "",
   "main": "none.js",
   "scripts": {
@@ -25,6 +26,11 @@
       "@babel/plugin-proposal-optional-chaining"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm test"
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/plugin-proposal-optional-chaining": "^7.10.3",
@@ -37,6 +43,7 @@
     "css-loader": "^3.6.0",
     "html-webpack-inline-source-plugin": "0.0.10",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^4.2.5",
     "mini-css-extract-plugin": "^0.8.2",
     "node-sass": "^4.14.1",
     "sass-loader": "^7.1.0",
