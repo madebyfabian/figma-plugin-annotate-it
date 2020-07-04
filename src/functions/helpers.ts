@@ -26,6 +26,16 @@ export const loadFonts = async () => {
 
 
 /**
+ * Posts a message to the figma code.
+ * @param type The type (name) of the message.
+ * @param value The actual value of the message.
+ */
+export const postMsg = ( type: string, value: string ) => {
+  parent.postMessage({ pluginMessage: { type, value }}, '*')
+}
+
+
+/**
  * @returns {array} Some kind of ['400 1em Roboto', '600 1em Roboto']
  */
 const _generateRequiredWeightsArr = ( fontFaceName ) => {

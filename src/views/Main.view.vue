@@ -10,7 +10,13 @@
     </main>
     
     <div class="bottom-content">
-      <Button><Icon iconName="plus" />Add new</Button>
+      <div class="left">
+        <Button :disabled="userHasNothingSelected">
+          <Icon iconName="plus" />
+          Add new
+        </Button>
+        <p v-if="userHasNothingSelected">To add annotations, please select a frame.</p>
+      </div>
       <Button buttonType="primary">Place annotations</Button>
     </div>
   </div>
@@ -23,10 +29,37 @@
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
 
+  import { postMsg } from '@/functions/helpers'
+
   export default {
     components: { Sidebar, Button, Icon, AnnotationsContainer },
 
-    data: () => ({ })
+    data: () => ({
+      userHasNothingSelected: false
+    }),
+
+    created() {
+      postMsg('req__selectionState', {})
+
+      onmessage = event => {
+        if (event.data.length === 0)
+          return
+
+        const msg = event.data.pluginMessage,
+              msgValue = msg && msg.value
+
+        switch (msg.type) {
+          case 'res__selectionState': {
+            this.userHasNothingSelected = !!(msgValue.length === 0)
+ 
+            break
+          }
+        
+          default:
+            break
+        }
+      }
+    }
   }
 </script>
 
@@ -66,6 +99,16 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
+      align-items: center;
+
+      .left {
+        display: flex;
+        align-items: center;
+
+        button {
+          margin-right: 8px;
+        }
+      }
     }
   }
 </style>

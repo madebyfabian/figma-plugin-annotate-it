@@ -103,6 +103,7 @@
 
       &:disabled {
         color: $color--black-3;
+        /deep/ * { color: $color--black-3 }
         box-shadow: inset 0 0 0 1px $color--black-3;
       }
     }
