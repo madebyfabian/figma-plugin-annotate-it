@@ -1,13 +1,13 @@
 const path = require('path'),
-      fs = require('fs'),
       manifest = require('./src/manifest.json'),
-      svelteConfig = require('./svelte.config')
+      fs = require('fs')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin'),
       HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin'),
       WebpackMessages = require('webpack-messages'),
-      MiniCssExtractPlugin = require('mini-css-extract-plugin'),
-      { CleanWebpackPlugin } = require('clean-webpack-plugin')  
+      VueLoaderPlugin = require('vue-loader/lib/plugin')
+
+console.clear()
 
 module.exports = ( env, argv ) => {
   const mode          = argv.mode || 'development'
@@ -18,108 +18,61 @@ module.exports = ( env, argv ) => {
   
     // This is necessary because Figma's 'eval' works differently than normal eval
     devtool: isProduction ? false : 'inline-source-map',
+
+    stats: false,
     
     entry: {
-      main: './src/code.ts',
-      bundle: [ './src/svelte.main.js' ]
+      main: './src/main.ts',
+      ui: './src/ui.ts'
     },
-  
-    resolve: {
-      alias: {
-        svelte: path.resolve('node_modules', 'svelte')
-      },
-      extensions: [ '.mjs', '.js', '.ts', '.svelte', '.scss', '.html' ],
-      mainFields: [ 'svelte', 'browser', 'module', 'main' ]
-    },
-    
+
     output: {
+      filename: '[name].js',
       path: path.join(__dirname, 'build'),
-      filename: '[name].js'
-    },
-  
+    },  
+    
     module: {
       rules: [
-        // Svelte
-        {
-          test: /\.svelte$/,
-          exclude: /node_modules\/svelte$/,
-          use: {
-            loader: 'svelte-loader',
-            options: {
-              ...svelteConfig, 
-              emitCss: true,
-              hotReload: true,
-              onwarn: (warning, handler) => {
-                // Leave blank to disable warnings
-              }
-            }
-          }
-        },
-        
-        // JS and TS
-        {
-          test: /\.jsx?.$/,
-          exclude: /node_modules/,
-          use: [
-            'babel-loader',
-          ]
-        },
-        {
-          test: /\.tsx?$/,
-          exclude: /node_modules/,
-          use: [
-            'babel-loader',
-            'ts-loader'
-          ]
-        },
-
-        // CSS and SCSS
-        {
-          test: /\.s?css$/,
-          use: [
-            /**
-             * MiniCssExtractPlugin doesn't support HMR.
-             * For developing, use 'style-loader' instead.
-             * */
-            isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
-            'css-loader',
-            'sass-loader'
-          ]
-        },
-
-        // SVG
-        {
-          test: /\.svg$/,
-          use: [
-            {
-              loader: 'svg-url-loader',
-              options: {
-                limit: 10000,
-              },
-            },
-          ],
-        }
-      ]
+        // Converts Vue code to JavaScript
+        { test: /\.vue$/, loader: 'vue-loader', exclude: /node_modules/ },
+  
+        // Converts TypeScript code to JavaScript
+        { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },
+  
+        // Enables including CSS by doing "import './file.css'" in your TypeScript code
+        { test: /\.css$/, loader: [{ loader: 'style-loader' }, { loader: 'css-loader' }] },
+  
+        // Allows you to use "<%= require('./file.svg') %>" in your HTML code to get a data URI
+        { test: /\.(png|jpg|gif|webp|svg)$/, loader: [{ loader: 'url-loader' }] },
+  
+        { test: /\.scss$/, use: [ 'vue-style-loader', 'css-loader', 'sass-loader' ] }
+      ],
     },
-  
-    plugins: [
-      new CleanWebpackPlugin(), // Clean /build before every build
 
-      new MiniCssExtractPlugin({
-        filename: '[name].css'
-      }),
-  
+    resolveLoader: {
+      modules: [path.join(__dirname, 'node_modules')]
+    },
+
+    resolve: {
+      // Webpack tries these extensions for you if you omit the extension like "import './file'"
+      extensions: ['.tsx', '.ts', '.jsx', '.js', '.vue', '.json'],
+      alias: {
+        'vue$': 'vue/dist/vue.esm.js'
+      }
+    },
+
+    plugins: [
       new HtmlWebpackPlugin({
+        template: './src/ui.html',
         filename: 'ui.html',
-        templateContent: '<!doctype html><html lang="en"><head><meta charset="utf-8"></head><body></body></html>',
-        inlineSource: '.(js|css)$',
-        chunks: [ 'bundle' ],
+        inlineSource: '.(js)$',
+        chunks: ['ui'],
       }),
-  
+
       new HtmlWebpackInlineSourcePlugin(),
-  
+      new VueLoaderPlugin(),
       new WebpackMessages(),
-      
+
       {
         apply: (compiler) => {
           compiler.hooks.afterEmit.tap('AfterEmitPlugin', compilation => {
@@ -133,19 +86,13 @@ module.exports = ( env, argv ) => {
               id: manifest.id || ''
             }))
 
-            // Remove build/bundle.js & build/bundle.css (because it is already included inside ui.html)
-            const bundlePath = './build/bundle.js'
+            // Remove build/ui.js &(because it is already included inside ui.html)
+            const bundlePath = './build/ui.js'
             if (fs.existsSync(bundlePath))
                 fs.unlinkSync(bundlePath)
-
-            const bundleCSSPath = './build/bundle.css'
-            if (isProduction && fs.existsSync(bundleCSSPath))
-              fs.unlinkSync(bundleCSSPath)
-          });
+          })
         }
       },
-    ],  
-  
-    stats: false
+    ]
   }
 }
