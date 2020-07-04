@@ -1,20 +1,16 @@
 <template>
   <main :class="a11yClass">
-    <MainView />
+    <router-view/>
   </main>
 </template>
 
 <script>
-  import MainView from './views/Main.view'
-
   export default {
     name: "App",
 
-    components: { MainView },
-
     data() {
       return {
-        'a11yClass': 'using-keyboard'
+        a11yClass: 'using-keyboard'
       }
     },
 
