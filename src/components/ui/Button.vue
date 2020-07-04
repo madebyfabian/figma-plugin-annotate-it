@@ -55,16 +55,22 @@
 
 <style lang="scss" scoped>
   button {
-    @include font(11, regular);
+    @include font(11, medium);
     height: 2rem;
     text-align: center;
     padding: 0 15px;
+    line-height: 30px;
     border-radius: 6px;
     border: none;
     flex-shrink: 0;
     box-shadow: inset 0 0 0 1px $color--black-8;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+
+    svg {
+      margin-left: -8px;
+    }
     
     &[buttonType=primary] {
       background: $color--blue;

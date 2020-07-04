@@ -1,8 +1,7 @@
 figma.showUI(__html__, { 
-  width: 600, 
-  height: 400
+  width: 716, 
+  height: 500
 })
-
 
 
 const onSelectionChange = () => {

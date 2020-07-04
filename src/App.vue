@@ -40,6 +40,22 @@
     }
   }
 
+  :root {
+    --color--blue: #18A0FB;
+    --color--red: #F24822;
+
+    --color--black: #000;
+    --color--black-8: rgba(0, 0, 0, .8);
+    --color--black-3: rgba(0, 0, 0, .3);
+    --color--white: #fff;
+
+    --color--background-white: #fff;
+    --color--background-grey-f0: #f0f0f0;
+    --color--background-silver: #E5E5E5;
+
+    --color--special-hover-fill: rgba(0, 0, 0, 0.06);
+  }
+
   *:not(html), *::after, *::before {
     @include font;
     color: $color--black-8;
@@ -49,6 +65,10 @@
   body {
     margin: 16px;
     overflow: hidden;
+  }
+
+  b, strong {
+    font-weight: 600;
   }
 
   .using-keyboard *:focus {
