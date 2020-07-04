@@ -1,15 +1,26 @@
 <template>
-  <h1>Hello World :)</h1>
+  <main>
+    <p class="test">Test →</p>
+  </main>
 </template>
 
 <script>
   export default {
-    name: "App"
+    
   }
 </script>
 
 <style lang="scss" scoped>
-  h1 {
-    color: grey;
+  .test {
+    @include text(14, bold);
+    font-size: 100px;
+    line-height: 100%;
+    font-weight: 100;
+    color: $color--blue;
+    transition: font-weight 1s ease;
+
+    &:hover {
+      font-weight: 900;
+    }
   }
 </style>

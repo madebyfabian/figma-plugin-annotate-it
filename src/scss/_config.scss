@@ -1,54 +1,17 @@
 // Helper
 @function map-deep-get($map, $keys...) {
-  @each $key in $keys {
-    $map: map-get($map, $key);
-  }
+  @each $key in $keys { $map: map-get($map, $key); }
   @return $map;
 }
 
+$_fontSizes: (
+  11: ( line-height: 16px, letter-spacing: 0.005em ),
+  12: ( line-height: 16px, letter-spacing: 0em ),
+  13: ( line-height: 24px, letter-spacing: -0.0025em ),
+  14: ( line-height: 24px, letter-spacing: -0.006em )
+);
 
-
-@mixin text( $size: 11, $variant: 'regular' ) {
-  $sizes: (
-    11: (
-      line-height: 16px,
-      letter-spacing: 0.005em
-    ),
-    12: (
-      line-height: 16px,
-      letter-spacing: 0em
-    ),
-    13: (
-      line-height: 24px,
-      letter-spacing:  -0.0025em
-    ),
-    14: (
-      line-height: 24px,
-      letter-spacing: -0.006em
-    )
-  );
-
-  @if not map-has-key($sizes, $size) {
-    @error 'Nope! #{$size} does not exist as a size.';
-  } @else {
-    font-size: $size + px;
-    line-height: map-deep-get($sizes, $size, line-height);
-    letter-spacing: map-deep-get($sizes, $size, letter-spacing);
-  }
-
-
-  $variants: (
-    "regular": 400,
-    "bold": 600
-  );
-
-  @if not map-has-key($variants, $variant) {
-    @error 'Nope! #{$variant} does not exist as a variant.';
-  } @else {
-    font-weight: map-get($variants, $variant);
-  }
-}
-
+$_fontWeights: ( "regular": 400, "bold": 600 );
 
 $_colors: (
   blue: #18A0FB,
@@ -61,6 +24,24 @@ $_colors: (
   background-white: #fff,
   background-grey-f0: #f0f0f0
 );
+
+
+@mixin text( $size: 11, $variant: 'regular' ) {
+  @if not map-has-key($_fontSizes, $size) {
+    @error 'Nope! #{$size} does not exist as a size.';
+  } @else {
+    font-size: $size + px;
+    line-height: map-deep-get($_fontSizes, $size, line-height);
+    letter-spacing: map-deep-get($_fontSizes, $size, letter-spacing);
+  }
+
+  @if not map-has-key($_fontWeights, $variant) {
+    @error 'Nope! #{$variant} does not exist as a variant.';
+  } @else {
+    font-weight: map-get($_fontWeights, $variant);
+  }
+}
+
 
 :root {
   @each $name, $color in $_colors {
@@ -77,3 +58,8 @@ $color--black-3: var(--color--black-3);
 
 $color--background-white: var(--color--white);
 $color--background-grey-f0: var(--color--grey-f0);
+
+
+:export {
+  fontWeights: #{$_fontWeights}
+}
