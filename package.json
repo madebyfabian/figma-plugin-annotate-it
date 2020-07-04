@@ -53,6 +53,7 @@
   },
   "dependencies": {
     "figma-plugin-ds-svelte": "^1.0.4",
+    "marked": "^1.1.0",
     "svelte-spa-router": "^2.2.0"
   }
 }
