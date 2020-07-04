@@ -41,7 +41,7 @@
   }
 
   *:not(html), *::after, *::before {
-    @include text;
+    @include font;
     color: $color--black-8;
     box-sizing: border-box;
   }

@@ -1,26 +1,31 @@
 <template>
   <main>
-    <p class="test">Test →</p>
+    <Button>
+      Hinzufügen
+    </Button>
+    <br><br>
+    <Button buttonType="primary">
+      Hinzufügen
+    </Button>
+    <br><br>
+    <Button buttonType="icon">
+      <Icon iconName="plus" />
+    </Button>
   </main>
 </template>
 
 <script>
+  import Button from '@/components/Button'
+
+  import Icon from '@/components/Icon'
+
   export default {
-    
+    components: { Button, Icon },
+
+    data: () => ({ })
   }
 </script>
 
 <style lang="scss" scoped>
-  .test {
-    @include text(14, bold);
-    font-size: 100px;
-    line-height: 100%;
-    font-weight: 100;
-    color: $color--blue;
-    transition: font-weight 1s ease;
-
-    &:hover {
-      font-weight: 900;
-    }
-  }
+  // 
 </style>

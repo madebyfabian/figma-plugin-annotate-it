@@ -20,13 +20,16 @@ $_colors: (
   black: #000,
   black-8: rgba(#000, .8),
   black-3: rgba(#000, .3),
+  white: #fff,
 
   background-white: #fff,
-  background-grey-f0: #f0f0f0
+  background-grey-f0: #f0f0f0,
+
+  special-hover-fill: rgba(0, 0, 0, 0.06)
 );
 
 
-@mixin text( $size: 11, $variant: 'regular' ) {
+@mixin font( $size: 11, $variant: 'regular' ) {
   @if not map-has-key($_fontSizes, $size) {
     @error 'Nope! #{$size} does not exist as a size.';
   } @else {
@@ -55,9 +58,12 @@ $color--red: var(--color--red);
 $color--black: var(--color--black);
 $color--black-8: var(--color--black-8);
 $color--black-3: var(--color--black-3);
+$color--white: var(--color--white);
 
 $color--background-white: var(--color--white);
 $color--background-grey-f0: var(--color--grey-f0);
+
+$color--special-hover-fill: var(--color--special-hover-fill);
 
 
 :export {
