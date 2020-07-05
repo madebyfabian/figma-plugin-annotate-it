@@ -1,8 +1,8 @@
 <template>
-  <article class="annotationItem">
+  <article class="annotationItem" :showSkeleton="showSkeleton">
     <SectionTitle class="annotationItem-number">#1</SectionTitle>
     <div>
-      <input class="annotationItem-input title" type="text" placeholder="Title">
+      <input class="annotationItem-input title" type="text" placeholder="Title" value="This is an example">
       <MarkdownEditor class="annotationItem-editor" />
       <!-- <div 
         class="annotationItem-input content"
@@ -24,38 +24,12 @@
   export default {
     components: { SectionTitle, Icon, Button, MarkdownEditor },
 
-   
-
-    // data: () => ({
-    //   content: ''
-    // }),
-
-    // methods: {
-    //   contentUpdate(e) {
-    //     const $el = e.target
-    //     const originalValue = $el.innerHTML
-    //     const markedOptions = {
-    //       gfm: true,
-    //       breaks: true
-    //     }
-    //     const markedResult = marked(originalValue, markedOptions)
-
-        
-
-    //     console.log(
-    //       '-> New value:', originalValue, 
-    //       '\n-> marked():', markedResult
-    //     )
-    //     // this.content =  + 'omg'
-    //     // this.content = 'OMG'
-    //     // this.content = 'right?'
-    //     // e.target.blur()
-    //     // e.target.innerHTML = e.target.innerText
-
-    //     e.target.innerHTML = markedResult
-    //     placeCaretAtEnd($el)
-    //   }
-    // }
+    props: {
+      showSkeleton: {
+        type: Boolean,
+        default: false
+      }
+    }
   }
 </script>
 
@@ -65,6 +39,11 @@
     display: grid;
     grid-template-columns: 32px 1fr 32px;
     gap: 8px;
+
+    &[showSkeleton=true] {
+      opacity: .33;
+      pointer-events: none;
+    }
 
     &-number {
       align-self: center;

@@ -1,6 +1,4 @@
 <template>
-  <!-- <div ref="editor" /> -->
-  
   <CodeMirror 
     class="editor" 
     :options="options" 
@@ -9,29 +7,15 @@
 </template>
 
 <script>
-  // import CodeMirror from '@/functions/codemirror/lib/codemirror'
-  // import mdMode from '@/functions/codemirror/mode/markdown/markdown'
-
-  // import '@/functions/codemirror/lib/codemirror.css'
-
   import { codemirror as CodeMirror } from 'vue-codemirror' 
+
   import 'codemirror/lib/codemirror.css'
-  import 'codemirror/mode/markdown/markdown'
+  import 'codemirror/mode/gfm/gfm'
 
   export default {
-    //  mounted() {
-    //   const cm = new CodeMirror(this.$refs.editor, {
-    //     value: `# Hello world!\n\nThis is some **bold** text!\n- Do list me\n- Or me`,
-    //     mode: 'markdown',
-    //     lineWrapping: true,
-    //     inputStyle: 'contenteditable',
-    //     viewportMargin: Infinity
-    //   })
-    // }
-
     data: () => ({
       options: {
-        mode: { name: 'markdown' },
+        mode: { name: 'gfm' },
         lineWrapping: true,
         inputStyle: 'contenteditable',
         viewportMargin: Infinity
@@ -47,6 +31,7 @@
   .editor {
     /deep/ .CodeMirror {
       height: auto;
+      min-height: 72px;
       border-radius: 0 0 2px 2px;
       box-shadow: inset 0 0 0 1px $color--special-black-1;
 

@@ -19,6 +19,12 @@ export const loadFonts = async () => {
       weight: '100 900'
     }).load()
     document.fonts.add(fontFace)
+
+    const fontFaceItalic = await new FontFace('Inter', `url(https://rsms.me/inter/font-files/Inter-italic.var.woff2?3.13)`, { 
+      style: 'italic', 
+      weight: '100 900'
+    }).load()
+    document.fonts.add(fontFaceItalic)
   } catch (err) {
     console.error(err)
   }

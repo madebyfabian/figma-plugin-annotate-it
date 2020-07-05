@@ -2,7 +2,7 @@
   <div class="container">
     <div class="emptyState">
       <div class="emptyState-inner">
-        <p>You have no annotations.<br>To add, click on the "Add new" button below.</p>
+        <p>No annotations found on this page.<br></p>
         <AnnotationItem :showSkeleton="true" />
       </div>
     </div>
@@ -23,8 +23,6 @@
     background: $color--background-white;
     border-bottom: none;
     border-radius: 4px 4px 0 0;
-    // border-radius: 4px;
-    background: $color--background-grey-f0;
     padding: 16px;
 
     .emptyState {

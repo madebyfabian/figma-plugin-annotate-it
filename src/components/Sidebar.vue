@@ -12,14 +12,14 @@
 
     <section class="markdown">
       <SectionTitle class="sectionTitle isRegular">You can use <b>Markdown</b> for text formatting:</SectionTitle>
-      <!-- <p>
+      <p>
         <b>**Bold**</b><br>
         <i>_Italics_</i><br>
         - Unordered<br>
         1. Ordered<br>
         --- Divider<br>
         [My link](https://example.com)
-      </p> -->
+      </p>
     </section>
   </aside>
 </template>
