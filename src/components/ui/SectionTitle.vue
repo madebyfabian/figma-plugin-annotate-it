@@ -24,7 +24,6 @@
   .sectionTitle {
     padding: 8px;
     margin: 0 -8px;
-    background: $color--background-white;
 
     &[type=default] {
       min-height: 32px;

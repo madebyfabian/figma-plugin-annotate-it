@@ -3,14 +3,17 @@
     <div class="emptyState">
       <div class="emptyState-inner">
         <p>You have no annotations.<br>To add, click on the "Add new" button below.</p>
+        <AnnotationItem :showSkeleton="true" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import AnnotationItem from '@/components/AnnotationItem'
+
   export default {
-    
+    components: { AnnotationItem }
   }
 </script>
 
@@ -18,10 +21,11 @@
   .container {
     border: 1px solid $color--background-silver;
     background: $color--background-white;
-    // border-bottom: none;
-    // border-radius: 4px 4px 0 0;
-    border-radius: 4px;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    // border-radius: 4px;
     background: $color--background-grey-f0;
+    padding: 16px;
 
     .emptyState {
       height: 100%;
@@ -30,9 +34,14 @@
       justify-content: center;
       flex-wrap: wrap;
 
-      p {
-        @include font(11, bold);
-        text-align: center;
+      &-inner {
+        width: 100%;
+        
+        p {
+          @include font(11, bold);
+          text-align: center;
+          margin-bottom: 16px;
+        }
       }
     }
   }

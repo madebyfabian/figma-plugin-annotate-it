@@ -68,8 +68,10 @@
     align-items: center;
     justify-content: center;
 
-    svg {
-      margin-left: -8px;
+    &:not([buttonType=icon]) {
+      svg {
+        margin-left: -8px;
+      }
     }
     
     &[buttonType=primary] {
@@ -109,7 +111,6 @@
     }
 
     &[buttonType=icon] {
-      background: $color--background-white;
       border-radius: 2px;
       box-shadow: none;
       width: 32px;

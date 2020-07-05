@@ -1,7 +1,7 @@
 <template>
-  <main :class="a11yClass">
+  <div :class="a11yClass">
     <router-view/>
-  </main>
+  </div>
 </template>
 
 <script>
@@ -54,6 +54,7 @@
     --color--background-silver: #E5E5E5;
 
     --color--special-hover-fill: rgba(0, 0, 0, 0.06);
+    --color--special-black-1: rgba(0, 0, 0, 0.1);
   }
 
   *:not(html), *::after, *::before {
@@ -75,7 +76,7 @@
     margin: 0;
   }
 
-  .using-keyboard *:focus {
-    box-shadow: 0 0 0 2px #18a0fb!important;
-  }
+  // .using-keyboard *:focus {
+  //   box-shadow: 0 0 0 2px #18a0fb!important;
+  // }
 </style>

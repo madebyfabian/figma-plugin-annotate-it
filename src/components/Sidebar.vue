@@ -10,9 +10,16 @@
       <div style="height: 32px; width: 100px; background: #e8e8e8;border-radius: 100px;"></div>
     </section>
 
-    <section>
-      <SectionTitle class="sectionTitle isRegular">You can use <b>Markdown</b> for text formatting.</SectionTitle>
-      <div style="height: 32px; width: 100px; background: #e8e8e8;border-radius: 100px;"></div>
+    <section class="markdown">
+      <SectionTitle class="sectionTitle isRegular">You can use <b>Markdown</b> for text formatting:</SectionTitle>
+      <!-- <p>
+        <b>**Bold**</b><br>
+        <i>_Italics_</i><br>
+        - Unordered<br>
+        1. Ordered<br>
+        --- Divider<br>
+        [My link](https://example.com)
+      </p> -->
     </section>
   </aside>
 </template>
@@ -33,6 +40,10 @@
   aside {
     section {
       margin-bottom: 16px;
+
+      &.markdown p, &.markdown p * {
+        line-height: 200%;
+      }
       
       .sectionTitle {
         min-width: 100%;
