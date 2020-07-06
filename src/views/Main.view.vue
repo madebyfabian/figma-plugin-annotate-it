@@ -3,29 +3,41 @@
     <Sidebar />
 
     <main>
-      <AnnotationsContainer class="content" />
+      <div class="container">
+        <div class="emptyState" v-if="!annotations || !annotations.length">
+          <div class="emptyState-inner">
+            <p>No annotations found on this page.<br></p>
+            <AnnotationItem :showSkeleton="true" />
+          </div>
+        </div>
+
+        <div class="defaultState" v-else>
+          <AnnotationItem 
+            v-for="(annotation, i) of annotations" 
+            :key="i"
+            :itemKey="i"
+            @removeAnnotation="removeAnnotation"
+            v-model="annotations[i]"
+          />
+
+          <!-- <pre>{{ annotations }}</pre> -->
+        </div>
+      </div>
 
       <footer>
-        <Button :disabled="userHasNothingSelected">
+        <Button buttonType="primary" :disabled="userHasNothingSelected" @click="createAnnotationItem">
           <Icon iconName="plus" />
           Add new
         </Button>
         <p v-if="userHasNothingSelected">To add annotations, please select a frame.</p>
       </footer>
     </main>
-    
-    <div class="bottom-content">
-      <div class="left">
-        
-      </div>
-      <Button buttonType="primary" :disabled="true">Place annotations</Button>
-    </div>
   </div>
 </template>
 
 <script>
   import Sidebar from '@/components/Sidebar'
-  import AnnotationsContainer from '@/components/AnnotationsContainer'
+  import AnnotationItem from '@/components/AnnotationItem'
 
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
@@ -33,11 +45,35 @@
   import { postMsg } from '@/functions/helpers'
 
   export default {
-    components: { Sidebar, Button, Icon, AnnotationsContainer },
+    components: { Sidebar, Button, Icon, AnnotationItem },
 
     data: () => ({
-      userHasNothingSelected: false
+      userHasNothingSelected: false,
+      // annotations: []
+      annotations: [
+        {
+          title: 'This is the original number 1', content: { rawMarkdown: '', parsedMdast: null }
+        },
+        {
+          title: 'This is the original number 2', content: { rawMarkdown: '', parsedMdast: null }
+        },
+        {
+          title: 'This is the original number 3', content: { rawMarkdown: '', parsedMdast: null }
+        }
+      ]
     }),
+
+    methods: {
+      createAnnotationItem() {
+        this.annotations.push({
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        })
+      },
+
+      removeAnnotation( itemKey ) {
+        this.annotations.splice(itemKey, 1)
+      }
+    },
 
     created() {
       postMsg('req__selectionState', {})
@@ -52,7 +88,6 @@
         switch (msg.type) {
           case 'res__selectionState': {
             this.userHasNothingSelected = !!(msgValue.length === 0)
- 
             break
           }
         
@@ -69,15 +104,46 @@
     height: 100%;
     display: grid;
     grid-template-columns: 176px 1fr;
-    grid-template-rows: 1fr min-content;
     gap: 16px 8px;
 
     main {
       display: grid;
+      max-height: calc(100vh - 16px - 16px); // 100% minus plugins padding 16px * 2
       grid-template-rows: 1fr min-content;
 
-      .content {
+      .container {
         height: 100%;
+        border: 1px solid $color--background-silver;
+        background: $color--background-white;
+        border-bottom: none;
+        border-radius: 4px 4px 0 0;
+        padding: 16px;
+        overflow: hidden;
+        overflow-y: scroll;
+        flex: 1;
+
+        .emptyState {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-wrap: wrap;
+
+          &-inner {
+            width: 100%;
+            
+            p {
+              @include font(11, bold);
+              text-align: center;
+              margin-bottom: 16px;
+            }
+          }
+        }
+
+        .defaultState {
+          display: grid;
+          gap: 8px;
+        }
       }
       
       footer {
@@ -92,23 +158,6 @@
         p {
           margin-left: 8px;
           text-align: center;
-        }
-      }
-    }
-
-    .bottom-content {
-      grid-column: 2 / 3;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      .left {
-        display: flex;
-        align-items: center;
-
-        button {
-          margin-right: 8px;
         }
       }
     }

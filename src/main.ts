@@ -1,8 +1,18 @@
+let pluginStartupComplete = false
+
+
 const onSelectionChange = () => {
 	figma.ui.postMessage({
 		type: 'res__selectionState',
 		value: figma.currentPage.selection
 	})
+
+	if (!pluginStartupComplete) {
+		pluginStartupComplete = true
+
+		if (!figma.currentPage.selection.length)
+			figma.notify('Please select a frame to add annotations.')
+	}
 }
 
 
@@ -21,8 +31,8 @@ figma.ui.on('message', async msg => {
 
 
 figma.showUI(__html__, { 
-  width: 716, 
-  height: 500
+  width: 663, 
+  height: 432
 })
 
 
