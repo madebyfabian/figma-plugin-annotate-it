@@ -17,8 +17,7 @@
         <i>_Italics_</i><br>
         - Unordered<br>
         1. Ordered<br>
-        --- Divider<br>
-        [My link](https://example.com)
+        --- Divider
       </p>
     </section>
   </aside>

@@ -3,24 +3,24 @@
     <Sidebar />
 
     <main>
-      <div class="container">
-        <div class="emptyState" v-if="!annotations || !annotations.length">
-          <div class="emptyState-inner">
-            <p>No annotations found on this page.<br></p>
-            <AnnotationItem :showSkeleton="true" />
+      <div class="container" v-bar>
+        <div class="container-scrollContent">
+          <div class="emptyState" v-if="!annotations || !annotations.length">
+            <div class="emptyState-inner">
+              <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
+              <AnnotationItem :showSkeleton="true" />
+            </div>
           </div>
-        </div>
 
-        <div class="defaultState" v-else>
-          <AnnotationItem 
-            v-for="(annotation, i) of annotations" 
-            :key="i"
-            :itemKey="i"
-            @removeAnnotation="removeAnnotation"
-            v-model="annotations[i]"
-          />
-
-          <!-- <pre>{{ annotations }}</pre> -->
+          <div class="defaultState" v-else>
+            <AnnotationItem 
+              v-for="(annotation, i) of annotations" 
+              :key="i"
+              :itemKey="i"
+              @removeAnnotation="removeAnnotation"
+              v-model="annotations[i]"
+            />
+          </div>
         </div>
       </div>
 
@@ -49,18 +49,19 @@
 
     data: () => ({
       userHasNothingSelected: false,
-      // annotations: []
-      annotations: [
-        {
-          title: 'This is the original number 1', content: { rawMarkdown: '', parsedMdast: null }
-        },
-        {
-          title: 'This is the original number 2', content: { rawMarkdown: '', parsedMdast: null }
-        },
-        {
-          title: 'This is the original number 3', content: { rawMarkdown: '', parsedMdast: null }
-        }
-      ]
+      annotations: [{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        }]
     }),
 
     methods: {
@@ -95,6 +96,17 @@
             break
         }
       }
+    },
+
+    watch: {
+      annotations: {
+        deep: true,
+        immediate: true,
+        handler( newValue ) {
+          console.clear()
+          console.log(JSON.stringify(newValue, null, 2))
+        }
+      }
     }
   }
 </script>
@@ -103,7 +115,7 @@
   .grid {
     height: 100%;
     display: grid;
-    grid-template-columns: 176px 1fr;
+    grid-template-columns: 168px 1fr;
     gap: 16px 8px;
 
     main {
@@ -117,10 +129,12 @@
         background: $color--background-white;
         border-bottom: none;
         border-radius: 4px 4px 0 0;
-        padding: 16px;
         overflow: hidden;
-        overflow-y: scroll;
         flex: 1;
+
+        &-scrollContent {
+          padding: 16px 24px 16px;
+        }
 
         .emptyState {
           height: 100%;

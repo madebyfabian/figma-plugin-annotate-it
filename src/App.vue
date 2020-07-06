@@ -79,4 +79,26 @@
   // .using-keyboard *:focus {
   //   box-shadow: 0 0 0 2px #18a0fb!important;
   // }
+
+
+
+  .vb > .vb-dragger {
+    z-index: 5;
+    width: 12px;
+    right: 0;
+    cursor: pointer;
+  }
+  .vb > .vb-dragger > .vb-dragger-styler {
+    backface-visibility: hidden;
+    transform: rotate3d(0,0,0,0);
+    transition:
+      background-color 100ms ease-out,
+      margin 100ms ease-out,
+      height 100ms ease-out;
+    background-color: $color--black-3;
+    margin: 5px 5px 5px 0;
+    border-radius: 20px;
+    height: calc(100% - 10px);
+    display: block;
+  }
 </style>

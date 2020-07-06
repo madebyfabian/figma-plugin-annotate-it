@@ -2,6 +2,9 @@ import Vue from 'vue'
 // @ts-ignore
 import App from './App.vue'
 import router from './router'
+import Vuebar from 'vuebar'
+
+Vue.use(Vuebar)
 
 Vue.config.productionTip = false
 Vue.config.devtools = false
