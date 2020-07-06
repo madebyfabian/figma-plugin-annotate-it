@@ -133,7 +133,8 @@
         }
 
         &-placeholder {
-          padding: 8px;
+          // padding: 8px;
+          transform: translate(4px, 8px);
           color: $color--black-3;
         }
       }
