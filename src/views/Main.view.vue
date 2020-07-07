@@ -57,6 +57,8 @@
         this.annotations.push({
           title: '', content: { rawMarkdown: '', parsedMdast: null }
         })
+
+        postMsg('req__createAnnotationItem', {})
       },
 
       removeAnnotation( itemKey ) {
@@ -91,7 +93,6 @@
         deep: true,
         immediate: true,
         handler( newValue ) {
-          console.clear()
           console.log(JSON.stringify(newValue, null, 2))
         }
       }
