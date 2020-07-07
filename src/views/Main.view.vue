@@ -49,19 +49,7 @@
 
     data: () => ({
       userHasNothingSelected: false,
-      annotations: [{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        }]
+      annotations: []
     }),
 
     methods: {
@@ -133,7 +121,8 @@
         flex: 1;
 
         &-scrollContent {
-          padding: 16px 24px 16px;
+          padding: 16px;
+          padding-right: 24px;
         }
 
         .emptyState {

@@ -62,7 +62,7 @@
       value: {
         type: Object,
         default: () => ({
-          title: 'My title', content: { rawMarkdown: 'Test **123**' }
+          title: 'This is an example title', content: { rawMarkdown: 'You can format the annotation with Markdown like \n**bold** or _italic_, or whatever you prefer.' }
         })
       },
       itemKey: {
