@@ -3,24 +3,22 @@
     <Sidebar />
 
     <main>
-      <div class="container" v-bar>
-        <div class="container-scrollContent">
-          <div class="emptyState" v-if="!annotations || !annotations.length">
-            <div class="emptyState-inner">
-              <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
-              <AnnotationItem :showSkeleton="true" />
-            </div>
+      <div class="container">
+        <div class="emptyState" v-if="!annotations || !annotations.length">
+          <div class="emptyState-inner">
+            <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
+            <AnnotationItem :showSkeleton="true" />
           </div>
+        </div>
 
-          <div class="defaultState" v-else>
-            <AnnotationItem 
-              v-for="(annotation, i) of annotations" 
-              :key="i"
-              :itemKey="i"
-              @removeAnnotation="removeAnnotation"
-              v-model="annotations[i]"
-            />
-          </div>
+        <div class="defaultState" v-else>
+          <AnnotationItem 
+            v-for="(annotation, i) of annotations" 
+            :key="i"
+            :itemKey="i"
+            @removeAnnotation="removeAnnotation"
+            v-model="annotations[i]"
+          />
         </div>
       </div>
 
@@ -49,7 +47,17 @@
 
     data: () => ({
       userHasNothingSelected: false,
-      annotations: []
+      annotations: [{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        },{
+          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        }]
     }),
 
     methods: {
@@ -120,10 +128,31 @@
         border-radius: 4px 4px 0 0;
         overflow: hidden;
         flex: 1;
+        padding: 16px;
+        padding-right: 24px;
+        overflow-y: scroll;
 
-        &-scrollContent {
-          padding: 16px;
-          padding-right: 24px;
+        &::-webkit-scrollbar {
+          width: 14px;
+        }
+        
+        // &::-webkit-scrollbar-track {
+        //   // box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+        //   // background: white;
+        //   // box-shadow: -2px 0 0 1px blue;
+        // }
+        
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          background: rgba(#000, .2);
+          padding: 2px;
+          border: 4px solid white;
+          cursor: pointer;
+          transform: translateX(10px);
+          
+          &:hover {
+            border-width: 4px 3px;
+          }
         }
 
         .emptyState {
