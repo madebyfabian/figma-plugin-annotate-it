@@ -84,8 +84,8 @@ figma.ui.on('message', async msg => {
 
 
 figma.showUI(__html__, { 
-  width: 663, 
-  height: 432
+  width: 455, 
+  height: 446
 })
 
 

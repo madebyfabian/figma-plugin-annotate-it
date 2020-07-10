@@ -1,0 +1,135 @@
+*[figma-tooltip-position][figma-tooltip] {
+  --tooltipArrowSize: 6px;
+  --tooltipSpace: 8px;
+  --tooltipSpaceElAndArrow: calc(100% + var(--tooltipSpace));
+  --tooltipSpaceElAndContent: calc(var(--tooltipSpaceElAndArrow) + var(--tooltipArrowSize));
+  
+
+  position: relative;
+
+  // Main Tooltip Container
+  &::after {
+    content: attr(figma-tooltip);
+    padding: 0 8px;
+    line-height: 28px;
+    background: $color--background-22;
+    border-radius: 2px;
+    border: 0.5px solid $color--black;
+    color: $color--white;
+    display: inline-flex;
+    position: absolute;
+    white-space: nowrap;
+  }
+
+  // Arrow
+  &::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: absolute;
+  }
+}
+
+
+@mixin tooltipPosCenter( $dir ) {
+  @if $dir == 'horizontal' {
+    left: 50%;
+    transform: translateX(-50%)
+  } @else if $dir == 'vertical' {
+    top: 50%;
+    transform: translateY(-50%)
+  }
+}
+
+@mixin tooltipPosOuter( $type, $pos ) {
+  $prop: if($pos == 'left', 'right', 'left');
+
+  @if $type == 'content' {
+    #{$prop}: calc(100% - (20px + 6.5px));
+  } @else if $type == 'arrow' {
+    #{$prop}: calc(100% - 20px);
+  }
+};
+
+
+
+
+
+// top-left, top-center, top-right
+*[figma-tooltip-position^=top-] {
+  &::after { 
+    bottom: var(--tooltipSpaceElAndContent)
+  }
+
+  &::before { 
+    bottom: var(--tooltipSpaceElAndArrow);
+    border-width: 6.5px 6.5px 0 6.5px;
+    border-color: $color--background-22 transparent transparent transparent;
+  }
+}
+
+
+// bottom-left, bottom-center, bottom-right
+*[figma-tooltip-position^=bottom-] {
+  &::after {
+    top: var(--tooltipSpaceElAndContent)
+  }
+
+  &::before { 
+    top: var(--tooltipSpaceElAndArrow);
+    border-width: 0 6.5px 6.5px 6.5px;
+    border-color: transparent transparent $color--background-22 transparent;
+  }
+}
+
+
+// top-right, bottom-right
+*[figma-tooltip-position$=-right] {
+  &::after { @include tooltipPosOuter('content', 'right') }
+  &::before { @include tooltipPosOuter('arrow', 'right') }
+}
+
+// right
+*[figma-tooltip-position=right] {
+  &::after { 
+    @include tooltipPosCenter('vertical');
+    left: var(--tooltipSpaceElAndContent)
+  }
+
+  &::before {
+    @include tooltipPosCenter('vertical');
+    left: var(--tooltipSpaceElAndArrow);
+    border-width: 6.5px 6.5px 6.5px 0;
+    border-color: transparent $color--background-22 transparent transparent;
+  }
+}
+
+
+// top-center, bottom-center
+*[figma-tooltip-position$=-center] {
+  &::after { @include tooltipPosCenter('horizontal') }
+  &::before { @include tooltipPosCenter('horizontal') }
+}
+
+
+// top-left, bottom-left
+*[figma-tooltip-position$=-left] {
+  &::after { @include tooltipPosOuter('content', 'left') }
+  &::before { @include tooltipPosOuter('arrow', 'left') }
+}
+
+// left 
+*[figma-tooltip-position=left] {
+  &::after { 
+    @include tooltipPosCenter('vertical');
+    right: var(--tooltipSpaceElAndContent)
+  }
+  &::before {
+    @include tooltipPosCenter('vertical');
+    right: var(--tooltipSpaceElAndArrow);
+    border-width: 6.5px 0 6.5px 6.5px;
+    border-color: transparent transparent transparent $color--background-22;
+  }
+}

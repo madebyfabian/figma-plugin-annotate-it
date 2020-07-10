@@ -5,6 +5,8 @@
 </template>
 
 <script>
+  import '@/scss/tooltip.scss'
+
   export default {
     name: "App",
 
@@ -52,6 +54,7 @@
     --color--background-white: #fff;
     --color--background-grey-f0: #f0f0f0;
     --color--background-silver: #E5E5E5;
+    --color--background-22: #222;
 
     --color--special-hover-fill: rgba(0, 0, 0, 0.06);
     --color--special-black-1: rgba(0, 0, 0, 0.1);
@@ -64,7 +67,7 @@
   }
 
   body {
-    margin: 16px;
+    margin: 0;
     overflow: hidden;
   }
 
