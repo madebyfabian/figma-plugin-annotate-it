@@ -1,6 +1,8 @@
 <template>
   <div :class="a11yClass">
-    <router-view/>
+    <transition name="slide" mode="out-in">
+      <router-view/>
+    </transition>
   </div>
 </template>
 
@@ -79,29 +81,47 @@
     margin: 0;
   }
 
+  a {
+    text-decoration: none;
+    color: $color--blue;
+  }
+
+  p a, ol a, ul a {
+    text-decoration: underline;
+  }
+
   // .using-keyboard *:focus {
   //   box-shadow: 0 0 0 2px #18a0fb!important;
   // }
 
 
+//   .slide-enter-active, .slide-leave-active {
+//     transition: opacity .5s
+// }
+// .slide-enter, .slide-leave-to /* .fade-leave-active in <2.1.8 */ {
+//     opacity: 0
+// }
 
-  .vb > .vb-dragger {
-    z-index: 5;
-    width: 12px;
-    right: 0;
-    cursor: pointer;
+
+  .slide-enter-active,
+  .slide-leave-active {
+    transition-duration: 300ms;
+    // transition-duration: 1s;
+    transition-property: height, opacity, transform;
+    transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+    overflow: hidden;
   }
-  .vb > .vb-dragger > .vb-dragger-styler {
-    backface-visibility: hidden;
-    transform: rotate3d(0,0,0,0);
-    transition:
-      background-color 100ms ease-out,
-      margin 100ms ease-out,
-      height 100ms ease-out;
-    background-color: $color--black-3;
-    margin: 5px 5px 5px 0;
-    border-radius: 20px;
-    height: calc(100% - 10px);
-    display: block;
+
+  .slide-enter,
+  .slide-leave-active {
+    opacity: 0;
+  }
+
+  .slide-enter {
+    transform: translate(-1em, 0);
+  }
+
+  .slide-leave-active {
+    transform: translate(1em, 0);
   }
 </style>

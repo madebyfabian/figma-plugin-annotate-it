@@ -29,7 +29,7 @@
         type: String,
         default: 'standard',
         validator: (value) => {
-          return [ 'primary', 'standard', 'icon' ].includes(value)
+          return [ 'primary', 'standard', 'icon', 'iconDraggable' ].includes(value)
         }
       },
 
@@ -46,7 +46,9 @@
 
     methods: {
       onClick() {
-        this.$refs.button.blur()
+        if (this.$refs && this.$refs.button)
+          this.$refs.button.blur()
+          
         this.$emit('click')
       }
     }
@@ -110,12 +112,14 @@
       }
     }
 
-    &[buttonType=icon] {
+    &[buttonType^=icon] {
       border-radius: 2px;
       box-shadow: none;
       width: 32px;
       padding: 0;
-      color: $color--black-8;
+      /deep/ * {
+        color: $color--blue;
+      }
 
       &:not(:disabled) {
         &:hover {
@@ -142,6 +146,18 @@
         /deep/ * {
           color: $color--black-3;
         }
+      }
+    }
+
+    &[buttonType=iconDraggable] {
+      width: 24px;
+
+      /deep/ svg {
+        transform: translateX(4px);
+      }
+
+      &:active, &:focus {
+        box-shadow: none!important;
       }
     }
   }

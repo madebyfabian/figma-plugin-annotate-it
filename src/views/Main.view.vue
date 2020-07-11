@@ -1,22 +1,44 @@
 <template>
   <div class="grid">
-    <main>
+    <main class="scrollContainer" ref="scrollContainer">
       <div class="emptyState" v-if="!annotations || !annotations.length">
         <div class="emptyState-inner">
           <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
           <AnnotationItem :showSkeleton="true" />
         </div>
       </div>
-
-      <div class="defaultState" v-else>
+      
+      <!-- <transition-group name="fade" tag="div" class="wrapper">
         <AnnotationItem 
           v-for="(annotation, i) of annotations" 
-          :key="i"
+          :key="annotation.id"
+
           :itemKey="i"
           @removeAnnotation="removeAnnotation"
           v-model="annotations[i]"
+          
+          class="line"
         />
-      </div>
+      </transition-group> -->
+
+
+      <Container 
+        @drop="onDrop" 
+        drag-handle-selector=".annotationItem-dragHandleButton">
+
+        <Draggable v-for="(annotation, i) in annotations" :key="annotation.id">
+          <div class="draggable-item">
+            <transition name="slide" :appear="true">
+              <AnnotationItem 
+                v-if="!annotation.isDeleted"
+                :itemKey="i"
+                @removeAnnotation="removeAnnotation"
+                v-model="annotations[i]"
+              />
+            </transition>
+          </div>
+        </Draggable>
+      </Container>
     </main>
 
     <router-link to="/about">
@@ -28,7 +50,7 @@
         buttonType="primary" 
         :disabled="userHasNothingSelected" 
         @click="createAnnotationItem"
-        v-tooltip.right="`Adds a new annotation`">
+        v-tooltip.right="`Add a new annotation`">
 
         <Icon iconName="plus" />
         Add new
@@ -41,41 +63,49 @@
 <script>
   import FloatingButton from '@/components/ui/FloatingButton'
   import AnnotationItem from '@/components/AnnotationItem'
-
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
 
-  import { postMsg } from '@/functions/helpers'
+  import { Container, Draggable } from 'vue-smooth-dnd'
+
+  import { postMsg, randomId, onDrop, generateAnnotationItem } from '@/functions/helpers'
+
 
   export default {
-    components: { FloatingButton, Button, Icon, AnnotationItem },
+    components: { FloatingButton, Button, Icon, AnnotationItem, Container, Draggable },
 
     data: () => ({
       userHasNothingSelected: false,
-      annotations: [{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        },{
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
-        }]
+      annotations: []
     }),
 
     methods: {
       createAnnotationItem() {
-        this.annotations.push({
-          title: '', content: { rawMarkdown: '', parsedMdast: null }
+        this.annotations.push( generateAnnotationItem() )
+
+        // Scroll to bottom
+        const scrollContainer = this.$refs.scrollContainer
+        this.$nextTick(() => {
+          scrollContainer.scrollTo({
+            top: scrollContainer.scrollHeight,
+            behavior: 'smooth'
+          })
         })
 
-        postMsg('req__createAnnotationItem', {})
+        // postMsg('req__createAnnotationItem', {})
       },
 
-      removeAnnotation( itemKey ) {
-        this.annotations.splice(itemKey, 1)
+      removeAnnotation( itemId ) {
+        const itemArrIndex = this.annotations.findIndex(item => item.id === itemId)
+        this.annotations[itemArrIndex].isDeleted = true
+
+        setTimeout(() => {
+          this.annotations.splice(itemArrIndex, 1)
+        }, 300)
+      },
+
+      onDrop( dropResult ) {
+        this.annotations = onDrop(this.annotations, dropResult)
       }
     },
 
@@ -106,6 +136,7 @@
         deep: true,
         immediate: true,
         handler( newValue ) {
+          // console.clear()
           // console.log(JSON.stringify(newValue, null, 2))
         }
       }
@@ -121,8 +152,10 @@
 
     main {
       overflow: hidden;
-      padding: 16px;
+      padding: 24px 0;
       overflow-y: scroll;
+      position: relative;
+      z-index: 0;
 
       &::-webkit-scrollbar {
         width: 14px;
@@ -142,11 +175,17 @@
       }
 
       .emptyState {
+        padding: 16px;
         height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-wrap: wrap;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: $color--background-white;
 
         &-inner {
           width: 100%;
@@ -157,11 +196,6 @@
             margin-bottom: 16px;
           }
         }
-      }
-
-      .defaultState {
-        display: grid;
-        gap: 8px;
       }
     }
 
@@ -178,8 +212,8 @@
       padding: 16px;
       border-top: 1px solid $color--background-silver;
       background: $color--background-white;
-
-      
+      position: relative;
+      z-index: 1;
 
       p {
         margin-left: 8px;
@@ -187,4 +221,35 @@
       }
     }
   }
+
+
+
+
+  // .items-enter-active,
+  // .items-leave-active {
+  //   transition-duration: 150ms;
+  //   transition-property: height, opacity, transform;
+  //   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+  //   overflow: hidden;
+  // }
+
+  // .items-enter,
+  // .items-leave-active {
+  //   opacity: 0;
+  //   transform: translate(1em, 0);
+  // }
+
+  // .line {
+  //   // transition: all 150ms;
+  //   transition: all 150ms;
+  // }
+
+  // .fade-enter, .fade-leave-to {
+  //   opacity: 0;
+  //   transform: translateY(-1rem);
+  // }
+
+  // .fade-leave-active {
+  //   // position: absolute;
+  // }
 </style>

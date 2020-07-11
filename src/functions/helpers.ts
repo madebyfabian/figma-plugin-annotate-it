@@ -32,6 +32,15 @@ export const loadFonts = async () => {
 
 
 /**
+ * Generates a random string and returns it.
+ * @param idLength The length of the id. Defaults to 16.
+ */
+export const randomId = ( idLength: boolean = 16 ) => {
+  return [...Array(idLength)].map(() => Math.random().toString(32)[2]).join('')
+}
+
+
+/**
  * Posts a message to the figma code.
  * @param type The type (name) of the message.
  * @param value The actual value of the message.
@@ -39,6 +48,43 @@ export const loadFonts = async () => {
 export const postMsg = ( type: string, value: string ) => {
   parent.postMessage({ pluginMessage: { type, value }}, '*')
 }
+
+
+/**
+ * Re-sorts the given array based on a drop-event.
+ * @param arr The original array.
+ * @param dropResult The data of the new Result.
+ * @returns The new, correctly sorted array.
+ */
+export const onDrop = ( arr, dropResult ) => {
+  const { removedIndex, addedIndex, payload } = dropResult
+  if (removedIndex === null && addedIndex === null)
+    return arr
+
+  const result = [...arr]
+  let itemToAdd = payload
+
+  if (removedIndex !== null)
+    itemToAdd = result.splice(removedIndex, 1)[0]
+
+  if (addedIndex !== null)
+    result.splice(addedIndex, 0, itemToAdd)
+  
+  return result
+}
+
+
+/**
+ * Returns a new, empty annotation item object.
+ * @param title
+ * @param rawMarkdown 
+ */
+export const generateAnnotationItem = ( title = '', rawMarkdown = '' ) => ({
+  id: randomId(),
+  title,
+  content: { rawMarkdown, parsedMdast: null },
+  isDeleted: false
+})
 
 
 /**

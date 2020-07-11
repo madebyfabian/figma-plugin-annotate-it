@@ -3,7 +3,6 @@
   --tooltipSpace: 8px;
   --tooltipSpaceElAndArrow: calc(100% + var(--tooltipSpace));
   --tooltipSpaceElAndContent: calc(var(--tooltipSpaceElAndArrow) + var(--tooltipArrowSize));
-  
 
   position: relative;
 
@@ -19,6 +18,7 @@
     display: inline-flex;
     position: absolute;
     white-space: nowrap;
+    z-index: 99999;
   }
 
   // Arrow
@@ -29,6 +29,7 @@
     height: 0;
     border-style: solid;
     position: absolute;
+    z-index: 99999;
   }
 }
 
