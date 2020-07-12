@@ -10,9 +10,6 @@ Vue.config.devtools = false
 import vTooltipDirective from '@/directives/v-tooltip'
 Vue.directive('tooltip', vTooltipDirective)
 
-import { loadFonts } from '@/functions/helpers.ts'
-loadFonts()
-
 
 // Vue.use({
 //   install () {

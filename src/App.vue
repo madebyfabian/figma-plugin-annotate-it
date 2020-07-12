@@ -33,8 +33,26 @@
 </script>
 
 <style lang="scss">
+  @font-face {
+    font-family: 'Inter var';
+    font-weight: 100 900;
+    font-style: normal;
+    font-named-instance: 'Regular';
+    font-display: swap;
+    src: url('https://rsms.me/inter/font-files/Inter-roman.var.woff2?3.13') format('woff2');
+  }
+
+  @font-face {
+    font-family: 'Inter var';
+    font-weight: 100 900;
+    font-style: italic;
+    font-named-instance: 'Italic';
+    font-display: swap;
+    src: url('https://rsms.me/inter/font-files/Inter-italic.var.woff2?3.13') format('woff2');
+  }
+
   * {
-    font-family: 'Inter', system-ui, sans-serif!important;
+    font-family: 'Inter var', system-ui, sans-serif!important;
     user-select: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
