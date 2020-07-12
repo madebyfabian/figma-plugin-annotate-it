@@ -10,6 +10,7 @@ export const loadFonts = async () => {
     const requiredFonts = _generateRequiredWeightsArr('Inter')
     if (requiredFonts) { // If the parsing of the weights from .scss has worked 
       const fontsAvailable = requiredFonts.every(font => document.fonts.check(font) === true)
+      console.log('Are the fonts available on my machine?', fontsAvailable)
       if (fontsAvailable) // If fonts are available on the machine, don't do anything.
         return 
     }
@@ -83,8 +84,19 @@ export const generateAnnotationItem = ( title = '', rawMarkdown = '' ) => ({
   id: randomId(),
   title,
   content: { rawMarkdown, parsedMdast: null },
-  isDeleted: false
+  isDeleted: false,
+  colorThemeId: getUserColorThemes()[0].id
 })
+
+
+/**
+ * Returns an array of color themes for the current user.
+ */
+export const getUserColorThemes = () => ([
+  { name: 'Blue', color: '18A0FB', id: 'blvbk3k2fj551h0p' },
+  { name: 'Red', color: 'F24822', id: '25s8afhofkgi7185' },
+  { name: 'Green', color: '1BC47D', id: 'dd70jmjl2dp78sii' }
+])
 
 
 /**

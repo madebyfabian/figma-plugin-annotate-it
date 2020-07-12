@@ -21,7 +21,6 @@
         />
       </transition-group> -->
 
-
       <Container 
         @drop="onDrop" 
         drag-handle-selector=".annotationItem-dragHandleButton">
@@ -42,7 +41,7 @@
     </main>
 
     <router-link to="/about">
-      <FloatingButton v-tooltip.top-left="`Help & About`" />
+      <FloatingButton v-tooltip.top-left="`Help & Support`" />
     </router-link>
 
     <footer>
@@ -76,7 +75,7 @@
 
     data: () => ({
       userHasNothingSelected: false,
-      annotations: []
+      annotations: [ generateAnnotationItem() ]
     }),
 
     methods: {
@@ -145,6 +144,9 @@
 </script>
 
 <style lang="scss" scoped>
+.smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
+  overflow: visible;
+}
   .grid {
     height: 100%;
     display: grid;
@@ -203,6 +205,7 @@
       position: absolute;
       right: 16px;
       bottom: 16px;
+      z-index: 2;
     }
 
     footer {
@@ -221,35 +224,4 @@
       }
     }
   }
-
-
-
-
-  // .items-enter-active,
-  // .items-leave-active {
-  //   transition-duration: 150ms;
-  //   transition-property: height, opacity, transform;
-  //   transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
-  //   overflow: hidden;
-  // }
-
-  // .items-enter,
-  // .items-leave-active {
-  //   opacity: 0;
-  //   transform: translate(1em, 0);
-  // }
-
-  // .line {
-  //   // transition: all 150ms;
-  //   transition: all 150ms;
-  // }
-
-  // .fade-enter, .fade-leave-to {
-  //   opacity: 0;
-  //   transform: translateY(-1rem);
-  // }
-
-  // .fade-leave-active {
-  //   // position: absolute;
-  // }
 </style>

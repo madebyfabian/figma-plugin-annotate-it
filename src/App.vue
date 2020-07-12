@@ -60,6 +60,7 @@
 
     --color--special-hover-fill: rgba(0, 0, 0, 0.06);
     --color--special-black-1: rgba(0, 0, 0, 0.1);
+    --color--special-selection-a: #DAEBF7;
   }
 
   *:not(html), *::after, *::before {
@@ -123,5 +124,27 @@
 
   .slide-leave-active {
     transform: translate(1em, 0);
+  }
+
+
+
+
+
+  .slideDown-enter-active,
+  .slideDown-leave-active {
+    transition-duration: 150ms;
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.55, 0, 0.1, 1);
+    overflow: hidden;
+  }
+
+  .slideDown-enter,
+  .slideDown-leave-active {
+    opacity: 0;
+  }
+
+  .slideDown-enter,
+  .slideDown-leave-active {
+    transform: translateY(-1em);
   }
 </style>

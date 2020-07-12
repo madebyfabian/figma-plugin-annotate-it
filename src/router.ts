@@ -8,7 +8,7 @@ import Home from './views/Main.view.vue'
 import About from './views/About.view.vue'
 
 // @ts-ignore
-import Test from './views/Test.view.vue'
+// import Test from './views/Test.view.vue'
 
 Vue.use(VueRouter)
 

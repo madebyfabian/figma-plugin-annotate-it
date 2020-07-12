@@ -8,14 +8,15 @@
       <Icon iconName="drag" />
     </Button>
 
-    <SectionTitle class="annotationItem-number">#{{ itemKey + 1 }}</SectionTitle>
+    <SectionTitle class="annotationItem-number">
+      #{{ itemKey + 1 }}
+    </SectionTitle>
 
     <input 
       class="annotationItem-inputTitle" 
       type="text" 
       placeholder="Title"
-      v-model="value.title"
-    />
+      v-model="value.title" />
 
     <div class="annotationItem-inputEditor-wrap">
       <CodeMirror 
@@ -25,6 +26,10 @@
         @input="onContentInput"
       />
     </div>
+
+    <ColorStyleControl
+      class="annotationItem-colorStyleControl"
+      v-model="value.colorThemeId" />
 
     <Button 
       buttonType="icon" 
@@ -49,14 +54,15 @@
   import SectionTitle from '@/components/ui/SectionTitle'
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
+  import ColorStyleControl from '@/components/ui/ColorStyleControl'
 
-  import { generateAnnotationItem } from '@/functions/helpers'
+  import { generateAnnotationItem, randomId } from '@/functions/helpers'
 
-  const contentPlaceholder = 'You can format the annotation with Markdown like \n**bold** or _italic_, or whatever you prefer.'
+  const contentPlaceholder = 'Your annotation Description goes here.\nYou can format the text with Markdown like\n**bold** or _italic_, - unordered, 1. ordered, --- divider'
   
 
   export default {
-    components: { SectionTitle, Icon, Button, CodeMirror },
+    components: { SectionTitle, Icon, Button, CodeMirror, ColorStyleControl },
 
     data: () => ({
       editorOptions: {
@@ -75,7 +81,7 @@
       },
       value: {
         type: Object,
-        default: () => generateAnnotationItem('This is an example title', contentPlaceholder)
+        default: () => generateAnnotationItem('Your annotation Title goes here', contentPlaceholder)
       },
       itemKey: {
         type: Number,
@@ -111,7 +117,7 @@
 
     display: grid;
     grid-template-columns: 24px 32px 1fr 32px;
-    grid-template-rows: 40px minmax(72px, 1fr);
+    grid-template-rows: 40px minmax(72px, 1fr) min-content;
     align-items: center;
     gap: 6px 8px;
 
@@ -195,6 +201,11 @@
     &-inputTitle, &-inputEditor /deep/ .CodeMirror {
       box-shadow: inset 0 0 0 1px $color--special-black-1;
       border-radius: 3px;
+    }
+
+    &-colorStyleControl {
+      grid-row: 3 / 4;
+      grid-column: 3 / 4;
     }
 
     &-removeButton {
