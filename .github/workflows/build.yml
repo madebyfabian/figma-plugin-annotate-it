@@ -28,25 +28,29 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    # - name: Now get the new version in package.json
+    #   id: package-version
+    #   uses: martinbeentjes/npm-get-version-action@master
+
     - name: Now get the new version in package.json
       id: package-version
-      uses: martinbeentjes/npm-get-version-action@master
+      uses: pchynoweth/action-get-npm-version@master
 
     - name: Now change the current version in the manifest
-      run: sed -i 's/🚀 PROD — Annotate it!/Annotate it! v${{ steps.package-version.outputs.current-version}}/' build/manifest.json
+      run: sed -i 's/🚀 PROD — Annotate it!/Annotate it! v${{ steps.package-version.outputs.version}}/' build/manifest.json
 
     - name: Now zip the npm build
       uses: papeloto/action-zip@v1
       with:
         files: build/
-        dest: annotate-it-v${{ steps.package-version.outputs.current-version}}.zip
+        dest: annotate-it-v${{ steps.package-version.outputs.version}}.zip
 
     - name: Make release
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         prerelease: false
-        automatic_release_tag: v${{ steps.package-version.outputs.current-version}}
+        automatic_release_tag: v${{ steps.package-version.outputs.version}}
         files: |
-          annotate-it-v${{ steps.package-version.outputs.current-version}}.zip
+          annotate-it-v${{ steps.package-version.outputs.version}}.zip
           
