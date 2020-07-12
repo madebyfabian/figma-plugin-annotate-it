@@ -144,7 +144,9 @@ export default {
   },
 
   beforeDestroy() {
-    this.editor.destroy()
+    setTimeout(() => {
+      this.editor.destroy()
+    }, 300);
   },
 }
 </script>
