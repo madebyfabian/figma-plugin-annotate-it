@@ -1,6 +1,5 @@
 export default {
   inserted: ( el, binding, vnode ) => {
-    const content = binding.expression.replace(/(\`|\')/g, '')
     const modifiers = Object.keys(binding.modifiers)
     const modifier = modifiers && modifiers.length ? modifiers[0] : 'bottom-center'
     
@@ -10,7 +9,7 @@ export default {
       timeout = setTimeout(() => {
         // console.log('v-tooltip - mouseover')
         el.setAttribute('figma-tooltip-position', modifier)
-        el.setAttribute('figma-tooltip', content)
+        el.setAttribute('figma-tooltip', binding.value)
       }, 500)
     })
 

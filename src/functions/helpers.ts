@@ -44,12 +44,12 @@ export const onDrop = ( arr, dropResult ) => {
 /**
  * Returns a new, empty annotation item object.
  * @param title
- * @param rawMarkdown 
+ * @param content 
  */
-export const generateAnnotationItem = ( title = '', rawMarkdown = '' ) => ({
+export const generateAnnotationItem = ( title = '', content = null ) => ({
   id: randomId(),
   title,
-  content: { rawMarkdown, parsedMdast: null },
+  content,
   isDeleted: false,
   colorThemeId: getUserColorThemes()[0].id
 })

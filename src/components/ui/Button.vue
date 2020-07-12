@@ -117,9 +117,9 @@
       box-shadow: none;
       width: 32px;
       padding: 0;
-      /deep/ * {
-        color: $color--blue;
-      }
+      // /deep/ * {
+      //   color: $color--blue;
+      // }
 
       &:not(:disabled) {
         &:hover {

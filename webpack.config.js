@@ -20,6 +20,10 @@ module.exports = ( env, argv ) => {
     devtool: isProduction ? false : 'inline-source-map',
 
     stats: false,
+
+    performance: {
+      hints: false
+    },
     
     entry: {
       main: './src/main.ts',
@@ -34,7 +38,7 @@ module.exports = ( env, argv ) => {
     module: {
       rules: [
         // Converts Vue code to JavaScript
-        { test: /\.vue$/, loader: 'vue-loader', exclude: /node_modules/ },
+        { test: /\.vue$/, loader: 'vue-loader' }, // , exclude: /node_modules/
   
         // Converts TypeScript code to JavaScript
         { test: /\.tsx?$/, use: 'ts-loader', exclude: /node_modules/ },

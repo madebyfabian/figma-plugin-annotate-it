@@ -1,5 +1,5 @@
 <template>
-  <article class="annotationItem" :showSkeleton="showSkeleton">
+  <article class="annotationItem" :class="showSkeletonClass">
     <Button
       buttonType="iconDraggable"
       class="annotationItem-dragHandleButton"
@@ -18,13 +18,8 @@
       placeholder="Title"
       v-model="value.title" />
 
-    <div class="annotationItem-inputEditor-wrap">
-      <CodeMirror 
-        class="annotationItem-inputEditor" 
-        :options="editorOptions"
-        :value="value.content.rawMarkdown"
-        @input="onContentInput"
-      />
+    <div class="annotationItem-inputEditor" :class="showSkeletonClass">
+      <RichTextEditor v-model="value.content" :isSkeleton="showSkeleton" />
     </div>
 
     <ColorStyleControl
@@ -37,42 +32,31 @@
       v-tooltip.bottom-left="`Delete annotation`"
       @click="removeAnnotation">
 
-      <Icon iconName="minus" />
+      <Icon iconName="trash" />
     </Button>
   </article>
 </template>
 
 <script>
-  // Setup CodeMirror v5 Editor & mdast parser
-  import { create } from 'md-mdast'
-  import { codemirror as CodeMirror } from 'vue-codemirror' 
-  import 'codemirror/lib/codemirror.css'
-  import 'codemirror/mode/gfm/gfm'
-  import 'codemirror/addon/display/placeholder'
-  const parser = create()
-
   import SectionTitle from '@/components/ui/SectionTitle'
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
   import ColorStyleControl from '@/components/ui/ColorStyleControl'
 
+  import RichTextEditor from '@/components/ui/RichTextEditor'
+
   import { generateAnnotationItem, randomId } from '@/functions/helpers'
 
-  const contentPlaceholder = 'Your annotation Description goes here.\nYou can format the text with Markdown like\n**bold** or _italic_, - unordered, 1. ordered, --- divider'
-  
+  // const contentPlaceholder = 'Your annotation Description goes here.\nYou can format the text with Markdown like\n**bold** or _italic_, - unordered, 1. ordered, --- divider'
 
   export default {
-    components: { SectionTitle, Icon, Button, CodeMirror, ColorStyleControl },
-
-    data: () => ({
-      editorOptions: {
-        mode: { name: 'gfm' },
-        lineWrapping: true,
-        inputStyle: 'contenteditable',
-        viewportMargin: Infinity,
-        placeholder: contentPlaceholder
-      }
-    }),
+    components: { 
+      SectionTitle, 
+      Icon,
+      Button,
+      ColorStyleControl,
+      RichTextEditor
+    },
 
     props: {
       showSkeleton: {
@@ -81,7 +65,7 @@
       },
       value: {
         type: Object,
-        default: () => generateAnnotationItem('Your annotation Title goes here', contentPlaceholder)
+        default: () => generateAnnotationItem('Your annotation Title goes here')
       },
       itemKey: {
         type: Number,
@@ -90,22 +74,15 @@
     },
 
     methods: {
-      onContentInput( newValue ) {
-        this.value.content.rawMarkdown = newValue
-        this.generateMdast()
-      },
-
-      generateMdast() {
-        this.value.content.parsedMdast = parser.tokenizeBlock(this.value.content.rawMarkdown)
-      },
-
       removeAnnotation() {
         this.$emit('removeAnnotation', this.value.id)
       }
     },
 
-    created() {
-      this.generateMdast()
+    computed: {
+      showSkeletonClass() {
+        return this.showSkeleton ? 'showSkeleton' : false
+      }
     }
   }
 </script>
@@ -114,15 +91,20 @@
   .annotationItem {
     width: calc(100% - 8px);
     margin: 0 8px 24px 0;
-
     display: grid;
     grid-template-columns: 24px 32px 1fr 32px;
-    grid-template-rows: 40px minmax(72px, 1fr) min-content;
+    grid-template-rows: 40px 1fr min-content;
     align-items: center;
     gap: 6px 8px;
 
     &:hover &-dragHandleButton {
       opacity: 1
+    }
+
+    &.showSkeleton {
+      opacity: .25;
+      pointer-events: none;
+      margin-bottom: 0;
     }
 
     &-dragHandleButton {
@@ -155,50 +137,82 @@
       line-height: 40px;
       @include font(11, bold);
       border: none;
-    }
 
-    &-inputEditor-wrap {
-      min-height: 72px;
-      grid-column: 3 / 4;
-      grid-row: 2 / 3;
+      &::placeholder {
+        color: $color--black-3;
+      }
     }
 
     &-inputEditor {
-      min-height: 72px;
-      border-top: none;
-      @include font(11, regular);
-      margin-top: -1px;
-      width: 100%;
+      grid-column: 3 / 4;
+      grid-row: 2 / 3;
+      position: relative;
 
-      /deep/ .CodeMirror {
-        height: auto;
-        min-height: 72px;
-
-        &-code {
-          padding: 8px 0;
-        }
-
-        &-line {
-          padding: 0 8px;
-        }
-
-        &-placeholder {
-          // padding: 8px;
-          transform: translate(4px, 8px);
-          color: $color--black-3;
+      /deep/ .editor {
+        padding: 12px 8px;
+        
+        *[contenteditable=true] {
+          min-height: calc(72px - 12px * 2)
         }
       }
 
-      &:empty::after {
-        content: attr(placeholder);
-      }
+      // &.showSkeleton::after, &.showSkeleton::before {
+      //   content: '';
+      //   height: 8px;
+      //   border-radius: 12px;
+      //   background: $color--black-3;
+      //   position: absolute;
+      //   left: 8px;
+      //   z-index: 1;
+      // }
 
-      * {
-        @include font(11, bold);
-      }
+      // &.showSkeleton::before {
+      //   width: 80%;
+      //   top: 14px;
+      // }
+
+      // &.showSkeleton::after {
+      //   width: 60%;
+      //   top: calc(14px * 2 + 2px);
+      // }
+
+      // &-codeMirror {
+      //   min-height: 72px;
+      //   border-top: none;
+      //   @include font(11, regular);
+      //   margin-top: -1px;
+      //   width: 100%;
+
+      //   /deep/ .CodeMirror {
+      //     height: auto;
+      //     min-height: 72px;
+
+      //     &-code {
+      //       padding: 8px 0;
+      //     }
+
+      //     &-line {
+      //       padding: 0 8px;
+      //     }
+
+      //     &-placeholder {
+      //       // padding: 8px;
+      //       transform: translate(4px, 8px);
+      //       color: $color--black-3;
+      //     }
+      //   }
+
+      //   &:empty::after {
+      //     content: attr(placeholder);
+      //   }
+
+      //   * {
+      //     @include font(11, bold);
+      //   }
+      // }
     }
 
-    &-inputTitle, &-inputEditor /deep/ .CodeMirror {
+    &-inputTitle, &-inputEditor {
       box-shadow: inset 0 0 0 1px $color--special-black-1;
       border-radius: 3px;
     }
@@ -211,11 +225,6 @@
     &-removeButton {
       grid-column: 4 / 5;
       background: transparent;
-    }
-
-    &[showSkeleton=true] {
-      opacity: .33;
-      pointer-events: none;
     }
   }
 </style>

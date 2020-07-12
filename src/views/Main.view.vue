@@ -123,9 +123,6 @@
             this.userHasNothingSelected = !!(msgValue.length === 0)
             break
           }
-        
-          default:
-            break
         }
       }
     },
@@ -135,8 +132,8 @@
         deep: true,
         immediate: true,
         handler( newValue ) {
-          // console.clear()
-          // console.log(JSON.stringify(newValue, null, 2))
+          console.clear()
+          console.log(JSON.stringify(newValue, null, 2))
         }
       }
     }
@@ -195,7 +192,7 @@
           p {
             @include font(11, bold);
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 24px;
           }
         }
       }
