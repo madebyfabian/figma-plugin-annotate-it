@@ -1,47 +1,40 @@
 import { generateFontNameConfig, generateAnnotItemBodyTextNode } from '@/functions/figma/figmaHelpers'
 
 
-type Mark = { type: 'bold' | 'italic' | 'strike' | 'underline' }
-type Attrs = { order: number }
-type ContentBlock = {
-  type: 'paragraph' | 'text' | 'hard_break' | 'bullet_list',
-  content?: ContentBlock[],
-  attrs?: Attrs,
-  text?: string,
-  marks?: Mark[]
-}
 
 
 /**
- * Parses a given Text content in JSON and returns the corresponding Figma Nodes Tree of it.
+ * Parses a given Text content in JSON and returns the corresponding Figma Text Node of it.
  */
-export default async ( options: { content: ContentBlock[], contentNode: FrameNode }) => {
-  const contentNode = options.contentNode
+export default ( options: { contentBlock: ContentBlock, contentBlockIndex: number } ) => {
+  const { contentBlock, contentBlockIndex } = options
 
-  // Remove all childs
-  contentNode.children.forEach(child => child.remove())
+  // // Remove all childs
+  // contentNode.children.forEach(child => child.remove())
 
-  let i = 0
-  for (const contentBlock of options.content) {
-    console.log(JSON.stringify(contentBlock, null, 2))
+  // let i = 0
+  // for (const contentBlock of options.content) {
+  //   // console.log(JSON.stringify(contentBlock, null, 2))
 
-    switch (contentBlock.type) {
-      case 'paragraph':
-        // Add all childs with the new value
-        parseParagraphBlock(contentNode, contentBlock, i === 0)
-        break
-    
-      // case 'bullet_list':
-      //   parseBulletListBlock(contentBlock)
-      //   break
-    }
+  //   switch (contentBlock.type) {
+  //     case 'paragraph':
+  //       // Add all childs with the new value
+  //       parseParagraphBlock(contentNode, contentBlock, i === 0)
+  //       break
+  //   }
 
-    i++
+  //   i++
+  // }
+
+  switch (contentBlock.type) {
+    case 'paragraph':
+      // Add all childs with the new value
+      return parseParagraphBlock(contentBlock, contentBlockIndex === 0)
   }
 }
 
 
-const parseParagraphBlock = ( contentNode: FrameNode, contentBlock: ContentBlock, isFirst: boolean ) => {
+const parseParagraphBlock = ( contentBlock: ContentBlock, isFirst: boolean ) => {
   const hasPlaceholder = !contentBlock.content && isFirst ? true : false,
         textNode = generateAnnotItemBodyTextNode({ hasPlaceholder })
 
@@ -67,8 +60,7 @@ const parseParagraphBlock = ( contentNode: FrameNode, contentBlock: ContentBlock
       totalLength += textPartContent.length
     }
     
-
-  contentNode.appendChild(textNode)
+  return textNode
 }
 
 
@@ -92,20 +84,3 @@ const getTextMarkOptions = ( marks: Mark[] ) => {
     textDecoration
   }
 }
-
-
-// const _parseBulletListBlock = ( bulletListBlock: ContentBlock ) => {
-//   let items = []
-//   for (const listItem of bulletListBlock.content) {
-//     for (const listItemChild of listItem.content) {
-//       switch (listItemChild.type) {
-//         case 'paragraph':
-          
-//           break;
-      
-//         default:
-//           break;
-//       }
-//     }
-//   }
-// }

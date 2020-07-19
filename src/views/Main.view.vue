@@ -54,6 +54,29 @@
   import { Container, Draggable } from 'vue-smooth-dnd'
   import { postMsg, randomId, onDrop, generateAnnotationItem } from '@/functions/helpers'
 
+
+  /**
+   * Takes an array of annotations
+   * e.g. { title: string, content: [{ type: 'paragraph', content: object[] }, ...] }.
+   * 
+   * @returns The same array. but all nested contents are stringified, 
+   * e.g. { title: string, content: [{ type: 'paragraph', content: string }, ...] }
+   */
+  const blockContentSectionToString = ( annotArr ) => {
+    return annotArr.map(annot => { // Loop through every annotation in the array.
+      return { 
+        ...annot,
+        content: annot.content.map(annotContentBlock => { // Loop through every content block
+          return {
+            ...annotContentBlock, 
+            content: JSON.stringify(annotContentBlock.content)
+          }
+        })
+      }
+    })
+  }
+
+
   export default {
     components: { FloatingButton, Button, Icon, AnnotationItem, Container, Draggable },
 
@@ -124,13 +147,8 @@
         if (!this.enableWatcher)
           return
 
-        const newAnnots = JSON.parse(newAnnots_str).map(annot => {
-          return { ...annot, content: JSON.stringify(annot.content) }
-        })
-        
-        const oldAnnots = JSON.parse(oldAnnots_str).map(annot => {
-          return { ...annot, content: JSON.stringify(annot.content) }
-        })
+        const newAnnots = blockContentSectionToString(JSON.parse(newAnnots_str)),
+              oldAnnots = blockContentSectionToString(JSON.parse(oldAnnots_str))
 
         postMsg('pushAnnotChanges', { newAnnots, oldAnnots })
       }
