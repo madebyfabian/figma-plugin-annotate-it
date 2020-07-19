@@ -7,19 +7,6 @@
           <AnnotationItem :showSkeleton="true" />
         </div>
       </div>
-      
-      <!-- <transition-group name="fade" tag="div" class="wrapper">
-        <AnnotationItem 
-          v-for="(annotation, i) of annotations" 
-          :key="annotation.id"
-
-          :itemKey="i"
-          @removeAnnotation="removeAnnotation"
-          v-model="annotations[i]"
-          
-          class="line"
-        />
-      </transition-group> -->
 
       <Container 
         @drop="onDrop" 
@@ -64,18 +51,16 @@
   import AnnotationItem from '@/components/AnnotationItem'
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
-
   import { Container, Draggable } from 'vue-smooth-dnd'
-
   import { postMsg, randomId, onDrop, generateAnnotationItem } from '@/functions/helpers'
-
 
   export default {
     components: { FloatingButton, Button, Icon, AnnotationItem, Container, Draggable },
 
     data: () => ({
       userHasNothingSelected: false,
-      annotations: [ generateAnnotationItem() ]
+      annotations: null,
+      enableWatcher: false
     }),
 
     methods: {
@@ -90,8 +75,6 @@
             behavior: 'smooth'
           })
         })
-
-        // postMsg('req__createAnnotationItem', {})
       },
 
       removeAnnotation( itemId ) {
@@ -108,33 +91,48 @@
       }
     },
 
-    created() {
-      postMsg('req__selectionState', {})
-
+    mounted() {
       onmessage = event => {
-        if (event.data.length === 0)
-          return
-
+        if (event.data.length === 0) return
         const msg = event.data.pluginMessage,
               msgValue = msg && msg.value
 
         switch (msg.type) {
-          case 'res__selectionState': {
+          case 'doInit': 
+            this.annotations = msgValue
+            this.$nextTick(function() {
+              this.enableWatcher = true
+            })
+
+            break
+
+          case 'selectionUpdated': 
             this.userHasNothingSelected = !!(msgValue.length === 0)
             break
-          }
         }
       }
     },
 
+    computed: {
+      annotations_str() { // For getting the old value inside the watcher
+        return JSON.stringify(this.annotations)
+      }
+    },
+
     watch: {
-      annotations: {
-        deep: true,
-        immediate: true,
-        handler( newValue ) {
-          console.clear()
-          console.log(JSON.stringify(newValue, null, 2))
-        }
+      annotations_str( newAnnots_str, oldAnnots_str ) {
+        if (!this.enableWatcher)
+          return
+
+        const newAnnots = JSON.parse(newAnnots_str).map(annot => {
+          return { ...annot, content: JSON.stringify(annot.content) }
+        })
+        
+        const oldAnnots = JSON.parse(oldAnnots_str).map(annot => {
+          return { ...annot, content: JSON.stringify(annot.content) }
+        })
+
+        postMsg('pushAnnotChanges', { newAnnots, oldAnnots })
       }
     }
   }

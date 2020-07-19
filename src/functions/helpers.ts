@@ -49,7 +49,7 @@ export const onDrop = ( arr, dropResult ) => {
 export const generateAnnotationItem = ( title = '', content = null ) => ({
   id: randomId(),
   title,
-  content,
+  content: content || [{ type: 'paragraph' }],
   isDeleted: false,
   colorThemeId: getUserColorThemes()[0].id
 })
