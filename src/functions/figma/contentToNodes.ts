@@ -50,7 +50,7 @@ const parseParagraphBlock = ( contentNode: FrameNode, contentBlock: ContentBlock
 
   let totalLength = 0
 
-  if (!hasPlaceholder)
+  if (contentBlock.content)
     for (const textPart of contentBlock.content) {
       let textPartContent = textPart.type === 'text' 
         ? textPart.text 

@@ -62,15 +62,12 @@ export const getAnnotWrapperNode = () : FrameNode => {
 export const generateAnnotWrapperNode = () => {
   const node = figma.createFrame()
   setPluginData(node, config.annotWrapperNodePluginDataKey, [])
-
   node.name = config.annotWrapperNodeName
   node.resize(343, 100)
   node.fills = [{ type: 'SOLID', color: <RGB> { r: 1, g: 1, b: 1 }}]
   node.verticalPadding = 8
   node.itemSpacing = 16
   node.layoutMode = 'VERTICAL'
-
-  console.log(node)
   return node
 }
 
@@ -125,7 +122,7 @@ export const generateAnnotItemNode = ( data: any ) => {
 
 export const generateAnnotItemBodyTextNode = ({ hasPlaceholder = true } = {}) => {
   const textNode = figma.createText()
-  textNode.characters = hasPlaceholder ? 'Your annotation description goes here' : ''
+  textNode.characters = hasPlaceholder ? 'Your annotation description goes here' : ' '
   textNode.opacity = hasPlaceholder ? .25 : 1
   textNode.layoutAlign = 'STRETCH'
   textNode.fontName = generateFontNameConfig()
