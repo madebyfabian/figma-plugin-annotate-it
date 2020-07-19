@@ -103,13 +103,13 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
         const newContentBlock = _generateSafeAddedContentBlock(contentBlock.current),
               newNode = contentBlockToNode({ contentBlock: newContentBlock, contentBlockIndex })
 
-        // console.log(`ADDED (line ${contentBlockIndex + 1})`, newContentBlock)
+        console.log(`ADDED (line ${contentBlockIndex + 1})`, newContentBlock)
         bodyNode.insertChild(contentBlockIndex, newNode)
         contentBlockIndex++
         break
     
       case 'DELETED':
-        // console.log(`REMOVED (line ${contentBlockIndex + 1})`, contentBlock)
+        console.log(`REMOVED (line ${contentBlockIndex + 1})`, contentBlock)
         bodyNode.children[contentBlockIndex].remove()
         contentBlockIndex--
         break
@@ -118,7 +118,7 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
         const modifyContentBlock = _generateSafeModifiedContentBlock(contentBlock),
               modifiedNode = contentBlockToNode({ contentBlock: modifyContentBlock, contentBlockIndex })
 
-        // console.log(`MODIFIED (on line ${contentBlockIndex + 1})`, modifyContentBlock)
+        console.log(`MODIFIED (on line ${contentBlockIndex + 1})`, modifyContentBlock)
         bodyNode.children[contentBlockIndex].remove()
         bodyNode.insertChild(contentBlockIndex, modifiedNode)
         break

@@ -1,6 +1,4 @@
-import { generateFontNameConfig, generateAnnotItemBodyTextNode } from '@/functions/figma/figmaHelpers'
-
-
+import { generateFontNameConfig, generateAnnotItemBodyTextNode, generateSolidPaint } from '@/functions/figma/figmaHelpers'
 
 
 /**
@@ -9,32 +7,17 @@ import { generateFontNameConfig, generateAnnotItemBodyTextNode } from '@/functio
 export default ( options: { contentBlock: ContentBlock, contentBlockIndex: number } ) => {
   const { contentBlock, contentBlockIndex } = options
 
-  // // Remove all childs
-  // contentNode.children.forEach(child => child.remove())
-
-  // let i = 0
-  // for (const contentBlock of options.content) {
-  //   // console.log(JSON.stringify(contentBlock, null, 2))
-
-  //   switch (contentBlock.type) {
-  //     case 'paragraph':
-  //       // Add all childs with the new value
-  //       parseParagraphBlock(contentNode, contentBlock, i === 0)
-  //       break
-  //   }
-
-  //   i++
-  // }
-
   switch (contentBlock.type) {
     case 'paragraph':
-      // Add all childs with the new value
-      return parseParagraphBlock(contentBlock, contentBlockIndex === 0)
+      return generateParagraphBlock(contentBlock, contentBlockIndex === 0)
+    
+    case 'horizontal_rule':
+      return generateHorizontalRuleBlock()
   }
 }
 
 
-const parseParagraphBlock = ( contentBlock: ContentBlock, isFirst: boolean ) => {
+const generateParagraphBlock = ( contentBlock: ContentBlock, isFirst: boolean ) => {
   const hasPlaceholder = !contentBlock.content && isFirst ? true : false,
         textNode = generateAnnotItemBodyTextNode({ hasPlaceholder })
 
@@ -51,7 +34,7 @@ const parseParagraphBlock = ( contentBlock: ContentBlock, isFirst: boolean ) => 
 
       if (textPart.type === 'text') {
         const end = totalLength + textPartContent.length,
-              { fontName, textDecoration } = getTextMarkOptions(textPart?.marks)
+              { fontName, textDecoration } = _getTextMarkOptions(textPart?.marks)
 
         textNode.setRangeFontName(start, end, fontName)
         textNode.setRangeTextDecoration(start, end, textDecoration)
@@ -64,7 +47,7 @@ const parseParagraphBlock = ( contentBlock: ContentBlock, isFirst: boolean ) => 
 }
 
 
-const getTextMarkOptions = ( marks: Mark[] ) => {
+const _getTextMarkOptions = ( marks: Mark[] ) => {
   let isBold = false,
       isItalic = false,
       textDecoration: TextDecoration = 'NONE'
@@ -83,4 +66,23 @@ const getTextMarkOptions = ( marks: Mark[] ) => {
     fontName: generateFontNameConfig({ isBold, isItalic }),
     textDecoration
   }
+}
+
+
+const generateHorizontalRuleBlock = () => {
+  const node = figma.createFrame()
+  node.name = 'Horizontal Rule'
+  node.layoutAlign = 'STRETCH'
+  node.layoutMode = 'VERTICAL'
+  node.verticalPadding = 12
+
+  const lineNode = figma.createRectangle()
+  lineNode.layoutAlign = 'STRETCH'
+  lineNode.resize(lineNode.width, 2)
+  lineNode.cornerRadius = 2
+  lineNode.fills = [ generateSolidPaint({ r: 240, g: 240, b: 240 }) ]
+
+  node.appendChild(lineNode)
+
+  return node
 }

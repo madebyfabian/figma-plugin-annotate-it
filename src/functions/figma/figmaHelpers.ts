@@ -1,6 +1,9 @@
 import config from '@/config'
 
-const _rgbChanger = ( originalValue: number ) => originalValue / 255
+
+export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
+  return <SolidPaint>{ type: 'SOLID', color: <RGB>{ r: r / 255, g: g / 255, b: b / 255 } }
+}
 
 
 export const getPluginData = ( node: SceneNode, key: string, isJSON = true ) => {
@@ -137,17 +140,16 @@ export const generateAnnotItemBodyTextNode = ({ hasPlaceholder = true } = {}) =>
 export const generateAnnotBadgeNode = ( number: number ) => {
   // Main Frame Node
 	const node = figma.createComponent()
-	const newRGB : RGB = { r: _rgbChanger(24), g: _rgbChanger(160), b: _rgbChanger(251) }
 	node.resize(24, 24)
 	node.cornerRadius = 24
 	node.layoutMode = 'HORIZONTAL'
-	node.fills = [ { type: 'SOLID', color: newRGB  } ]
+	node.fills = [ generateSolidPaint({ r: 24, g: 160, b: 251 }) ]
 
 	// Text Frame inside Main Frame
 	const textNode = figma.createText()
 	textNode.fontSize = 12
 	textNode.characters = number.toString()
-	textNode.fills = [ { type: 'SOLID', color: <RGB> { r: 1, g: 1, b: 1 } } ]
+	textNode.fills = [ generateSolidPaint({ r: 255, g: 255, b: 255 }) ]
 	textNode.resize(24, 24)
 	textNode.textAlignHorizontal = 'CENTER'
 	textNode.fontName = generateFontNameConfig({ isBold: true })
