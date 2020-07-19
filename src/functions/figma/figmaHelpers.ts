@@ -93,7 +93,7 @@ export const generateAnnotItemNode = ( data: any ) => {
 
   const headerTextNode = figma.createText()
   headerTextNode.name = 'Text'
-  headerTextNode.resize(279, 16)
+  headerTextNode.resize(279, headerTextNode.height)
   headerTextNode.layoutAlign = 'CENTER'
   headerTextNode.textAlignVertical = 'CENTER'
   headerTextNode.fontSize = 16
@@ -107,7 +107,8 @@ export const generateAnnotItemNode = ( data: any ) => {
   const bodyNode = figma.createFrame()
   bodyNode.name = 'Body'
   bodyNode.layoutMode = 'VERTICAL'
-  bodyNode.layoutAlign = 'STRETCH'
+  bodyNode.layoutAlign = 'MAX'
+  bodyNode.resize(279, bodyNode.height)
   
   const bodyPlaceholderNode = generateAnnotItemBodyTextNode()
   bodyNode.appendChild(bodyPlaceholderNode)

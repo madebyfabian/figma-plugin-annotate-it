@@ -16,8 +16,6 @@ type ContentBlock = {
  * Parses a given Text content in JSON and returns the corresponding Figma Nodes Tree of it.
  */
 export default async ( options: { content: ContentBlock[], contentNode: FrameNode }) => {
-  // console.log(`Detected a change in the text content. Processing it with parseContentJSON().`)
-
   const contentNode = options.contentNode
 
   // Remove all childs
@@ -25,13 +23,12 @@ export default async ( options: { content: ContentBlock[], contentNode: FrameNod
 
   let i = 0
   for (const contentBlock of options.content) {
-    // console.log(JSON.stringify(contentBlock, null, 2))
+    console.log(JSON.stringify(contentBlock, null, 2))
 
     switch (contentBlock.type) {
       case 'paragraph':
         // Add all childs with the new value
         parseParagraphBlock(contentNode, contentBlock, i === 0)
-
         break
     
       // case 'bullet_list':

@@ -8,7 +8,7 @@ const differy = new Differy()
 export default ( msgValue: { newAnnots: object[], oldAnnots: object[] } ) => {
   const diff = differy.compare(msgValue.oldAnnots, msgValue.newAnnots)
 
-  // console.clear()
+  console.clear()
 
   if (diff.changes > 1) {
     // There are more than 1 change at a time. We should check if the ids has changed.
