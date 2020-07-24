@@ -92,7 +92,10 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
 
   const bodyNode = <FrameNode>annotNode.findChild(node => node.name === 'Body')
 
-  for (const contentBlock of item._[entryName]._) {
+  const contentBlockArr = item._[entryName]._,
+        contentBlocksAmount = contentBlockArr.filter(b => b.status !== 'DELETED').length
+  
+  for (const contentBlock of contentBlockArr) {
     contentBlockIndex++
 
     if (!contentBlock.changes)
@@ -101,7 +104,7 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
     switch (contentBlock.status) {
       case 'ADDED':
         const newContentBlock = _generateSafeAddedContentBlock(contentBlock.current),
-              newNode = contentBlockToNode({ contentBlock: newContentBlock, contentBlockIndex })
+              newNode = contentBlockToNode({ contentBlock: newContentBlock, contentBlocksAmount })
 
         console.log(`ADDED (line ${contentBlockIndex + 1})`, newContentBlock)
         bodyNode.insertChild(contentBlockIndex, newNode)
@@ -115,10 +118,10 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
         break
         
       case 'MODIFIED':
-        const modifyContentBlock = _generateSafeModifiedContentBlock(contentBlock),
-              modifiedNode = contentBlockToNode({ contentBlock: modifyContentBlock, contentBlockIndex })
+        const modifiedContentBlock = _generateSafeModifiedContentBlock(contentBlock),
+              modifiedNode = contentBlockToNode({ contentBlock: modifiedContentBlock, contentBlocksAmount })
 
-        console.log(`MODIFIED (on line ${contentBlockIndex + 1})`, modifyContentBlock)
+        console.log(`MODIFIED (on line ${contentBlockIndex + 1})`, modifiedContentBlock)
         bodyNode.children[contentBlockIndex].remove()
         bodyNode.insertChild(contentBlockIndex, modifiedNode)
         break

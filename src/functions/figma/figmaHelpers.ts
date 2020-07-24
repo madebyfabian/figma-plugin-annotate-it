@@ -124,10 +124,10 @@ export const generateAnnotItemNode = ( data: any ) => {
 }
 
 
-export const generateAnnotItemBodyTextNode = ({ hasPlaceholder = true } = {}) => {
+export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) => {
   const textNode = figma.createText()
-  textNode.characters = hasPlaceholder ? 'Your annotation description goes here' : ' '
-  textNode.opacity = hasPlaceholder ? .25 : 1
+  textNode.characters = showPlaceholder ? 'Your annotation description goes here' : ' '
+  textNode.opacity = showPlaceholder ? .25 : 1
   textNode.layoutAlign = 'STRETCH'
   textNode.fontName = generateFontNameConfig()
   textNode.fontSize = 14
