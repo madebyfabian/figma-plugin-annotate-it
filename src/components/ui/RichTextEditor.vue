@@ -266,6 +266,7 @@ export default {
         ul,
         ol {
           padding-left: 1rem;
+          margin: 0;
         }
 
         li > p,

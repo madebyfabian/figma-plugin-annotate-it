@@ -48,10 +48,7 @@ const handleDeletedAnnotItem = ( item: any ) => {
 
 
 const handleModifiedAnnotItem = ( item: any ) => {
-  const itemId = item._.id.current,
-        annotWrapperNode = getAnnotWrapperNode(),
-        // @ts-ignore
-        annotNode : FrameNode = annotWrapperNode.findChild(node => node.name.includes(itemId))
+  const annotNode = <FrameNode>getAnnotWrapperNode().findChild(node => node.name.includes(item._.id.current))
 
   // Loop through item entries (id, title, content, ...)
   let doneChanges = 0
@@ -62,8 +59,7 @@ const handleModifiedAnnotItem = ( item: any ) => {
 
     switch (entryName) {
       case 'title':
-        // @ts-ignore
-        const titleNode : TextNode = annotNode.findOne(node => node.name === 'Text')
+        const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Text')
         titleNode.characters = newValue.length === 0 ? 'Title' : newValue
         titleNode.opacity = newValue.length === 0 ? .25 : 1
         break

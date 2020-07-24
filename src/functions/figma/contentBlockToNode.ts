@@ -5,6 +5,7 @@ import { generateFontNameConfig, generateAnnotItemBodyTextNode, generateSolidPai
  * Parses a given Text content in JSON and returns the corresponding Figma Text Node of it.
  */
 export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBlock, contentBlocksAmount: number } ) => {
+  console.log(contentBlock.type)
   switch (contentBlock.type) {
     case 'paragraph':
       return generateParagraphBlock(contentBlock, contentBlocksAmount)
@@ -12,8 +13,8 @@ export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBl
     case 'horizontal_rule':
       return generateHorizontalRuleBlock()
 
-    // case 'bullet_list':
-    //   return generateBulletListBlock(contentBlock)
+    case 'bullet_list': case 'ordered_list':
+      return generateBulletListBlock(contentBlock)
   }
 }
 
@@ -69,14 +70,17 @@ const generateHorizontalRuleBlock = () => {
 }
 
 
-// const generateBulletListBlock = ( contentBlock: ContentBlock ) => {
-//   for (const { content: listItemContent } of contentBlock.content) {
-//     console.log(listItemContent)
-//   }
+const generateBulletListBlock = ( contentBlock: ContentBlock ) => {
+  for (const { content: listItemContent } of contentBlock.content) {
+    console.log(listItemContent)
+  }
 
-//   const testNode = figma.createFrame()
-//   return testNode
-// }
+  const testNode = figma.createFrame()
+  testNode.resize(200, 19)
+  testNode.cornerRadius = 100
+  testNode.fills = [ generateSolidPaint({ r: 200, g: 200, b: 200 }) ]
+  return testNode
+}
 
 
 // --- HELPERS ---
