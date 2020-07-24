@@ -8,7 +8,7 @@ const differy = new Differy()
 export default ( msgValue: { newAnnots: object[], oldAnnots: object[] } ) => {
   const diff = differy.compare(msgValue.oldAnnots, msgValue.newAnnots)
 
-  // console.clear()
+  console.clear()
 
   if (diff.changes > 1) {
     // There are more than 1 change at a time. We should check if the ids has changed.
@@ -21,19 +21,16 @@ export default ( msgValue: { newAnnots: object[], oldAnnots: object[] } ) => {
   }
 
   for (const item of diff._) {
-    if (item.status === 'ADDED')
-      handleAddedItem(item)
-    else 
-    if (item.status === 'DELETED')
-      handleDeletedItem(item)
-    else 
-    if (item.status === 'MODIFIED')
-      handleModifiedItem(item)
+    switch (item.status) {
+      case 'ADDED':     handleAddedAnnotItem(item); break
+      case 'DELETED':   handleDeletedAnnotItem(item); break
+      case 'MODIFIED':  handleModifiedAnnotItem(item); break
+    }
   }
 }
 
 
-const handleAddedItem = ( item: any ) => {
+const handleAddedAnnotItem = ( item: any ) => {
   const { current: newItem } = item
 
   console.log('Adding:', newItem)
@@ -42,7 +39,7 @@ const handleAddedItem = ( item: any ) => {
 }
 
 
-const handleDeletedItem = ( item: any ) => {
+const handleDeletedAnnotItem = ( item: any ) => {
   const { original: deletedItem } = item
 
   console.log('Deleting:', deletedItem.id)
@@ -50,7 +47,7 @@ const handleDeletedItem = ( item: any ) => {
 }
 
 
-const handleModifiedItem = ( item: any ) => {
+const handleModifiedAnnotItem = ( item: any ) => {
   const itemId = item._.id.current,
         annotWrapperNode = getAnnotWrapperNode(),
         // @ts-ignore
@@ -87,17 +84,22 @@ const handleModifiedItem = ( item: any ) => {
 
 
 const handleModifiedItem_content = ( item: any, entryName: string, annotNode: FrameNode ) => {
-  let doneContentChanges = 0,
-      contentBlockIndex = -1
-
   const bodyNode = <FrameNode>annotNode.findChild(node => node.name === 'Body')
 
-  const contentBlockArr = item._[entryName]._,
+  const diffObj = item._[entryName],
+        contentBlockArr = diffObj._,
         contentBlocksAmount = contentBlockArr.filter(b => b.status !== 'DELETED').length
-  
-  for (const contentBlock of contentBlockArr) {
-    contentBlockIndex++
 
+  let doneContentChanges = 0,
+      expectedContentChanges = diffObj.changes,
+      figmaNodeListIndex = -1
+
+  for (let i = 0; i < contentBlockArr.length; i++) {
+    figmaNodeListIndex++
+
+    console.log('i', i, '- figmaNodeListIndex', figmaNodeListIndex)
+
+    const contentBlock = contentBlockArr[i]
     if (!contentBlock.changes)
       continue
 
@@ -106,29 +108,28 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
         const newContentBlock = _generateSafeAddedContentBlock(contentBlock.current),
               newNode = contentBlockToNode({ contentBlock: newContentBlock, contentBlocksAmount })
 
-        console.log(`ADDED (line ${contentBlockIndex + 1})`, newContentBlock)
-        bodyNode.insertChild(contentBlockIndex, newNode)
-        contentBlockIndex++
+        console.log(`ADDED (line ${i + 1})`, newContentBlock)
+        bodyNode.insertChild(figmaNodeListIndex, newNode)
         break
     
       case 'DELETED':
-        console.log(`REMOVED (line ${contentBlockIndex + 1})`, contentBlock)
-        bodyNode.children[contentBlockIndex].remove()
-        contentBlockIndex--
+        console.log(`REMOVED (line ${i + 1})`, contentBlock)
+        bodyNode.children[figmaNodeListIndex].remove()
+        figmaNodeListIndex--
         break
         
       case 'MODIFIED':
         const modifiedContentBlock = _generateSafeModifiedContentBlock(contentBlock),
               modifiedNode = contentBlockToNode({ contentBlock: modifiedContentBlock, contentBlocksAmount })
 
-        console.log(`MODIFIED (on line ${contentBlockIndex + 1})`, modifiedContentBlock)
-        bodyNode.children[contentBlockIndex].remove()
-        bodyNode.insertChild(contentBlockIndex, modifiedNode)
+        console.log(`MODIFIED (on line ${i + 1})`, modifiedContentBlock)
+        bodyNode.children[figmaNodeListIndex].remove()
+        bodyNode.insertChild(figmaNodeListIndex, modifiedNode)
         break
     }
 
     doneContentChanges++
-    if (doneContentChanges === item._[entryName].changes)
+    if (doneContentChanges === expectedContentChanges)
       break
   }
 }
