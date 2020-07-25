@@ -1,11 +1,18 @@
-import { generateFontNameConfig, generateAnnotItemBodyTextNode, generateSolidPaint } from '@/functions/figma/figmaHelpers'
+import { 
+  generateFontNameConfig, 
+  generateAnnotItemBodyTextNode, 
+  generateSolidPaint,
+  defaultParagraphBlockContent,
+  defaultParagraphTextOptions
+} from '@/functions/figma/figmaHelpers'
 
 
 /**
  * Parses a given Text content in JSON and returns the corresponding Figma Text Node of it.
  */
 export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBlock, contentBlocksAmount: number } ) => {
-  console.log(contentBlock.type)
+  console.log(JSON.stringify(contentBlock, null, 2))
+
   switch (contentBlock.type) {
     case 'paragraph':
       return generateParagraphBlock(contentBlock, contentBlocksAmount)
@@ -14,7 +21,7 @@ export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBl
       return generateHorizontalRuleBlock()
 
     case 'bullet_list': case 'ordered_list':
-      return generateBulletListBlock(contentBlock)
+      return generateListBlock(contentBlock, 0)
   }
 }
 
@@ -23,7 +30,6 @@ export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBl
 const generateParagraphBlock = ( contentBlock: ContentBlock, contentBlocksAmount: number ) => {
   let totalLength = 0
 
-  // @ts-ignore
   const showPlaceholder = contentBlocksAmount === 1 && _showPlaceholder(contentBlock),
         textNode = generateAnnotItemBodyTextNode({ showPlaceholder })
 
@@ -70,16 +76,61 @@ const generateHorizontalRuleBlock = () => {
 }
 
 
-const generateBulletListBlock = ( contentBlock: ContentBlock ) => {
-  for (const { content: listItemContent } of contentBlock.content) {
-    console.log(listItemContent)
+const generateListBlock = ( contentBlock: ContentBlock, nestingLevel: number) => {
+  const isBulletList = contentBlock.type === 'bullet_list'
+
+  const listWrapperNode = figma.createFrame()
+  listWrapperNode.name = isBulletList ? 'Bullet List' : 'Ordered List'
+  listWrapperNode.layoutMode = 'VERTICAL'
+  listWrapperNode.layoutAlign = 'STRETCH'
+
+  // Loop through the array list-items on the root of the listWrapper
+  for (let i = 0, n = contentBlock.content.length; i < n; ++i){
+    const { content: listItemContent } = contentBlock.content[i]
+
+    const listItemNode = figma.createFrame()
+    listItemNode.name = 'List Item'
+    listItemNode.layoutMode = 'HORIZONTAL'
+    listItemNode.itemSpacing = 4
+    listItemNode.counterAxisSizingMode = 'AUTO'
+
+    // Either the dot or the 1., 2., 3...
+    const listItemKeyNode = figma.createText()
+    listItemKeyNode.name = 'Key'
+    listItemKeyNode.resize(12, listItemKeyNode.height)
+    listItemKeyNode.textAlignHorizontal = isBulletList ? 'CENTER' : 'RIGHT'
+    listItemKeyNode.characters = isBulletList ? _getBullet(nestingLevel) : `${i + 1}.`
+    listItemKeyNode.fontSize = isBulletList ? 18 : defaultParagraphTextOptions.fontSize
+    listItemKeyNode.lineHeight = defaultParagraphTextOptions.lineHeight
+    listItemKeyNode.letterSpacing = defaultParagraphTextOptions.letterSpacing
+
+    const listItemContentWrapperNode = figma.createFrame()
+    listItemContentWrapperNode.name = 'List Content'
+    listItemContentWrapperNode.layoutMode = 'VERTICAL'
+    listItemContentWrapperNode.resize(279 - ((nestingLevel + 1) * 16), listItemContentWrapperNode.height)
+
+    listItemNode.appendChild(listItemKeyNode)
+    listItemNode.appendChild(listItemContentWrapperNode)
+
+    listWrapperNode.appendChild(listItemNode)
+
+    // Loop through the array of paragraph (or other) blocks inside the list item
+    for (const listItemChildBlock of listItemContent) {
+      switch (listItemChildBlock.type) {
+        case 'paragraph':
+          const safeParagraphBlock = _generateSafeParagraphBlock(listItemChildBlock)
+          listItemContentWrapperNode.appendChild(generateParagraphBlock(safeParagraphBlock, 0))
+          break;
+
+        case 'bullet_list': case 'ordered_list':
+          listItemContentWrapperNode.appendChild(generateListBlock(listItemChildBlock, nestingLevel + 1))
+      }
+
+      console.log('listItemChildBlock', listItemChildBlock)
+    }
   }
 
-  const testNode = figma.createFrame()
-  testNode.resize(200, 19)
-  testNode.cornerRadius = 100
-  testNode.fills = [ generateSolidPaint({ r: 200, g: 200, b: 200 }) ]
-  return testNode
+  return listWrapperNode
 }
 
 
@@ -112,4 +163,20 @@ const _showPlaceholder = ( contentBlock: ContentBlock ) => {
         textContentIsEmpty = contentBlock.content[0]?.text === ' '
 
   return onlyOneTextPartInsideBlockExists && textContentIsEmpty
+}
+
+
+const _generateSafeParagraphBlock = ( contentBlock: ContentBlock ) => {
+  return <ContentBlock>{
+    ...contentBlock,
+    content: contentBlock?.content || defaultParagraphBlockContent
+  }
+}
+
+
+const _getBullet = ( nestingLevel: number ) => {
+  switch (nestingLevel) {
+    case 0:   return '•'
+    default:  return '◦'
+  }
 }

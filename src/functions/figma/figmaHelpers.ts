@@ -58,6 +58,23 @@ export const getAnnotWrapperNode = () : FrameNode => {
 }
 
 
+/**
+ * Sometimes, when a paragraph has no content, 
+ * we need this little helper to fill it with an empty space to avoid figma errors
+ */
+export const defaultParagraphBlockContent = [{ type: 'text', text: ' ' }]
+
+
+/**
+ * @returns A few default options for the styling of annotation paragraphs.
+ */
+export const defaultParagraphTextOptions = {
+  fontSize: 14,
+  lineHeight: <LineHeight>{ value: 19, unit: 'PIXELS' },
+  letterSpacing: <LetterSpacing>{ value: 0.5, unit: 'PERCENT' }
+}
+
+
 // ---
 // Node Generators
 // ---
@@ -130,9 +147,9 @@ export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) =
   textNode.opacity = showPlaceholder ? .25 : 1
   textNode.layoutAlign = 'STRETCH'
   textNode.fontName = generateFontNameConfig()
-  textNode.fontSize = 14
-  textNode.lineHeight = <LineHeight>{ value: 19, unit: 'PIXELS' }
-  textNode.letterSpacing = <LetterSpacing>{ value: 0.5, unit: 'PERCENT' }
+  textNode.fontSize = defaultParagraphTextOptions.fontSize
+  textNode.lineHeight = defaultParagraphTextOptions.lineHeight
+  textNode.letterSpacing = defaultParagraphTextOptions.letterSpacing
   return textNode
 }
 

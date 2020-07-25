@@ -269,6 +269,11 @@ export default {
           margin: 0;
         }
 
+        ul > li > ul, 
+        ul > li > ul * {
+          list-style-type: circle;
+        }
+
         li > p,
         li > ol,
         li > ul {

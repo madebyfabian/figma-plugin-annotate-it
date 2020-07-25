@@ -1,6 +1,6 @@
 import Differy from '@netilon/differify'
 import contentBlockToNode from '@/functions/figma/contentBlockToNode'
-import { generateAnnotItemNode, getAnnotWrapperNode } from '@/functions/figma/figmaHelpers'
+import { generateAnnotItemNode, getAnnotWrapperNode, defaultParagraphBlockContent } from '@/functions/figma/figmaHelpers'
 
 const differy = new Differy()
 
@@ -93,8 +93,6 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
   for (let i = 0; i < contentBlockArr.length; i++) {
     figmaNodeListIndex++
 
-    console.log('i', i, '- figmaNodeListIndex', figmaNodeListIndex)
-
     const contentBlock = contentBlockArr[i]
     if (!contentBlock.changes)
       continue
@@ -104,12 +102,12 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
         const newContentBlock = _generateSafeAddedContentBlock(contentBlock.current),
               newNode = contentBlockToNode({ contentBlock: newContentBlock, contentBlocksAmount })
 
-        console.log(`ADDED (line ${i + 1})`, newContentBlock)
+        // console.log(`ADDED (line ${i + 1})`, newContentBlock)
         bodyNode.insertChild(figmaNodeListIndex, newNode)
         break
     
       case 'DELETED':
-        console.log(`REMOVED (line ${i + 1})`, contentBlock)
+        // console.log(`REMOVED (line ${i + 1})`, contentBlock)
         bodyNode.children[figmaNodeListIndex].remove()
         figmaNodeListIndex--
         break
@@ -136,7 +134,7 @@ const _generateSafeAddedContentBlock = ( contentBlock: any ) => {
     ...contentBlock, 
     content: contentBlock?.content 
       ? JSON.parse(contentBlock.content) // when content is already something
-      : [{ type: 'text', text: ' ' }] // when content is undefined
+      : defaultParagraphBlockContent // when content is undefined
   }
 }
 
@@ -146,6 +144,6 @@ const _generateSafeModifiedContentBlock = ( contentBlock: any ) => {
     type: contentBlock._.type.current,
     content: contentBlock._.content.current
       ? JSON.parse(contentBlock._.content.current) // when content is already something
-      : [{ type: 'text', text: ' ' }] // when content is undefined
+      : defaultParagraphBlockContent // when content is undefined
   }
 }
