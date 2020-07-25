@@ -11,8 +11,6 @@ import {
  * Parses a given Text content in JSON and returns the corresponding Figma Text Node of it.
  */
 export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBlock, contentBlocksAmount: number } ) => {
-  console.log(JSON.stringify(contentBlock, null, 2))
-
   switch (contentBlock.type) {
     case 'paragraph':
       return generateParagraphBlock(contentBlock, contentBlocksAmount)
@@ -125,8 +123,6 @@ const generateListBlock = ( contentBlock: ContentBlock, nestingLevel: number) =>
         case 'bullet_list': case 'ordered_list':
           listItemContentWrapperNode.appendChild(generateListBlock(listItemChildBlock, nestingLevel + 1))
       }
-
-      console.log('listItemChildBlock', listItemChildBlock)
     }
   }
 

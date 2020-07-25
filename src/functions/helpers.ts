@@ -18,35 +18,11 @@ export const postMsg = ( type: string, value: string ) => {
 
 
 /**
- * Re-sorts the given array based on a drop-event.
- * @param arr The original array.
- * @param dropResult The data of the new Result.
- * @returns The new, correctly sorted array.
- */
-export const onDrop = ( arr, dropResult ) => {
-  const { removedIndex, addedIndex, payload } = dropResult
-  if (removedIndex === null && addedIndex === null)
-    return arr
-
-  const result = [...arr]
-  let itemToAdd = payload
-
-  if (removedIndex !== null)
-    itemToAdd = result.splice(removedIndex, 1)[0]
-
-  if (addedIndex !== null)
-    result.splice(addedIndex, 0, itemToAdd)
-  
-  return result
-}
-
-
-/**
  * Returns a new, empty annotation item object.
  * @param title
  * @param content 
  */
-export const generateAnnotationItem = ( title = '', content = null ) => ({
+export const generateAnnotationItem = ( title = '', content = null ) : Annotation => ({
   id: randomId(),
   title,
   content: content || [{ type: 'paragraph' }],

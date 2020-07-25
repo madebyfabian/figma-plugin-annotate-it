@@ -13,11 +13,21 @@ declare global {
     text?: string,
     marks?: Mark[]
   }
+
+
+  type Annotation = {
+    colorThemeId: string,
+    content: ContentBlock[],
+    id: string,
+    isDeleted: boolean,
+    title: string
+  }
 }
 
 
 export {
   Mark,
   Attrs,
-  ContentBlock
+  ContentBlock,
+  Annotation
 }

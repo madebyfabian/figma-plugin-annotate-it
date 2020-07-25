@@ -52,7 +52,31 @@
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
   import { Container, Draggable } from 'vue-smooth-dnd'
-  import { postMsg, randomId, onDrop, generateAnnotationItem } from '@/functions/helpers'
+  import { postMsg, randomId, generateAnnotationItem } from '@/functions/helpers'
+
+
+  /**
+   * Re-sorts the given array based on a drop-event.
+   * @param arr The original array.
+   * @param dropResult The data of the new Result.
+   * @returns The new, correctly sorted array.
+   */
+  const onDrop = ( arr, dropResult ) => {
+    const { removedIndex, addedIndex, payload } = dropResult
+    if (removedIndex === null && addedIndex === null)
+      return arr
+
+    const result = [...arr]
+    let itemToAdd = payload
+
+    if (removedIndex !== null)
+      itemToAdd = result.splice(removedIndex, 1)[0]
+
+    if (addedIndex !== null)
+      result.splice(addedIndex, 0, itemToAdd)
+    
+    return result
+  }
 
 
   /**
