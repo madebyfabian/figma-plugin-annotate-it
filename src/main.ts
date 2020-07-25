@@ -1,12 +1,34 @@
-import doInit from '@/functions/figma/doInit'
 import pushSelectionChange from '@/functions/figma/pushSelectionChange'
 import updateAnnotItems from '@/functions/figma/updateAnnotItems'
+
+import config from '@/config'
+import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/functions/figma/figmaHelpers'
 
 
 figma.showUI(__html__, { 
   width: 487, 
   height: 446
 })
+
+
+const doInit = async () => {
+	// Load fonts to use on canvas.
+	await Promise.all([
+		figma.loadFontAsync(generateFontNameConfig()),
+		figma.loadFontAsync(generateFontNameConfig({ isItalic: true })),
+		figma.loadFontAsync(generateFontNameConfig({ isBold: true})),
+		figma.loadFontAsync(generateFontNameConfig({ isBold: true, isItalic: true }))
+	])
+
+	// First, look if there already exists a annotation wrapper-frame
+	let annotWrapperNode = getAnnotWrapperNode(),
+			annotData = annotWrapperNode ? getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey) : []
+
+	figma.ui.postMessage({
+		type: 'doInit',
+		value: annotData
+	})
+}
 
 
 doInit()
@@ -41,3 +63,5 @@ figma.ui.on('message', async msg => {
 
 if (!figma.currentPage.selection.length)
 	figma.notify('Please select a frame to add annotations.')
+
+
