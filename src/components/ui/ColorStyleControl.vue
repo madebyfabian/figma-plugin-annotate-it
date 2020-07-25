@@ -33,7 +33,7 @@
 <script>
   import FloatingPanel from '@/components/ui/FloatingPanel'
 
-  import { getUserColorThemes } from '@/functions/helpers'
+  import { getUserColorThemes } from '@/utils/utils'
 
   export default {
     props: {

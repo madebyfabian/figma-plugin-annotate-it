@@ -45,7 +45,7 @@
 
   import RichTextEditor from '@/components/ui/RichTextEditor'
 
-  import { generateAnnotationItem, randomId } from '@/functions/helpers'
+  import { generateAnnotationItem, randomId } from '@/utils/utils'
 
   // const contentPlaceholder = 'Your annotation Description goes here.\nYou can format the text with Markdown like\n**bold** or _italic_, - unordered, 1. ordered, --- divider'
 

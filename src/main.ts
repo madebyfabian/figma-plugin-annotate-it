@@ -1,6 +1,6 @@
 import updateAnnotItems from '@/functions/figma/updateAnnotItems'
 
-import config from '@/config'
+import { config } from '@/utils/utils'
 import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/functions/figma/figmaHelpers'
 
 

@@ -1,6 +1,7 @@
 import Differy from '@netilon/differify'
 import contentBlockToNode from '@/functions/figma/contentBlockToNode'
-import { generateAnnotItemNode, getAnnotWrapperNode, defaultParagraphBlockContent } from '@/functions/figma/figmaHelpers'
+import { generateAnnotItemNode, getAnnotWrapperNode } from '@/functions/figma/figmaHelpers'
+import { config } from '@/utils/utils'
 
 const differy = new Differy()
 
@@ -134,7 +135,7 @@ const _generateSafeAddedContentBlock = ( contentBlock: any ) => {
     ...contentBlock, 
     content: contentBlock?.content 
       ? JSON.parse(contentBlock.content) // when content is already something
-      : defaultParagraphBlockContent // when content is undefined
+      : config.defaultParagraphBlockContent // when content is undefined
   }
 }
 
@@ -144,6 +145,6 @@ const _generateSafeModifiedContentBlock = ( contentBlock: any ) => {
     type: contentBlock._.type.current,
     content: contentBlock._.content.current
       ? JSON.parse(contentBlock._.content.current) // when content is already something
-      : defaultParagraphBlockContent // when content is undefined
+      : config.defaultParagraphBlockContent // when content is undefined
   }
 }

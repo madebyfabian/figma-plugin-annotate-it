@@ -2,9 +2,10 @@ import {
   generateFontNameConfig, 
   generateAnnotItemBodyTextNode, 
   generateSolidPaint,
-  defaultParagraphBlockContent,
   defaultParagraphTextOptions
 } from '@/functions/figma/figmaHelpers'
+
+import { config } from '@/utils/utils'
 
 
 /**
@@ -165,7 +166,7 @@ const _showPlaceholder = ( contentBlock: ContentBlock ) => {
 const _generateSafeParagraphBlock = ( contentBlock: ContentBlock ) => {
   return <ContentBlock>{
     ...contentBlock,
-    content: contentBlock?.content || defaultParagraphBlockContent
+    content: contentBlock?.content || config.defaultParagraphBlockContent
   }
 }
 

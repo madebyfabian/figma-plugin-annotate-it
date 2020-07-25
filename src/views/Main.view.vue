@@ -52,7 +52,7 @@
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
   import { Container, Draggable } from 'vue-smooth-dnd'
-  import { randomId, generateAnnotationItem } from '@/functions/helpers'
+  import { randomId, generateAnnotationItem } from '@/utils/utils'
 
 
   /**

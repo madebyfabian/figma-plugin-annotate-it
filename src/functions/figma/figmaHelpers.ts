@@ -1,4 +1,4 @@
-import config from '@/config'
+import { config } from '@/utils/utils'
 
 
 export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
@@ -56,13 +56,6 @@ export const getAnnotWrapperNode = () : FrameNode => {
     return true
   })
 }
-
-
-/**
- * Sometimes, when a paragraph has no content, 
- * we need this little helper to fill it with an empty space to avoid figma errors
- */
-export const defaultParagraphBlockContent = [{ type: 'text', text: ' ' }]
 
 
 /**
