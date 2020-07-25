@@ -8,16 +8,6 @@ export const randomId = ( idLength: number = 16 ) => {
 
 
 /**
- * Posts a message to the figma code.
- * @param type The type (name) of the message.
- * @param value The actual value of the message.
- */
-export const postMsg = ( type: string, value: string ) => {
-  parent.postMessage({ pluginMessage: { type, value }}, '*')
-}
-
-
-/**
  * Returns a new, empty annotation item object.
  * @param title
  * @param content 

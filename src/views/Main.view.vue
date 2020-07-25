@@ -52,7 +52,7 @@
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
   import { Container, Draggable } from 'vue-smooth-dnd'
-  import { postMsg, randomId, generateAnnotationItem } from '@/functions/helpers'
+  import { randomId, generateAnnotationItem } from '@/functions/helpers'
 
 
   /**
@@ -174,7 +174,10 @@
         const newAnnots = blockContentSectionToString(JSON.parse(newAnnots_str)),
               oldAnnots = blockContentSectionToString(JSON.parse(oldAnnots_str))
 
-        postMsg('pushAnnotChanges', { newAnnots, oldAnnots })
+        parent.postMessage({ pluginMessage: {
+          type: 'pushAnnotChanges', 
+          value: { newAnnots, oldAnnots }
+        }}, '*')
       }
     }
   }

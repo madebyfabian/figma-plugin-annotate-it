@@ -1,4 +1,3 @@
-import pushSelectionChange from '@/functions/figma/pushSelectionChange'
 import updateAnnotItems from '@/functions/figma/updateAnnotItems'
 
 import config from '@/config'
@@ -8,6 +7,12 @@ import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/fu
 figma.showUI(__html__, { 
   width: 487, 
   height: 446
+})
+
+
+const pushSelectionChange = () => figma.ui.postMessage({
+	type: 'selectionUpdated',
+	value: figma.currentPage.selection
 })
 
 
