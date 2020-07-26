@@ -43,6 +43,11 @@
       </Button>
       <p v-if="userHasNothingSelected">To add annotations, please select a frame.</p>
     </footer>
+
+    <!-- for debugging: -->
+    <!-- <pre style="position: fixed; overflow-y: scroll; bottom: 0; right: 0; 
+    z-index: 999; background: #eee; height: 150px; width: 300px; 
+    box-shadow: 0 5px 10px 0 rgba(0,0,0,.1); padding: 10px; font-size: 9px; border-radius: 8px">{{ JSON.stringify(annotations, null, 2) }}</pre> -->
   </div>
 </template>
 
@@ -89,26 +94,30 @@
     }),
 
     methods: {
-      createAnnotationItem() {
+      async createAnnotationItem() {
         this.annotations.push( generateAnnotItemObject() )
 
         // Scroll to bottom
         const scrollContainer = this.$refs.scrollContainer
-        this.$nextTick(() => {
-          scrollContainer.scrollTo({
-            top: scrollContainer.scrollHeight,
-            behavior: 'smooth'
-          })
+        await this.$nextTick()
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollHeight,
+          behavior: 'smooth'
         })
       },
 
-      removeAnnotation( itemId ) {
+      async removeAnnotation( itemId ) {
         const itemArrIndex = this.annotations.findIndex(item => item.id === itemId)
         this.annotations[itemArrIndex].isDeleted = true
 
-        setTimeout(() => {
-          this.annotations.splice(itemArrIndex, 1)
-        }, 300)
+        await this.$nextTick()
+        this.enableWatcher = false
+
+        await this.$nextTick()
+        this.annotations.splice(itemArrIndex, 1)
+
+        await this.$nextTick()
+        this.enableWatcher = true 
       },
 
       onDrop( dropResult ) {

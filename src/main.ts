@@ -1,5 +1,5 @@
 import { config } from '@/utils/utils'
-import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/utils/figmaHelpers'
+import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/utils/figmaUtils'
 import updateAnnotItems from '@/utils/updateAnnotItems'
 
 
@@ -13,10 +13,13 @@ const pushSelectionChange = () => figma.ui.postMessage({
 	type: 'selectionUpdated',
 	value: figma.currentPage.selection
 })
+
 // const pushSelectionChange = () => {
 // 	if (figma.currentPage.selection?.[0]) {
+// 		const sel = figma.currentPage.selection[0]
 // 		// console.clear()
-// 		console.log('currentSelection pluginData', getPluginData(figma.currentPage.selection[0], config.annotItemNodePluginDataKey))
+// 		const pluginData = getPluginData(sel, config.annotItemNodePluginDataKey)
+// 		console.log('the current selection:\n  - id:', sel.id, '\n  - data:', pluginData)
 // 	}
 
 // 	figma.ui.postMessage({

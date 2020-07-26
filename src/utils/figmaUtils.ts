@@ -62,12 +62,24 @@ export const getAnnotWrapperNode = ({ createOneIfItDoesNotExist = true } = {}) =
 }
 
 
+/**
+ * Loops through annot item nodes and updates the number inside the badge.
+ */
+export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
+  for (let i = 0; i < annotWrapperNode.children.length; i++) {
+    const annotItemNode = <FrameNode>annotWrapperNode.children[i]
+
+    const annotItemBadgeNode = <TextNode>annotItemNode.findOne(node => node.type === 'TEXT' && node.name === 'Badge/Text')
+    annotItemBadgeNode.characters = (i + 1).toString()
+  }
+}
+
+
 // ---
 // Node Generators
 // ---
 
-
-export const generateAnnotItemNode = ( data: Annotation ) => {
+export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) => {
   const node = figma.createFrame()
 
   setPluginData(node, config.annotItemNodePluginDataKey, data)
@@ -87,10 +99,10 @@ export const generateAnnotItemNode = ( data: Annotation ) => {
   headerNode.itemSpacing = 8
   headerNode.layoutMode = 'HORIZONTAL'
 
-  const headerAnnotBadgeNode = generateAnnotBadgeNode(1)
+  const headerAnnotBadgeNode = generateAnnotBadgeNode(badgeNumber)
 
   const headerTextNode = figma.createText()
-  headerTextNode.name = 'Text'
+  headerTextNode.name = 'Header/Text'
   headerTextNode.resize(279, headerTextNode.height)
   headerTextNode.layoutAlign = 'CENTER'
   headerTextNode.textAlignVertical = 'CENTER'
@@ -133,14 +145,16 @@ export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) =
 
 export const generateAnnotBadgeNode = ( number: number ) => {
   // Main Frame Node
-	const node = figma.createComponent()
+  const node = figma.createFrame()
+  node.name = 'Badge'
 	node.resize(24, 24)
 	node.cornerRadius = 24
 	node.layoutMode = 'HORIZONTAL'
 	node.fills = [ generateSolidPaint({ r: 24, g: 160, b: 251 }) ]
 
 	// Text Frame inside Main Frame
-	const textNode = figma.createText()
+  const textNode = figma.createText()
+  textNode.name = 'Badge/Text'
 	textNode.fontSize = 12
 	textNode.characters = number.toString()
 	textNode.fills = [ generateSolidPaint({ r: 255, g: 255, b: 255 }) ]
@@ -150,10 +164,11 @@ export const generateAnnotBadgeNode = ( number: number ) => {
 	textNode.lineHeight = { value: 24, unit: 'PIXELS' }
 	textNode.locked = true
 
-	node.appendChild(textNode)
+  node.appendChild(textNode)
+  return node
 
-	const instanceNode = node.createInstance()
-  node.remove()
+	// const instanceNode = node.createInstance()
+  // node.remove()
   
-  return instanceNode
+  // return instanceNode
 }

@@ -2,7 +2,7 @@ import {
   generateFontNameConfig, 
   generateAnnotItemBodyTextNode, 
   generateSolidPaint
-} from '@/utils/figmaHelpers'
+} from '@/utils/figmaUtils'
 
 import { config } from '@/utils/utils'
 
