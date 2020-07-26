@@ -1,86 +1,94 @@
-import Differy from '@netilon/differify'
-import contentBlockToNode from '@/utils/contentBlockToNode'
-import { generateAnnotItemNode, getAnnotWrapperNode } from '@/utils/figmaHelpers'
+import { generateAnnotItemNode, getAnnotWrapperNode, setPluginData } from '@/utils/figmaHelpers'
 import { config } from '@/utils/utils'
+import contentBlockToNode from '@/utils/contentBlockToNode'
+import createAnnotDiff from '@/utils/createAnnotDiff'
 
-const differy = new Differy()
 
+export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
+  const diff = createAnnotDiff(newAnnots, oldAnnots)
 
-export default ( msgValue: { newAnnots: object[], oldAnnots: object[] } ) => {
-  const diff = differy.compare(msgValue.oldAnnots, msgValue.newAnnots)
+  // console.clear()
 
-  console.clear()
-
+  // If there is more then 1 annotation items changed at a time, check if id's have changed,
+  // this would mean we have to re-initiate every item, since the order has changed.
   if (diff.changes > 1) {
-    // There are more than 1 change at a time. We should check if the ids has changed.
-    // (Which would mean that we would have to re-initiate every item, due to the changed order of items.)
     const firstItem = diff._[0]
     if (firstItem.status === 'MODIFIED' && firstItem._.id.status === 'MODIFIED') {
-      console.log('Detected a change of the id. This means the order has changed and we now have to re-initiate every item.')
+      // console.log('Detected a change of the id. This means the order has changed and we now have to re-initiate every item.')
       return
     }
   }
 
-  for (const item of diff._) {
-    switch (item.status) {
-      case 'ADDED':     handleAddedAnnotItem(item); break
-      case 'DELETED':   handleDeletedAnnotItem(item); break
-      case 'MODIFIED':  handleModifiedAnnotItem(item); break
-    }
-  }
-}
-
-
-const handleAddedAnnotItem = ( item: any ) => {
-  const { current: newItem } = item
-
-  console.log('Adding:', newItem)
-  
-  generateAnnotItemNode(newItem)
-}
-
-
-const handleDeletedAnnotItem = ( item: any ) => {
-  const { original: deletedItem } = item
-
-  console.log('Deleting:', deletedItem.id)
-  // @TODO implement deleting items in Figma.
-}
-
-
-const handleModifiedAnnotItem = ( item: any ) => {
-  const annotNode = <FrameNode>getAnnotWrapperNode().findChild(node => node.name.includes(item._.id.current))
-
-  // Loop through item entries (id, title, content, ...)
-  let doneChanges = 0
-  for (let entryName of Object.keys(item._)) {
-    const { changes, current: newValue } = item._[entryName]
-    if (!changes)
-      continue
-
-    switch (entryName) {
-      case 'title':
-        const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Text')
-        titleNode.characters = newValue.length === 0 ? 'Title' : newValue
-        titleNode.opacity = newValue.length === 0 ? .25 : 1
-        break
+  // Loop through array of diff objects
+  for (let i = 0; i < diff._.length; i++) {
+    const annotDiffObj = diff._[i],
+          annotWrapperNode = getAnnotWrapperNode()
     
-      case 'content':
-        handleModifiedItem_content(item, entryName, annotNode)
+    switch (annotDiffObj.status) {
+      case 'ADDED': {
+        const { current: newItem } = annotDiffObj
+        annotWrapperNode.appendChild(generateAnnotItemNode(newItem))
+
+        break
+      }
+
+      case 'DELETED': {
+        const { original: deletedItem } = annotDiffObj
+        const annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(deletedItem.id))
+        annotNode.remove()
+
+        // If the annotWrapper node is empty after removing the itemNode, remove the wrapper too.
+        if (annotWrapperNode.children.length === 0)
+          annotWrapperNode.remove()
+
+        break
+      }
+
+      case 'MODIFIED': {
+        const { _: modifiedItem } = annotDiffObj
+        const annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(modifiedItem.id.current))
+
+        // Save the "real" modified annot item object (wihout diff-things)
+        const modifiedItemWithoutDiff = newAnnots[i]
+        setPluginData(annotNode, config.annotItemNodePluginDataKey, modifiedItemWithoutDiff)
+
+        let doneChanges = 0
+
+        // Loop through item entries (id, title, content, ...)
+        for (let entryName of Object.keys(modifiedItem)) {
+          const { changes, current: newValue } = modifiedItem[entryName]
+          if (!changes)
+            continue
+
+          switch (entryName) {
+            case 'title':
+              const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Text')
+              titleNode.characters = newValue.length === 0 ? 'Title' : newValue
+              titleNode.opacity = newValue.length === 0 ? .25 : 1
+              break
+          
+            case 'content':
+              _handleModifiedItemContent(annotDiffObj, entryName, annotNode)
+              break
+          }
+
+          if (entryName !== 'content')
+            // console.log(`Detected a change in ${entryName}. The new value is:`, newValue)
+            // @TODO implement these changes in Figma.
+
+          doneChanges++
+          if (doneChanges === annotDiffObj.changes)
+            break
+        }
+
+        break
+      }
     }
-
-    if (entryName !== 'content')
-      console.log(`Detected a change in ${entryName}. The new value is:`, newValue)
-      // @TODO implement these changes in Figma.
-
-    doneChanges++
-    if (doneChanges === item.changes)
-      break
   }
 }
 
 
-const handleModifiedItem_content = ( item: any, entryName: string, annotNode: FrameNode ) => {
+const _handleModifiedItemContent = ( item: any, entryName: string, annotNode: FrameNode ) => {
   const bodyNode = <FrameNode>annotNode.findChild(node => node.name === 'Body')
 
   const diffObj = item._[entryName],
@@ -117,7 +125,7 @@ const handleModifiedItem_content = ( item: any, entryName: string, annotNode: Fr
         const modifiedContentBlock = _generateSafeModifiedContentBlock(contentBlock),
               modifiedNode = contentBlockToNode({ contentBlock: modifiedContentBlock, contentBlocksAmount })
 
-        console.log(`MODIFIED (on line ${i + 1})`, modifiedContentBlock)
+        // console.log(`MODIFIED (on line ${i + 1})`, modifiedContentBlock)
         bodyNode.children[figmaNodeListIndex].remove()
         bodyNode.insertChild(figmaNodeListIndex, modifiedNode)
         break

@@ -52,7 +52,7 @@
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
   import { Container, Draggable } from 'vue-smooth-dnd'
-  import { randomId, generateAnnotationItem } from '@/utils/utils'
+  import { randomId, generateAnnotItemObject } from '@/utils/utils'
 
 
   /**
@@ -77,29 +77,7 @@
     
     return result
   }
-
-
-  /**
-   * Takes an array of annotations
-   * e.g. { title: string, content: [{ type: 'paragraph', content: object[] }, ...] }.
-   * 
-   * @returns The same array. but all nested contents are stringified, 
-   * e.g. { title: string, content: [{ type: 'paragraph', content: string }, ...] }
-   */
-  const blockContentSectionToString = ( annotArr ) => {
-    return annotArr.map(annot => { // Loop through every annotation in the array.
-      return { 
-        ...annot,
-        content: annot.content.map(annotContentBlock => { // Loop through every content block
-          return {
-            ...annotContentBlock, 
-            content: JSON.stringify(annotContentBlock.content)
-          }
-        })
-      }
-    })
-  }
-
+  
 
   export default {
     components: { FloatingButton, Button, Icon, AnnotationItem, Container, Draggable },
@@ -112,7 +90,7 @@
 
     methods: {
       createAnnotationItem() {
-        this.annotations.push( generateAnnotationItem() )
+        this.annotations.push( generateAnnotItemObject() )
 
         // Scroll to bottom
         const scrollContainer = this.$refs.scrollContainer
@@ -171,12 +149,12 @@
         if (!this.enableWatcher)
           return
 
-        const newAnnots = blockContentSectionToString(JSON.parse(newAnnots_str)),
-              oldAnnots = blockContentSectionToString(JSON.parse(oldAnnots_str))
-
         parent.postMessage({ pluginMessage: {
           type: 'pushAnnotChanges', 
-          value: { newAnnots, oldAnnots }
+          value: { 
+            newAnnots: JSON.parse(newAnnots_str), 
+            oldAnnots: JSON.parse(oldAnnots_str)
+          }
         }}, '*')
       }
     }
@@ -184,9 +162,10 @@
 </script>
 
 <style lang="scss" scoped>
-.smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
-  overflow: visible;
-}
+  .smooth-dnd-container.vertical > .smooth-dnd-draggable-wrapper {
+    overflow: visible;
+  }
+
   .grid {
     height: 100%;
     display: grid;

@@ -1,6 +1,6 @@
 export const config = {
   annotWrapperNodeName: 'Annotate it! – Frame',
-  annotWrapperNodePluginDataKey: 'annotStore',
+  annotItemNodePluginDataKey: 'annotStore',
 
   /**
    * Helper to fill an empty contentBlock paragraph with an empty space to avoid figma errors
@@ -29,10 +29,8 @@ export const randomId = ( idLength: number = 16 ) => {
 
 /**
  * Returns a new, empty annotation item object.
- * @param title
- * @param content 
  */
-export const generateAnnotationItem = ( title = '', content = null ) : Annotation => ({
+export const generateAnnotItemObject = ( title = '', content = null ) : Annotation => ({
   id: randomId(),
   title,
   content: content || [{ type: 'paragraph' }],

@@ -38,16 +38,6 @@
         <button :class="{ 'is-active': isActive.underline() }" @click="commands.underline">
           <u>U</u>
         </button>
-
-        <!-- <button
-          v-for="(item, i) of menuBubbleItems"
-          :key="i"
-          @click="() => commands[item.commandName]()"
-          :class="{ 'is-active': isActive[commandName]() }"
-          v-tooltip.top-center="item.title">
-
-          <svg v-html="item.icon" />
-        </button> -->
       </div>
     </editor-menu-bubble>
 
@@ -58,28 +48,6 @@
 <script>
 import { Editor, EditorContent, EditorMenuBubble, EditorFloatingMenu } from 'tiptap'
 import { HardBreak, OrderedList, BulletList, ListItem, Bold, Italic, Strike, Underline, HorizontalRule, Placeholder, History } from 'tiptap-extensions'
-
-const editorOptions = {
-  extensions: [
-    new HardBreak(),
-    new BulletList(),
-    new OrderedList(),
-    new ListItem(),
-    new Bold(),
-    new Italic(),
-    new Strike(),
-    new Underline(),
-    new History(),
-    new HorizontalRule(),
-    new Placeholder({
-      emptyEditorClass: 'is-editor-empty',
-      emptyNodeClass: 'is-empty',
-      emptyNodeText: 'Your annotation Description goes here.\nYou can format the text with Markdown like\n**bold** or _italic_, - unordered, 1. ordered, --- divider',
-      showOnlyWhenEditable: true,
-      showOnlyCurrent: true,
-    })
-  ]
-}
 
 export default {
   props: {
@@ -100,10 +68,33 @@ export default {
     return {
       keepInBounds: true,
       editable: !this.isSkeleton,
+
       editor: new Editor({
-        ...editorOptions,
-        content: this.value
+        extensions: [
+          new HardBreak(),
+          new BulletList(),
+          new OrderedList(),
+          new ListItem(),
+          new Bold(),
+          new Italic(),
+          new Strike(),
+          new Underline(),
+          new History(),
+          new HorizontalRule(),
+          new Placeholder({
+            emptyEditorClass: 'is-editor-empty',
+            emptyNodeClass: 'is-empty',
+            emptyNodeText: 'Your annotation Description goes here.\nYou can format the text with Markdown like\n**bold** or _italic_, - unordered, 1. ordered, --- divider',
+            showOnlyWhenEditable: true,
+            showOnlyCurrent: true,
+          })
+        ],
+        content: {
+          type: 'doc',
+          content: this.value,
+        }
       }),
+
       floatingMenuItems: [
         {
           title: 'Bullet list',
@@ -126,13 +117,7 @@ export default {
                   <path stroke="#000" d="M6 12h5M13 12h5"/>
                 </svg>`
         }
-      ],
-      // menuBubbleItems: [
-      //   { title: 'Bold', commandName: 'bold', icon: '<b>B</b>' },
-      //   { title: 'Italic', commandName: 'italic', icon: '<i>i</i>' },
-      //   { title: 'Strikethrough', commandName: 'strike', icon: '<s>S</s>' },
-      //   { title: 'Underline', commandName: 'underline', icon: '<u>U</u>' }
-      // ]
+      ]
     }
   },
 

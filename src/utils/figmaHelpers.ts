@@ -1,4 +1,4 @@
-import { config } from '@/utils/utils'
+import { config, generateAnnotItemObject } from '@/utils/utils'
 
 
 export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
@@ -34,23 +34,31 @@ export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}
 
 
 /**
- * Try to find a already existing annotation wrapper-frame on the current page.
- * @returns The node of the annotation wrapper-frame.
+ * Find an already existing annotation wrapper-frame on the current page, or create one.
  */
-export const getAnnotWrapperNode = () => {
-  return <FrameNode>figma.currentPage.findChild(node => {
+export const getAnnotWrapperNode = ({ createOneIfItDoesNotExist = true } = {}) => {
+  let annotWrapperNode = <FrameNode>figma.currentPage.findChild(node => {
     if (node.type !== 'FRAME')
       return false
   
     if (node.name !== config.annotWrapperNodeName)
       return false
   
-    const pluginData = getPluginData(node, config.annotWrapperNodePluginDataKey)
-    if (!pluginData)
-      return false
-  
     return true
   })
+
+  // Create annot wrapper node
+  if (!annotWrapperNode && createOneIfItDoesNotExist) {
+    annotWrapperNode = figma.createFrame()
+    annotWrapperNode.name = config.annotWrapperNodeName
+    annotWrapperNode.resize(343, 100)
+    annotWrapperNode.fills = [{ type: 'SOLID', color: <RGB> { r: 1, g: 1, b: 1 }}]
+    annotWrapperNode.verticalPadding = 8
+    annotWrapperNode.itemSpacing = 16
+    annotWrapperNode.layoutMode = 'VERTICAL'
+  }
+
+  return annotWrapperNode
 }
 
 
@@ -58,21 +66,12 @@ export const getAnnotWrapperNode = () => {
 // Node Generators
 // ---
 
-export const generateAnnotWrapperNode = () => {
-  const node = figma.createFrame()
-  setPluginData(node, config.annotWrapperNodePluginDataKey, [])
-  node.name = config.annotWrapperNodeName
-  node.resize(343, 100)
-  node.fills = [{ type: 'SOLID', color: <RGB> { r: 1, g: 1, b: 1 }}]
-  node.verticalPadding = 8
-  node.itemSpacing = 16
-  node.layoutMode = 'VERTICAL'
-  return node
-}
 
-
-export const generateAnnotItemNode = ( data: any ) => {
+export const generateAnnotItemNode = ( data: Annotation ) => {
   const node = figma.createFrame()
+
+  setPluginData(node, config.annotItemNodePluginDataKey, data)
+
   node.name = `Annotation ${data.id}`
   node.resize(343, 100)
   node.horizontalPadding = 16
@@ -115,8 +114,7 @@ export const generateAnnotItemNode = ( data: any ) => {
   node.appendChild(headerNode)
   node.appendChild(bodyNode)
 
-  const parentNode = getAnnotWrapperNode() || generateAnnotWrapperNode()
-  parentNode.appendChild(node)
+  return node
 }
 
 

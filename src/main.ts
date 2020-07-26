@@ -1,7 +1,6 @@
-import updateAnnotItems from '@/utils/updateAnnotItems'
-
 import { config } from '@/utils/utils'
 import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/utils/figmaHelpers'
+import updateAnnotItems from '@/utils/updateAnnotItems'
 
 
 figma.showUI(__html__, { 
@@ -14,6 +13,17 @@ const pushSelectionChange = () => figma.ui.postMessage({
 	type: 'selectionUpdated',
 	value: figma.currentPage.selection
 })
+// const pushSelectionChange = () => {
+// 	if (figma.currentPage.selection?.[0]) {
+// 		// console.clear()
+// 		console.log('currentSelection pluginData', getPluginData(figma.currentPage.selection[0], config.annotItemNodePluginDataKey))
+// 	}
+
+// 	figma.ui.postMessage({
+// 		type: 'selectionUpdated',
+// 		value: figma.currentPage.selection
+// 	})	
+// }
 
 
 const doInit = async () => {
@@ -25,9 +35,16 @@ const doInit = async () => {
 		figma.loadFontAsync(generateFontNameConfig({ isBold: true, isItalic: true }))
 	])
 
-	// First, look if there already exists a annotation wrapper-frame
-	let annotWrapperNode = getAnnotWrapperNode(),
-			annotData = annotWrapperNode ? getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey) : []
+	const annotData = [],
+				annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false })
+
+	if (annotWrapperNode) {
+		for (const annotItemNode of annotWrapperNode.children) {
+			annotData.push(getPluginData(annotItemNode, config.annotItemNodePluginDataKey))
+		}
+	}
+
+	// console.log('annotData', annotData)
 
 	figma.ui.postMessage({
 		type: 'doInit',
@@ -60,7 +77,9 @@ figma.ui.on('message', async msg => {
 		// }
 
 		case 'pushAnnotChanges': 
-			updateAnnotItems(msgValue)
+			const { newAnnots, oldAnnots } = msgValue
+			updateAnnotItems(newAnnots, oldAnnots)
+
 			break
 	}
 })
