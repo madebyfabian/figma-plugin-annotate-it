@@ -1,7 +1,7 @@
-import updateAnnotItems from '@/functions/figma/updateAnnotItems'
+import updateAnnotItems from '@/utils/updateAnnotItems'
 
 import { config } from '@/utils/utils'
-import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/functions/figma/figmaHelpers'
+import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/utils/figmaHelpers'
 
 
 figma.showUI(__html__, { 

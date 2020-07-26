@@ -1,6 +1,6 @@
 import Differy from '@netilon/differify'
-import contentBlockToNode from '@/functions/figma/contentBlockToNode'
-import { generateAnnotItemNode, getAnnotWrapperNode } from '@/functions/figma/figmaHelpers'
+import contentBlockToNode from '@/utils/contentBlockToNode'
+import { generateAnnotItemNode, getAnnotWrapperNode } from '@/utils/figmaHelpers'
 import { config } from '@/utils/utils'
 
 const differy = new Differy()
