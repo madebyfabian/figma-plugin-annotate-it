@@ -18,9 +18,6 @@ export const setPluginData = ( node: SceneNode, key: string, value: any ) => {
 }
 
 
-/**
- * @Returns A Figma "FontName" object.
- */
 export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}) => {
   let style: string
 
@@ -40,9 +37,8 @@ export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}
  * Try to find a already existing annotation wrapper-frame on the current page.
  * @returns The node of the annotation wrapper-frame.
  */
-export const getAnnotWrapperNode = () : FrameNode => {
-  // @ts-ignore
-  return figma.currentPage.findChild(node => {
+export const getAnnotWrapperNode = () => {
+  return <FrameNode>figma.currentPage.findChild(node => {
     if (node.type !== 'FRAME')
       return false
   
@@ -55,16 +51,6 @@ export const getAnnotWrapperNode = () : FrameNode => {
   
     return true
   })
-}
-
-
-/**
- * @returns A few default options for the styling of annotation paragraphs.
- */
-export const defaultParagraphTextOptions = {
-  fontSize: 14,
-  lineHeight: <LineHeight>{ value: 19, unit: 'PIXELS' },
-  letterSpacing: <LetterSpacing>{ value: 0.5, unit: 'PERCENT' }
 }
 
 
@@ -140,9 +126,9 @@ export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) =
   textNode.opacity = showPlaceholder ? .25 : 1
   textNode.layoutAlign = 'STRETCH'
   textNode.fontName = generateFontNameConfig()
-  textNode.fontSize = defaultParagraphTextOptions.fontSize
-  textNode.lineHeight = defaultParagraphTextOptions.lineHeight
-  textNode.letterSpacing = defaultParagraphTextOptions.letterSpacing
+  textNode.fontSize = config.defaultParagraphTextOptions.fontSize
+  textNode.lineHeight = config.defaultParagraphTextOptions.lineHeight
+  textNode.letterSpacing = config.defaultParagraphTextOptions.letterSpacing
   return textNode
 }
 

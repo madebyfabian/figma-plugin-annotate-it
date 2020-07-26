@@ -1,8 +1,7 @@
 import { 
   generateFontNameConfig, 
   generateAnnotItemBodyTextNode, 
-  generateSolidPaint,
-  defaultParagraphTextOptions
+  generateSolidPaint
 } from '@/functions/figma/figmaHelpers'
 
 import { config } from '@/utils/utils'
@@ -99,9 +98,9 @@ const generateListBlock = ( contentBlock: ContentBlock, nestingLevel: number) =>
     listItemKeyNode.resize(12, listItemKeyNode.height)
     listItemKeyNode.textAlignHorizontal = isBulletList ? 'CENTER' : 'RIGHT'
     listItemKeyNode.characters = isBulletList ? _getBullet(nestingLevel) : `${i + 1}.`
-    listItemKeyNode.fontSize = isBulletList ? 18 : defaultParagraphTextOptions.fontSize
-    listItemKeyNode.lineHeight = defaultParagraphTextOptions.lineHeight
-    listItemKeyNode.letterSpacing = defaultParagraphTextOptions.letterSpacing
+    listItemKeyNode.fontSize = isBulletList ? 18 : config.defaultParagraphTextOptions.fontSize
+    listItemKeyNode.lineHeight = config.defaultParagraphTextOptions.lineHeight
+    listItemKeyNode.letterSpacing = config.defaultParagraphTextOptions.letterSpacing
 
     const listItemContentWrapperNode = figma.createFrame()
     listItemContentWrapperNode.name = 'List Content'
