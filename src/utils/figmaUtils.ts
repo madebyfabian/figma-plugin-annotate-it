@@ -1,5 +1,4 @@
-import { config, generateAnnotItemObject } from '@/utils/utils'
-import { filter } from 'vue/types/umd'
+import { config } from '@/utils/utils'
 
 
 export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
@@ -39,32 +38,26 @@ export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}
  */
 export const getAnnotWrapperNode = ({ createOneIfItDoesNotExist = true } = {}) => {
   let annotWrapperNode = <FrameNode>figma.currentPage.findChild(node => {
-    if (node.type !== 'FRAME')
-      return false
-  
-    if (node.name !== config.annotWrapperNodeName)
-      return false
-  
+    if (node.type !== 'FRAME') return false
+    if (node.name !== config.annotWrapperNodeName) return false
     return true
   })
 
   // Create annot wrapper node
   if (!annotWrapperNode && createOneIfItDoesNotExist) {
     const width = 343, 
-          height = 100
+          height = 100,
+          { x, y } = _calculateAnnotWrapperNodePos({ width, height })
 
     annotWrapperNode = figma.createFrame()
+    annotWrapperNode.resize(width, height)
+    annotWrapperNode.x = x
+    annotWrapperNode.y = y
     annotWrapperNode.name = config.annotWrapperNodeName
-    annotWrapperNode.resize(343, 100)
     annotWrapperNode.fills = [{ type: 'SOLID', color: <RGB> { r: 1, g: 1, b: 1 }}]
     annotWrapperNode.verticalPadding = 8
     annotWrapperNode.itemSpacing = 16
     annotWrapperNode.layoutMode = 'VERTICAL'
-
-    const { x, y } = _calculateAnnotWrapperNodePos({ width, height })
-    console.log('x', x, '- y', y)
-    annotWrapperNode.x = x
-    annotWrapperNode.y = y
   }
 
   return annotWrapperNode
@@ -188,29 +181,23 @@ export const generateAnnotBadgeNode = ( number: number ) => {
 /**
  * Is used when the annotation wrapper is initially created.
  */
-const _calculateAnnotWrapperNodePos = ( wrapperData: { width: number, height: number } ) => {
-  let x = 0, y = 0
-
-  // console.clear()
-
-  // If there is no current sel, return
+const _calculateAnnotWrapperNodePos = ( wrapperData: { width: number, height: number }, startAtX?: number ) => {
+  // If there is no current sel, return x = y = 0
   const currSel = figma.currentPage.selection?.[0]
   if (!currSel)
-    return { x, y }
+    return { x: 0, y: 0 }
 
-  return _loop(currSel.x + currSel.width, currSel)
-}
+  if (!startAtX)
+    startAtX = currSel.x + currSel.width
 
-
-const _loop = ( startAtX: number, currSel: any ) => {
   const filteredChilds = figma.currentPage.children.filter(node => {
     return node.x + node.width >= startAtX
   })
 
   // Loop through every direct page child node, returning only the child with an x higher than the current selection. 
-  let pageNodesPosDataArr = []
+  let pageNodesPosArr = []
   for (const node of filteredChilds) {
-    pageNodesPosDataArr.push({ 
+    pageNodesPosArr.push({ 
       width:  node.width,
       height: node.height,
       x:      node.x,
@@ -221,44 +208,28 @@ const _loop = ( startAtX: number, currSel: any ) => {
   }
 
   // Sort nodes by x position
-  pageNodesPosDataArr.sort((a, b) => a.xEnd - b.xEnd)
+  pageNodesPosArr.sort((a, b) => a.xEnd - b.xEnd)
 
-  let wantedWrapperPosData = { 
-    width:  currSel.width,
-    height: currSel.height,
+  let wantedWrapperPos = { 
+    width:  wrapperData.width,
+    height: wrapperData.height,
     x:      startAtX + 160,
     y:      currSel.y,
   }
 
-  const foundCollisionPosData = pageNodesPosDataArr.find(nodePosData => {
-    return nodePosData.id !== currSel.id && _doCollide(nodePosData, wantedWrapperPosData)
+  const foundCollisionPosData = pageNodesPosArr.find(nodePosData => {
+    const doCollide = !(
+      ((nodePosData.y + nodePosData.height) < (wantedWrapperPos.y)) ||
+      (nodePosData.y > (wantedWrapperPos.y + wantedWrapperPos.height)) ||
+      ((nodePosData.x + nodePosData.width) < wantedWrapperPos.x) ||
+      (nodePosData.x > (wantedWrapperPos.x + wantedWrapperPos.width))
+    )
+
+    return nodePosData.id !== currSel.id && doCollide
   })
 
-  console.log(foundCollisionPosData)
-
-  return foundCollisionPosData 
-    ? _loop(foundCollisionPosData.x + foundCollisionPosData.width, currSel)
-    : { x: wantedWrapperPosData.x, y: wantedWrapperPosData.y }
+  return foundCollisionPosData
+    ? _calculateAnnotWrapperNodePos(wrapperData, foundCollisionPosData.x + foundCollisionPosData.width)
+    : { x: wantedWrapperPos.x, y: wantedWrapperPos.y }
 }
 
-
-// const _numIsBetween = ( num: number, a: number, b: number ) => {
-//   let min = Math.min.apply(Math, [a, b]),
-//       max = Math.max.apply(Math, [a, b])
-
-//   let isBetween = num >= min && num <= max
-
-//   console.log('The number', num, (isBetween ? 'IS' : 'IS NOT'), 'between', min, 'and', max)
-
-//   return isBetween;
-// }
-
-const _doCollide = (a, b) => {
-  // console.log('Do\n',a, '\nand\n', b, '\ncollide?')
-  return !(
-      ((a.y + a.height) < (b.y)) ||
-      (a.y > (b.y + b.height)) ||
-      ((a.x + a.width) < b.x) ||
-      (a.x > (b.x + b.width))
-  );
-} 
