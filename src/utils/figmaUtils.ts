@@ -14,6 +14,7 @@ export const getPluginData = ( node: SceneNode, key: string, isJSON = true ) => 
 
 
 export const setPluginData = ( node: SceneNode, key: string, value: any ) => {
+  // console.log(`setting the pluginData.${key} of node`, node.id, 'to', value)
   node.setPluginData(key, (typeof value === 'string') ? value : JSON.stringify(value))
 }
 
@@ -30,6 +31,14 @@ export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}
   }
 
   return <FontName>{ family: 'Roboto', style }
+}
+
+
+export const generateAnnotItemTitleOptions = ( title?: string ) => {
+  return {
+    opacity: title.length ? 1 : .25,
+    characters: title.length ? title : 'Title'
+  }
 }
 
 
@@ -92,7 +101,6 @@ export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) =
   node.verticalPadding = 16
   node.itemSpacing = 16
   node.layoutMode = 'VERTICAL'
-  node.cornerRadius = 12
   node.locked = true
 
   const headerNode = figma.createFrame()
@@ -103,15 +111,16 @@ export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) =
 
   const headerAnnotBadgeNode = generateAnnotBadgeNode(badgeNumber)
 
+  const titleOptions = generateAnnotItemTitleOptions(data.title)
   const headerTextNode = figma.createText()
+  headerTextNode.characters = titleOptions.characters
+  headerTextNode.opacity = titleOptions.opacity
   headerTextNode.name = 'Header/Text'
   headerTextNode.resize(279, headerTextNode.height)
   headerTextNode.layoutAlign = 'CENTER'
   headerTextNode.textAlignVertical = 'CENTER'
   headerTextNode.fontSize = 16
   headerTextNode.fontName = generateFontNameConfig({ isBold: true })
-  headerTextNode.characters = 'Title'
-  headerTextNode.opacity = .25
 
   headerNode.appendChild(headerAnnotBadgeNode)
   headerNode.appendChild(headerTextNode)

@@ -1,29 +1,41 @@
-import { generateAnnotItemNode, getAnnotWrapperNode, setPluginData, updateAnnotItemsBadgeIndex } from '@/utils/figmaUtils'
+import { 
+  generateAnnotItemNode, 
+  getAnnotWrapperNode, 
+  setPluginData, 
+  updateAnnotItemsBadgeIndex,
+  generateAnnotItemTitleOptions
+} from '@/utils/figmaUtils'
 import { config } from '@/utils/utils'
 import contentBlockToNode from '@/utils/contentBlockToNode'
 import createAnnotDiff from '@/utils/createAnnotDiff'
 
 
 export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
-  const diff = createAnnotDiff(newAnnots, oldAnnots),
-        diffContent = diff._
+  const annotWrapperNode = getAnnotWrapperNode(),
+        diff = createAnnotDiff(newAnnots, oldAnnots),
+        annotArr = diff._
 
-  // console.clear()
+  console.clear()
 
-  // If there is more then 1 annotation items changed at a time, check if id's have changed,
-  // this would mean we have to re-initiate every item, since the order has changed.
+  // Handle annotation items reordering
   if (diff.changes > 1) {
-    const firstItem = diffContent[0]
-    if (firstItem.status === 'MODIFIED' && firstItem._.id.status === 'MODIFIED') {
-      console.log('Detected a change of the id. This means the order has changed and we now have to re-initiate every item.')
-      return
+    for (let i = 0; i < annotArr.length; i++) {
+      const annotDiffObj = annotArr[i]
+
+      // Get the existing node
+      const node = annotWrapperNode.findChild(node => node.name.includes(annotDiffObj._.id.current))  
+      annotWrapperNode.appendChild(node)
     }
+
+    // Update the badge's indexes
+    updateAnnotItemsBadgeIndex(annotWrapperNode)
+
+    return
   }
 
   // Loop through array of diff objects
-  for (let i = 0; i < diffContent.length; i++) {
-    const annotDiffObj = diffContent[i],
-          annotWrapperNode = getAnnotWrapperNode()
+  for (let i = 0; i < annotArr.length; i++) {
+    const annotDiffObj = annotArr[i]
     
     switch (annotDiffObj.status) {
       case 'ADDED': {
@@ -43,7 +55,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
           _deleteAnnotItem(item, annotWrapperNode)
         else {
           // Update annot item
-          const annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(item.id.current))
+          const annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(item.id.original))
 
           // Save the "real" modified annot item object (wihout diff-things)
           const modifiedItemWithoutDiff = newAnnots[i]
@@ -53,15 +65,21 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
 
           // Loop through item entries (id, title, content, ...)
           for (let entryName of Object.keys(item)) {
-            const { changes, current: newValue } = item[entryName]
+            const { changes, current: newValue, original: oldValue } = item[entryName]
             if (!changes)
               continue
 
             switch (entryName) {
+              // case 'id':
+              //   // id has changed. This is caused by the re-arrangement of the items order in the UI.
+              //   console.log('id of', annotNode.name, 'has changed. replace', oldValue, 'with', newValue)
+              //   annotNode.name = annotNode.name.replace(oldValue, newValue)
+
               case 'title':
-                const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Header/Text')
-                titleNode.characters = newValue.length === 0 ? 'Title' : newValue
-                titleNode.opacity = newValue.length === 0 ? .25 : 1
+                const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Header/Text'),
+                      titleOptions = generateAnnotItemTitleOptions(newValue)
+                titleNode.characters = titleOptions.characters
+                titleNode.opacity = titleOptions.opacity
                 break
             
               case 'content':
