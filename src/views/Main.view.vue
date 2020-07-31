@@ -1,7 +1,8 @@
 <template>
   <div class="grid">
     <main class="scrollContainer" ref="scrollContainer">
-      <div class="emptyState" v-if="!annotations || !annotations.length">
+      <!-- <div class="emptyState" v-if="!annotations || !annotations.length"> -->
+      <div class="emptyState" v-if="annotations !== null && annotations.length === 0">
         <div class="emptyState-inner">
           <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
           <AnnotationItem :showSkeleton="true" />
