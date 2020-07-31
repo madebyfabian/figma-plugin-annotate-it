@@ -113,15 +113,27 @@
   //   box-shadow: 0 0 0 2px #18a0fb!important;
   // }
 
+  .scrollContainer {
+    &::-webkit-scrollbar {
+      width: 14px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background: rgba(0, 0, 0, .15);
+      padding: 2px;
+      border: 4px solid white;
+      cursor: pointer;
+      transform: translateX(10px);
+      
+      &:hover {
+        border-width: 4px 3px;
+      }
+    }
+  }
 
-//   .slide-enter-active, .slide-leave-active {
-//     transition: opacity .5s
-// }
-// .slide-enter, .slide-leave-to /* .fade-leave-active in <2.1.8 */ {
-//     opacity: 0
-// }
 
-
+  // "slide" transition
   .slide-enter-active,
   .slide-leave-active {
     transition-duration: 300ms;
@@ -145,9 +157,7 @@
   }
 
 
-
-
-
+  // "slideDown" transition
   .slideDown-enter-active,
   .slideDown-leave-active {
     transition-duration: 150ms;

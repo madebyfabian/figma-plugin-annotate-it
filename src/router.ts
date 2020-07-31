@@ -7,9 +7,6 @@ import Home from './views/Main.view.vue'
 // @ts-ignore
 import About from './views/About.view.vue'
 
-// @ts-ignore
-// import Test from './views/Test.view.vue'
-
 Vue.use(VueRouter)
 
 const routes: Array<RouteConfig> = [
@@ -24,12 +21,6 @@ const routes: Array<RouteConfig> = [
     name: 'About',
     component: About
   },
-
-  // {
-  //   path: '/',
-  //   name: 'Test',
-  //   component: Test
-  // }
 ]
 
 const router = new VueRouter({

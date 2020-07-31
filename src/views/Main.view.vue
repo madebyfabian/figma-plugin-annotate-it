@@ -1,6 +1,6 @@
 <template>
   <div class="grid">
-    <main class="scrollContainer" ref="scrollContainer">
+    <main class="scrollContainer">
       <div class="emptyState" v-if="!annotations || !annotations.length">
         <div class="emptyState-inner">
           <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
@@ -186,23 +186,6 @@
       overflow-y: scroll;
       position: relative;
       z-index: 0;
-
-      &::-webkit-scrollbar {
-        width: 14px;
-      }
-      
-      &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background: rgba(0, 0, 0, .15);
-        padding: 2px;
-        border: 4px solid white;
-        cursor: pointer;
-        transform: translateX(10px);
-        
-        &:hover {
-          border-width: 4px 3px;
-        }
-      }
 
       .emptyState {
         padding: 16px;
