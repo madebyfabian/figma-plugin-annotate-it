@@ -85,10 +85,22 @@
     data: () => ({
       userHasNothingSelected: false,
       annotations: null,
-      enableWatcher: false
+      watchAnnotations: false
     }),
 
     methods: {
+      async disableWatcher() {
+        await this.$nextTick()
+        this.watchAnnotations = false
+        return Promise.resolve()
+      },
+
+      async enableWatcher() {
+        await this.$nextTick()
+        this.watchAnnotations = true
+        return Promise.resolve()
+      },
+
       async createAnnotationItem() {
         this.annotations.push( generateAnnotItemObject() )
 
@@ -105,14 +117,9 @@
         const itemArrIndex = this.annotations.findIndex(item => item.id === itemId)
         this.annotations[itemArrIndex].isDeleted = true
 
-        await this.$nextTick()
-        this.enableWatcher = false
-
-        await this.$nextTick()
+        await this.disableWatcher()
         this.annotations.splice(itemArrIndex, 1)
-
-        await this.$nextTick()
-        this.enableWatcher = true 
+        await this.enableWatcher()
       },
 
       onDrop( dropResult ) {
@@ -121,17 +128,16 @@
     },
 
     mounted() {
-      onmessage = event => {
+      onmessage = async event => {
         if (event.data.length === 0) return
         const msg = event.data.pluginMessage,
               msgValue = msg && msg.value
 
         switch (msg.type) {
-          case 'doInit': 
+          case 'doInit':
+            await this.disableWatcher()
             this.annotations = msgValue
-            this.$nextTick(function() {
-              this.enableWatcher = true
-            })
+            await this.enableWatcher()
 
             break
 
@@ -150,7 +156,7 @@
 
     watch: {
       annotations_str( newAnnots_str, oldAnnots_str ) {
-        if (!this.enableWatcher)
+        if (!this.watchAnnotations)
           return
 
         parent.postMessage({ pluginMessage: {

@@ -14,20 +14,6 @@ const pushSelectionChange = () => figma.ui.postMessage({
 	value: figma.currentPage.selection
 })
 
-// const pushSelectionChange = () => {
-// 	if (figma.currentPage.selection?.[0]) {
-// 		const sel = figma.currentPage.selection[0]
-// 		// console.clear()
-// 		const pluginData = getPluginData(sel, config.annotItemNodePluginDataKey)
-// 		console.log('the current selection:\n  - id:', sel.id, '\n  - data:', pluginData)
-// 	}
-
-// 	figma.ui.postMessage({
-// 		type: 'selectionUpdated',
-// 		value: figma.currentPage.selection
-// 	})	
-// }
-
 
 const doInit = async () => {
 	// Load fonts to use on canvas.
@@ -41,13 +27,10 @@ const doInit = async () => {
 	const annotData = [],
 				annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false })
 
-	if (annotWrapperNode) {
+	if (annotWrapperNode) 
 		for (const annotItemNode of annotWrapperNode.children) {
 			annotData.push(getPluginData(annotItemNode, config.annotItemNodePluginDataKey))
 		}
-	}
-
-	// console.log('annotData', annotData)
 
 	figma.ui.postMessage({
 		type: 'doInit',

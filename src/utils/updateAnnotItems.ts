@@ -15,7 +15,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
         diff = createAnnotDiff(newAnnots, oldAnnots),
         annotArr = diff._
 
-  console.clear()
+  // console.clear()
 
   // Handle annotation items reordering
   if (diff.changes > 1) {
@@ -87,7 +87,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
                 break
             }
 
-            console.log(`Detected a change in ${entryName}`)
+            // console.log(`Detected a change in ${entryName}`)
 
             doneChanges++
             if (doneChanges === annotDiffObj.changes)
