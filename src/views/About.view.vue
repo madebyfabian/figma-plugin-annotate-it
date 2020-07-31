@@ -1,6 +1,6 @@
 <template>
-  <div class="aboutUs scrollContainer">
-    <router-link to="/">&larr; Back</router-link>
+  <div class="aboutView scrollContainer">
+    <a @click="$emit('closeView')" href="#">&larr; Back</a>
 
     <SectionTitle>Help</SectionTitle>
     <ul>
@@ -60,7 +60,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .aboutUs {
+  .aboutView {
     padding: 16px;
     overflow-y: scroll;
     max-height: 100vh;

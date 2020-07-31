@@ -27,10 +27,6 @@
       </Container>
     </main>
 
-    <router-link to="/about">
-      <FloatingButton v-tooltip.top-left="`Help & Support`" />
-    </router-link>
-
     <footer>
       <Button 
         buttonType="primary" 
@@ -52,7 +48,6 @@
 </template>
 
 <script>
-  import FloatingButton from '@/components/ui/FloatingButton'
   import AnnotationItem from '@/components/AnnotationItem'
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
@@ -85,7 +80,7 @@
   
 
   export default {
-    components: { FloatingButton, Button, Icon, AnnotationItem, Container, Draggable },
+    components: { Button, Icon, AnnotationItem, Container, Draggable },
 
     data: () => ({
       userHasNothingSelected: false,
@@ -210,13 +205,6 @@
           }
         }
       }
-    }
-
-    .floatingButton {
-      position: absolute;
-      right: 16px;
-      bottom: 16px;
-      z-index: 2;
     }
 
     footer {
