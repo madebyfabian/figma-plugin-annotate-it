@@ -20,7 +20,7 @@
             <span>or <b><kbd>CMD</kbd> + <kbd>I</kbd></b></span>
           </li>
           <li>
-            <span>~</span><s>Strikethrough</s><span class="mark">~</span>
+            <span class="mark">~</span><s>Strikethrough</s><span class="mark">~</span>
             <span>or <b><kbd>CMD</kbd> + <kbd>D</kbd></b></span>
           </li>
           <li>
