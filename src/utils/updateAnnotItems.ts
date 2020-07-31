@@ -17,25 +17,24 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
 
   // console.clear()
 
-  // Handle annotation items reordering
-  if (diff.changes > 1) {
-    for (let i = 0; i < annotArr.length; i++) {
-      const annotDiffObj = annotArr[i]
-
-      // Get the existing node
-      const node = annotWrapperNode.findChild(node => node.name.includes(annotDiffObj._.id.current))  
-      annotWrapperNode.appendChild(node)
+  // Check if any id of any annotation has changed
+  let reorderingMode = false
+  for (const annotDiffObj of annotArr) {
+    if (annotDiffObj.status === 'MODIFIED' && annotDiffObj._.id.status === 'MODIFIED') {
+      reorderingMode = true; break
     }
-
-    // Update the badge's indexes
-    updateAnnotItemsBadgeIndex(annotWrapperNode)
-
-    return
   }
-
+  
   // Loop through array of diff objects
   for (let i = 0; i < annotArr.length; i++) {
     const annotDiffObj = annotArr[i]
+
+    // Handle annotation items reordering
+    if (reorderingMode) {
+      const annotNode = annotWrapperNode.findChild(node => node.name.includes(annotDiffObj._.id.current))  
+      annotWrapperNode.appendChild(annotNode)
+      continue
+    }    
     
     switch (annotDiffObj.status) {
       case 'ADDED': {
@@ -99,6 +98,10 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
       } // end case 'MODIFIED'
     } // end switch
   } // end for (... of ...)
+
+  if (reorderingMode)
+    // Update the badge's indexes
+    updateAnnotItemsBadgeIndex(annotWrapperNode)
 }
 
 
