@@ -6,7 +6,7 @@
       :class="{ floatingPanelIsOpened: floatingPanelIsOpened }">
 
       <div class="styleItem" v-tooltip.right="`Select a color for your annotation`" @click="floatingPanelIsOpened = !floatingPanelIsOpened">
-        <div class="styleItem-colorFill" :style="{ backgroundColor: '#' + currentColorTheme.color }" />
+        <div class="styleItem-colorFill" :style="{ backgroundColor: generateRGBCSSstring({ ...currentColorTheme.color }) }" />
         {{ currentColorTheme.name }}
       </div>
 
@@ -19,7 +19,7 @@
           v-for="(theme, i) in userColorThemes"
           :key="i">
 
-          <div class="styleItem-colorFill" :style="{ backgroundColor: '#' + theme.color }" />
+          <div class="styleItem-colorFill" :style="{ backgroundColor: generateRGBCSSstring({ ...theme.color }) }" />
           {{ theme.name }}
         </div>
       </FloatingPanel>
@@ -57,6 +57,10 @@
         // Emit a change if the current ID isn't the same as the selected one
         if (this.value !== themeId)
           this.$emit('input', themeId)
+      },
+
+      generateRGBCSSstring({ r, g, b }) {
+        return `rgb(${r}, ${g}, ${b})`
       }
     },
 

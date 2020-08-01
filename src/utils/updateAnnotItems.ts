@@ -12,8 +12,9 @@ import {
   setPluginData,
   generateAnnotItemTitleOptions,
   updateAnnotItemsBadgeIndex,
-  getAnnotMarkerBadgeNodeById,
-  checkIfNodeIsBadge
+  getAnnotMarkerBadgeNode,
+  checkIfNodeIsBadge,
+  updateAnnotItemBadgeColor
 } from '@/utils/utils'
 
 
@@ -83,7 +84,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
 
           // Loop through item entries (id, title, content, ...)
           for (let entryName of Object.keys(item)) {
-            const { changes, current: newValue, original: oldValue } = item[entryName]
+            const { changes, current: newValue } = item[entryName]
             if (!changes)
               continue
 
@@ -98,6 +99,9 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
               case 'content':
                 _handleModifiedItemContent(annotDiffObj, entryName, annotNode)
                 break
+
+              case 'colorThemeId':
+                updateAnnotItemBadgeColor(item.id.current, newValue)
             }
 
             // console.log(`Detected a change in ${entryName}`)
@@ -130,7 +134,7 @@ const _deleteAnnotItem = ( deletedItem: any, annotWrapperNode: FrameNode ) => {
     annotWrapperNode.remove()
 
   // Get the node for the badge marker item
-  const badgeMarkerNode = getAnnotMarkerBadgeNodeById(annotId)
+  const badgeMarkerNode = getAnnotMarkerBadgeNode(annotId)
   if (badgeMarkerNode)
     badgeMarkerNode.remove()
     
