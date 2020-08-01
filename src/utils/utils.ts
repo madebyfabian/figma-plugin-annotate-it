@@ -25,7 +25,13 @@ export const config = {
 // ---
 
 export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
-  return <SolidPaint>{ type: 'SOLID', color: <RGB>{ r: r / 255, g: g / 255, b: b / 255 } }
+  return <SolidPaint>{ type: 'SOLID', color: generateRGBA({ r, g, b }) }
+}
+
+
+export const generateRGBA = ({ r = 0, g = 0, b = 0, a = <number>null }) : RGB | RGBA => {
+  const color = { r: r / 255, g: g / 255, b: b / 255 }
+  return a ? <RGBA>{ ...color, a } : <RGB>color
 }
 
 

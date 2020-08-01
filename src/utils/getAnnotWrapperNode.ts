@@ -1,4 +1,8 @@
-import { config } from '@/utils/utils'
+import { 
+  config, 
+  generateSolidPaint,
+  generateRGBA
+} from '@/utils/utils'
 
 
 /**
@@ -22,10 +26,41 @@ export default ({ createOneIfItDoesNotExist = true } = {}) => {
     annotWrapperNode.x = x
     annotWrapperNode.y = y
     annotWrapperNode.name = config.annotWrapperNodeName
-    annotWrapperNode.fills = [{ type: 'SOLID', color: <RGB> { r: 1, g: 1, b: 1 }}]
-    annotWrapperNode.verticalPadding = 8
+    annotWrapperNode.fills = [ generateSolidPaint({ r: 255, g: 255, b: 255 }) ]
+    annotWrapperNode.verticalPadding = 16
     annotWrapperNode.itemSpacing = 16
     annotWrapperNode.layoutMode = 'VERTICAL'
+
+    annotWrapperNode.cornerRadius = 24
+    annotWrapperNode.cornerSmoothing = .6 // Like Apple
+    annotWrapperNode.effects = [
+      <ShadowEffect>{ 
+        type: 'DROP_SHADOW',
+        color: generateRGBA({ a: .03 }),
+        blendMode: 'NORMAL',
+        offset: <Vector>{ x: 0, y: -4 },
+        radius: 16,
+        visible: true
+      },
+
+      <ShadowEffect>{ 
+        type: 'DROP_SHADOW',
+        color: generateRGBA({ a: .07 }),
+        blendMode: 'NORMAL',
+        offset: <Vector>{ x: 0, y: 10 },
+        radius: 15,
+        visible: true
+      },
+
+      <ShadowEffect>{ 
+        type: 'DROP_SHADOW',
+        color: generateRGBA({ r: 50, g: 50, b: 93, a: .12 }),
+        blendMode: 'NORMAL',
+        offset: <Vector>{ x: 0, y: 32 },
+        radius: 72,
+        visible: true
+      }
+    ]
   }
 
   return annotWrapperNode
