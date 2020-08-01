@@ -1,5 +1,6 @@
 export const config = {
   annotWrapperNodeName: 'Annotate it! – Frame',
+  annotBadgeNodeName: 'Annotate it! – Badge',
   annotItemNodePluginDataKey: 'annotStore',
 
   /**

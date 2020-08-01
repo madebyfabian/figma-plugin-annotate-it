@@ -51,17 +51,6 @@ figma.ui.on('message', async msg => {
 	const { type: msgType, value: msgValue } = msg
 
 	switch (msgType) {
-		// case 'req__createAnnotationItem': {
-		// 	const currSel = figma.currentPage.selection?.[0]
-		// 	if (currSel) {
-		// 		const annotationPosX = currSel.absoluteTransform[0][2] - 32,
-		// 					annotationPosY = currSel.absoluteTransform[1][2] + ((currSel.height / 2 - (24 / 2)))
-
-		// 		const badge = await createAnnotationBadge(1, annotationPosX, annotationPosY)
-		// 		figma.currentPage.appendChild(badge)
-		// 	}
-		// }
-
 		case 'pushAnnotChanges': 
 			const { newAnnots, oldAnnots } = msgValue
 			updateAnnotItems(newAnnots, oldAnnots)

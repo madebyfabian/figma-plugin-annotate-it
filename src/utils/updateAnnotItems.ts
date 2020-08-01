@@ -3,7 +3,8 @@ import {
   getAnnotWrapperNode, 
   setPluginData, 
   updateAnnotItemsBadgeIndex,
-  generateAnnotItemTitleOptions
+  generateAnnotItemTitleOptions,
+  generateAnnotBadgeNode
 } from '@/utils/figmaUtils'
 import { config } from '@/utils/utils'
 import contentBlockToNode from '@/utils/contentBlockToNode'
@@ -38,11 +39,22 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
     
     switch (annotDiffObj.status) {
       case 'ADDED': {
-        const { current: newItem } = annotDiffObj
+        const { current: newItem } = annotDiffObj,
+              currSel = figma.currentPage.selection?.[0]
 
         // Get index for annotation badge
-        const annotationIndex = annotWrapperNode.children.length + 1
-        annotWrapperNode.appendChild(generateAnnotItemNode(newItem, annotationIndex))
+        const annotIndex = annotWrapperNode.children.length + 1
+        annotWrapperNode.appendChild(generateAnnotItemNode(newItem, annotIndex))
+
+        // Get the node for the badge marker item
+        const badgeMarkerNode = generateAnnotBadgeNode(annotIndex, newItem.id)
+        if (currSel) {
+          const spaceBetweenSelAndBadge = badgeMarkerNode.width - 8 // 8px overlap
+          badgeMarkerNode.x = currSel.absoluteTransform[0][2] - spaceBetweenSelAndBadge
+          badgeMarkerNode.y = currSel.absoluteTransform[1][2] + ((currSel.height / 2 - (badgeMarkerNode.width / 2)))
+        }
+
+        figma.currentPage.appendChild(badgeMarkerNode)
 
         break
       }

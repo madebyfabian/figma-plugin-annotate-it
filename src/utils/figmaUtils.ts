@@ -73,15 +73,41 @@ export const getAnnotWrapperNode = ({ createOneIfItDoesNotExist = true } = {}) =
 }
 
 
+const _checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
+  return node.type === 'INSTANCE' && node.name.includes(config.annotBadgeNodeName + (id ? ` ${id}` : ''))
+}
+
+
 /**
  * Loops through annot item nodes and updates the number inside the badge.
  */
 export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
   for (let i = 0; i < annotWrapperNode.children.length; i++) {
-    const annotItemNode = <FrameNode>annotWrapperNode.children[i]
+    const newChars = (i + 1).toString(),
+          annotItemNode = <FrameNode>annotWrapperNode.children[i],
+          id = annotItemNode.name.replace('Annotation ', '')
 
-    const annotItemBadgeNode = <TextNode>annotItemNode.findOne(node => node.type === 'TEXT' && node.name === 'Badge/Text')
-    annotItemBadgeNode.characters = (i + 1).toString()
+    // Get the Badge node inside the annotation item
+    const annotItemBadgeNode = <InstanceNode>annotItemNode.findOne(node => _checkIfNodeIsBadge(node, id)),
+          annotItemBadgeTextNode = <TextNode>annotItemBadgeNode.findChild(node => node.type === 'TEXT')
+    annotItemBadgeTextNode.characters = newChars
+
+    // Get the Marker Badge node on the page.
+    // First, try to get it directly as a page child.
+    let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => _checkIfNodeIsBadge(node, id))
+
+    // If it failed getting the annotMarker node. So try to find it on the whole page (meh... :/)
+    if (!annotMarkerBadgeNode)
+      annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findOne(node => {
+        return !node.parent.parent.name.includes(id) && _checkIfNodeIsBadge(node, id)
+      })
+
+    if (!annotMarkerBadgeNode)
+      console.log('Failed to find the annot marker for annot ${id} on the page. Create this badge.')
+    else {
+      const annotMarkerBadgeTextNode = <TextNode>annotMarkerBadgeNode.findChild(node => node.type === 'TEXT')
+      annotMarkerBadgeTextNode.characters = newChars
+    }
   }
 }
 
@@ -110,7 +136,7 @@ export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) =
   headerNode.layoutMode = 'HORIZONTAL'
   headerNode.counterAxisSizingMode = 'AUTO'
 
-  const headerAnnotBadgeNode = generateAnnotBadgeNode(badgeNumber)
+  const headerAnnotBadgeNode = generateAnnotBadgeNode(badgeNumber, data.id)
 
   const titleOptions = generateAnnotItemTitleOptions(data.title)
   const headerTextNode = figma.createText()
@@ -155,18 +181,17 @@ export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) =
 }
 
 
-export const generateAnnotBadgeNode = ( number: number ) => {
+export const generateAnnotBadgeNode = ( number = 0, annotId = <string>null) => {
   // Main Frame Node
-  const node = figma.createFrame()
-  node.name = 'Badge'
-	node.resize(24, 24)
-	node.cornerRadius = 24
-	node.layoutMode = 'HORIZONTAL'
-	node.fills = [ generateSolidPaint({ r: 24, g: 160, b: 251 }) ]
+  const componentNode = figma.createComponent()
+  componentNode.name = `${config.annotBadgeNodeName} ${annotId}`
+	componentNode.resize(24, 24)
+	componentNode.cornerRadius = 24
+	componentNode.layoutMode = 'HORIZONTAL'
+	componentNode.fills = [ generateSolidPaint({ r: 24, g: 160, b: 251 }) ]
 
 	// Text Frame inside Main Frame
   const textNode = figma.createText()
-  textNode.name = 'Badge/Text'
 	textNode.fontSize = 12
 	textNode.characters = number.toString()
 	textNode.fills = [ generateSolidPaint({ r: 255, g: 255, b: 255 }) ]
@@ -176,13 +201,11 @@ export const generateAnnotBadgeNode = ( number: number ) => {
 	textNode.lineHeight = { value: 24, unit: 'PIXELS' }
 	textNode.locked = true
 
-  node.appendChild(textNode)
-  return node
+  componentNode.appendChild(textNode)
 
-	// const instanceNode = node.createInstance()
-  // node.remove()
-  
-  // return instanceNode
+  const instanceNode = componentNode.createInstance()
+  componentNode.remove()
+  return instanceNode
 }
 
 
