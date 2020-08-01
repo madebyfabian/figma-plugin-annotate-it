@@ -1,6 +1,6 @@
 {
   "name": "figma-plugin-annotate-it",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "The code for the upcoming plugin 'Annotate it!'",
   "scripts": {
     "start": "webpack-cli --mode=development --watch",
