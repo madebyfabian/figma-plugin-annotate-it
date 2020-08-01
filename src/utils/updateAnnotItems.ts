@@ -4,6 +4,7 @@ import {
 } from '@/utils/nodeGenerators'
 import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
 import contentBlockToNode from '@/utils/contentBlockToNode'
+import detectNodeCollisions from '@/utils/detectNodeCollisions'
 import Differy from '@netilon/differify'
 const differy = new Differy()
 import { 
@@ -11,7 +12,8 @@ import {
   setPluginData,
   generateAnnotItemTitleOptions,
   updateAnnotItemsBadgeIndex,
-  getAnnotMarkerBadgeNodeById
+  getAnnotMarkerBadgeNodeById,
+  checkIfNodeIsBadge
 } from '@/utils/utils'
 
 
@@ -49,13 +51,14 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
         // Get index for annotation badge
         const annotIndex = annotWrapperNode.children.length + 1
         annotWrapperNode.appendChild(generateAnnotItemNode(newItem, annotIndex))
+        figma.notify('🎉 You successfully created your first annotation!')
 
         // Get the node for the badge marker item
         const badgeMarkerNode = generateAnnotBadgeNode(annotIndex, newItem.id)
         if (currSel) {
-          const spaceBetweenSelAndBadge = badgeMarkerNode.width - 8 // 8px overlap
-          badgeMarkerNode.x = currSel.absoluteTransform[0][2] - spaceBetweenSelAndBadge
-          badgeMarkerNode.y = currSel.absoluteTransform[1][2] + ((currSel.height / 2 - (badgeMarkerNode.width / 2)))
+          const { x, y } = _calculateAnnotMarkerBadgePosition(currSel, badgeMarkerNode)
+          badgeMarkerNode.x = x
+          badgeMarkerNode.y = y
         }
 
         figma.currentPage.appendChild(badgeMarkerNode)
@@ -85,11 +88,6 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
               continue
 
             switch (entryName) {
-              // case 'id':
-              //   // id has changed. This is caused by the re-arrangement of the items order in the UI.
-              //   console.log('id of', annotNode.name, 'has changed. replace', oldValue, 'with', newValue)
-              //   annotNode.name = annotNode.name.replace(oldValue, newValue)
-
               case 'title':
                 const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Header/Text'),
                       titleOptions = generateAnnotItemTitleOptions(newValue)
@@ -241,4 +239,28 @@ const _createAnnotDiff_blockContentSectionToString = ( annotArr ) => {
       })
     }
   })
+}
+
+
+const _calculateAnnotMarkerBadgePosition = ( currSel: SceneNode, badgeMarkerNode: SceneNode, startAtY?: number ) => {
+  const spaceBetweenSelAndBadge = badgeMarkerNode.width - 8 // 8px overlap
+
+  if (!startAtY)
+    startAtY = currSel.absoluteTransform[1][2] + ((currSel.height / 2 - (badgeMarkerNode.width / 2)))
+
+  let wantedPos = {
+    x: currSel.absoluteTransform[0][2] - spaceBetweenSelAndBadge,
+    y: startAtY,
+    width: badgeMarkerNode.width,
+    height: badgeMarkerNode.height
+  }
+
+  const collidableNodes = figma.currentPage.findChildren(node => checkIfNodeIsBadge(node)),
+        detectedCollision = detectNodeCollisions(collidableNodes, wantedPos).find(nodeObj => {
+          return nodeObj.id !== badgeMarkerNode.id
+        })
+
+  return detectedCollision
+    ? _calculateAnnotMarkerBadgePosition(currSel, badgeMarkerNode, startAtY + badgeMarkerNode.height + 8)
+    : { x: wantedPos.x, y: wantedPos.y }
 }

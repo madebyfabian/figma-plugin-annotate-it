@@ -100,17 +100,22 @@ export const getUserColorThemes = () => ([
 ])
 
 
+export const checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
+  return node.type === 'INSTANCE' && node.name.includes(config.annotBadgeNodeName + (id ? ` ${id}` : ''))
+}
+
+
 /**
  * Returns a Node of a MarkerBadge on the current page.
  */
 export const getAnnotMarkerBadgeNodeById = ( id: string ) => {
   // First, try to get it directly as a page child.
-  let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => _checkIfNodeIsBadge(node, id))
+  let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => checkIfNodeIsBadge(node, id))
 
   // If failed, try to find it on the whole page (meh, performance... :/)
   if (!annotMarkerBadgeNode)
     annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findOne(node => {
-      return !node.parent.parent.name.includes(id) && _checkIfNodeIsBadge(node, id)
+      return !node.parent.parent.name.includes(id) && checkIfNodeIsBadge(node, id)
     })
 
   return annotMarkerBadgeNode
@@ -127,7 +132,7 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
           id = annotItemNode.name.replace('Annotation ', '')
 
     // Get the Badge node inside the annotation item
-    const annotItemBadgeNode = <InstanceNode>annotItemNode.findOne(node => _checkIfNodeIsBadge(node, id)),
+    const annotItemBadgeNode = <InstanceNode>annotItemNode.findOne(node => checkIfNodeIsBadge(node, id)),
           annotItemBadgeTextNode = <TextNode>annotItemBadgeNode.findChild(node => node.type === 'TEXT')
     annotItemBadgeTextNode.characters = newChars
 
@@ -141,14 +146,4 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
       annotMarkerBadgeTextNode.characters = newChars
     }
   }
-}
-
-
-
-// ---
-// Helpers needed inside this file.
-// ---
-
-const _checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
-  return node.type === 'INSTANCE' && node.name.includes(config.annotBadgeNodeName + (id ? ` ${id}` : ''))
 }
