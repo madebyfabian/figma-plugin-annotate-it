@@ -1,10 +1,9 @@
-import { 
-  generateFontNameConfig, 
-  generateAnnotItemBodyTextNode, 
-  generateSolidPaint
-} from '@/utils/figmaUtils'
-
-import { config } from '@/utils/utils'
+import { generateAnnotItemBodyTextNode } from '@/utils/nodeGenerators'
+import {
+  config, 
+  generateSolidPaint,
+  generateFontNameConfig
+} from '@/utils/utils'
 
 
 /**

@@ -1,5 +1,9 @@
-import { config } from '@/utils/utils'
-import { getPluginData, generateFontNameConfig, getAnnotWrapperNode } from '@/utils/figmaUtils'
+import { 
+	config, 
+	getPluginData, 
+	generateFontNameConfig
+} from '@/utils/utils'
+import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
 import updateAnnotItems from '@/utils/updateAnnotItems'
 
 

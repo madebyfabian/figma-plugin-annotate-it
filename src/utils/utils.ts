@@ -19,6 +19,56 @@ export const config = {
 }
 
 
+
+// ---
+// Figma API Extensions
+// ---
+
+export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
+  return <SolidPaint>{ type: 'SOLID', color: <RGB>{ r: r / 255, g: g / 255, b: b / 255 } }
+}
+
+
+export const getPluginData = ( node: SceneNode, key: string, isJSON = true ) => {
+  const data = node.getPluginData(key)
+  if (!data) return null
+  if (isJSON) return JSON.parse(data) || null
+}
+
+
+export const setPluginData = ( node: SceneNode, key: string, value: any ) => {
+  node.setPluginData(key, (typeof value === 'string') ? value : JSON.stringify(value))
+}
+
+
+export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}) => {
+  let style: string
+
+  if (isItalic && !isBold)
+    style = 'Italic'
+  else {
+    style = isBold ? 'Bold' : 'Regular'
+    if (isItalic)
+      style += ' Italic'
+  }
+
+  return <FontName>{ family: 'Roboto', style }
+}
+
+
+export const generateAnnotItemTitleOptions = ( title?: string ) => {
+  return {
+    opacity: title.length ? 1 : .25,
+    characters: title.length ? title : 'Title'
+  }
+}
+
+
+
+// ---
+// General Utils
+// ---
+
 /**
  * Generates a random string and returns it.
  * @param idLength The length of the id. Defaults to 16.
@@ -28,9 +78,6 @@ export const randomId = ( idLength: number = 16 ) => {
 }
 
 
-/**
- * Returns a new, empty annotation item object.
- */
 export const generateAnnotItemObject = ( title = '', content = null ) : Annotation => ({
   id: randomId(),
   title,
@@ -40,11 +87,49 @@ export const generateAnnotItemObject = ( title = '', content = null ) : Annotati
 })
 
 
-/**
- * Returns an array of color themes for the current user.
- */
 export const getUserColorThemes = () => ([
   { name: 'Blue', color: '18A0FB', id: 'blvbk3k2fj551h0p' },
   { name: 'Red', color: 'F24822', id: '25s8afhofkgi7185' },
   { name: 'Green', color: '1BC47D', id: 'dd70jmjl2dp78sii' }
 ])
+
+
+/**
+ * Loops through annot item nodes and updates the number inside the badge.
+ */
+export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
+  const _checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
+    return node.type === 'INSTANCE' && node.name.includes(config.annotBadgeNodeName + (id ? ` ${id}` : ''))
+  }
+
+  for (let i = 0; i < annotWrapperNode.children.length; i++) {
+    const newChars = (i + 1).toString(),
+          annotItemNode = <FrameNode>annotWrapperNode.children[i],
+          id = annotItemNode.name.replace('Annotation ', '')
+
+    // Get the Badge node inside the annotation item
+    const annotItemBadgeNode = <InstanceNode>annotItemNode.findOne(node => _checkIfNodeIsBadge(node, id)),
+          annotItemBadgeTextNode = <TextNode>annotItemBadgeNode.findChild(node => node.type === 'TEXT')
+    annotItemBadgeTextNode.characters = newChars
+
+    // Get the Marker Badge node on the page.
+    // First, try to get it directly as a page child.
+    let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => _checkIfNodeIsBadge(node, id))
+
+    // If it failed getting the annotMarker node. So try to find it on the whole page (meh... :/)
+    if (!annotMarkerBadgeNode)
+      annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findOne(node => {
+        return !node.parent.parent.name.includes(id) && _checkIfNodeIsBadge(node, id)
+      })
+
+    if (!annotMarkerBadgeNode)
+      console.log('Failed to find the annot marker for annot ${id} on the page. Create this badge.')
+    else {
+      const annotMarkerBadgeTextNode = <TextNode>annotMarkerBadgeNode.findChild(node => node.type === 'TEXT')
+      annotMarkerBadgeTextNode.characters = newChars
+    }
+  }
+}
+
+
+

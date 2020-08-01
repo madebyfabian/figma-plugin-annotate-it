@@ -1,19 +1,22 @@
 import { 
-  generateAnnotItemNode, 
-  getAnnotWrapperNode, 
-  setPluginData, 
-  updateAnnotItemsBadgeIndex,
-  generateAnnotItemTitleOptions,
+  generateAnnotItemNode,
   generateAnnotBadgeNode
-} from '@/utils/figmaUtils'
-import { config } from '@/utils/utils'
+} from '@/utils/nodeGenerators'
+import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
 import contentBlockToNode from '@/utils/contentBlockToNode'
-import createAnnotDiff from '@/utils/createAnnotDiff'
+import Differy from '@netilon/differify'
+const differy = new Differy()
+import { 
+  config,
+  setPluginData,
+  generateAnnotItemTitleOptions,
+  updateAnnotItemsBadgeIndex
+} from '@/utils/utils'
 
 
 export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
   const annotWrapperNode = getAnnotWrapperNode(),
-        diff = createAnnotDiff(newAnnots, oldAnnots),
+        diff = _createAnnotDiff(newAnnots, oldAnnots),
         annotArr = diff._
 
   // console.clear()
@@ -198,4 +201,37 @@ const _generateSafeModifiedContentBlock = ( contentBlock: any ) => {
       ? JSON.parse(contentBlock._.content.current) // when content is already something
       : config.defaultParagraphBlockContent // when content is undefined
   }
+}
+
+
+/**
+ * Takes two arrays of annotations and 
+ * @returns a diff of those two.
+ */
+const _createAnnotDiff = ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
+  newAnnots = _createAnnotDiff_blockContentSectionToString(newAnnots)
+  oldAnnots = _createAnnotDiff_blockContentSectionToString(oldAnnots)
+
+  return differy.compare(oldAnnots, newAnnots)
+}
+
+
+/**
+ * Takes an array of annotations
+ * e.g. { title: string, content: [{ type: 'paragraph', content: object[] }, ...] }
+ * and returns the same array, but all nested contents are stringified, 
+ * e.g. { title: string, content: [{ type: 'paragraph', content: string }, ...] }
+ */
+const _createAnnotDiff_blockContentSectionToString = ( annotArr ) => {
+  return annotArr.map(annot => { // Loop through every annotation in the array.
+    return { 
+      ...annot,
+      content: annot.content.map(annotContentBlock => { // Loop through every content block
+        return {
+          ...annotContentBlock, 
+          content: JSON.stringify(annotContentBlock.content)
+        }
+      })
+    }
+  })
 }
