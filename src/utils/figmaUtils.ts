@@ -108,6 +108,7 @@ export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) =
   headerNode.resize(328, 24)
   headerNode.itemSpacing = 8
   headerNode.layoutMode = 'HORIZONTAL'
+  headerNode.counterAxisSizingMode = 'AUTO'
 
   const headerAnnotBadgeNode = generateAnnotBadgeNode(badgeNumber)
 
