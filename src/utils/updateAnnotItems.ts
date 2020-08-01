@@ -10,7 +10,8 @@ import {
   config,
   setPluginData,
   generateAnnotItemTitleOptions,
-  updateAnnotItemsBadgeIndex
+  updateAnnotItemsBadgeIndex,
+  getAnnotMarkerBadgeNodeById
 } from '@/utils/utils'
 
 
@@ -121,7 +122,8 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
 
 
 const _deleteAnnotItem = ( deletedItem: any, annotWrapperNode: FrameNode ) => {
-  const annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(deletedItem.id.current))
+  const annotId = deletedItem.id.current,
+        annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(annotId))
 
   annotNode.remove()
 
@@ -129,6 +131,11 @@ const _deleteAnnotItem = ( deletedItem: any, annotWrapperNode: FrameNode ) => {
   if (annotWrapperNode.children.length === 0)
     annotWrapperNode.remove()
 
+  // Get the node for the badge marker item
+  const badgeMarkerNode = getAnnotMarkerBadgeNodeById(annotId)
+  if (badgeMarkerNode)
+    badgeMarkerNode.remove()
+    
   // Update the badge's indexes
   updateAnnotItemsBadgeIndex(annotWrapperNode)
 }

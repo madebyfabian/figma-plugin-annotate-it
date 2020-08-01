@@ -95,13 +95,26 @@ export const getUserColorThemes = () => ([
 
 
 /**
+ * Returns a Node of a MarkerBadge on the current page.
+ */
+export const getAnnotMarkerBadgeNodeById = ( id: string ) => {
+  // First, try to get it directly as a page child.
+  let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => _checkIfNodeIsBadge(node, id))
+
+  // If failed, try to find it on the whole page (meh, performance... :/)
+  if (!annotMarkerBadgeNode)
+    annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findOne(node => {
+      return !node.parent.parent.name.includes(id) && _checkIfNodeIsBadge(node, id)
+    })
+
+  return annotMarkerBadgeNode
+}
+
+
+/**
  * Loops through annot item nodes and updates the number inside the badge.
  */
 export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
-  const _checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
-    return node.type === 'INSTANCE' && node.name.includes(config.annotBadgeNodeName + (id ? ` ${id}` : ''))
-  }
-
   for (let i = 0; i < annotWrapperNode.children.length; i++) {
     const newChars = (i + 1).toString(),
           annotItemNode = <FrameNode>annotWrapperNode.children[i],
@@ -113,14 +126,7 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
     annotItemBadgeTextNode.characters = newChars
 
     // Get the Marker Badge node on the page.
-    // First, try to get it directly as a page child.
-    let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => _checkIfNodeIsBadge(node, id))
-
-    // If it failed getting the annotMarker node. So try to find it on the whole page (meh... :/)
-    if (!annotMarkerBadgeNode)
-      annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findOne(node => {
-        return !node.parent.parent.name.includes(id) && _checkIfNodeIsBadge(node, id)
-      })
+    const annotMarkerBadgeNode = getAnnotMarkerBadgeNodeById(id)
 
     if (!annotMarkerBadgeNode)
       console.log('Failed to find the annot marker for annot ${id} on the page. Create this badge.')
@@ -133,3 +139,10 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
 
 
 
+// ---
+// Helpers needed inside this file.
+// ---
+
+const _checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
+  return node.type === 'INSTANCE' && node.name.includes(config.annotBadgeNodeName + (id ? ` ${id}` : ''))
+}
