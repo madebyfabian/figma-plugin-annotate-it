@@ -41,7 +41,7 @@
     </p>
     <p style="opacity: .75; text-align: right;">
       <br><br>
-      <i>Annotate it! vx.x.x</i>
+      <i>Annotate it! v{{version}}</i>
     </p>
   </div>
 </template>
@@ -50,8 +50,15 @@
   import SectionTitle from '@/components/ui/SectionTitle'
   import Icon from '@/components/ui/Icon'
 
+  import { version } from '../../package.json';
+
+
   export default {
-    components: { SectionTitle, Icon }
+    components: { SectionTitle, Icon },
+
+    data: () => ({
+      version: version
+    })
   }
 </script>
 
