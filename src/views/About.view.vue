@@ -39,10 +39,10 @@
       <b>Developed by:</b> Fabian – <a href="https://twitter.com/madebyfabian" target="_blank">@madebyfabian on Twitter</a><br>
       <b>Designed by:</b> Sonali – <a href="https://twitter.com/sonaliagrawal" target="_blank">@sonaliagrawal on Twitter</a>
     </p>
-    <p style="opacity: .75; text-align: right;">
+    <!-- <p style="opacity: .75; text-align: right;">
       <br><br>
       <i>Annotate it! v{{version}}</i>
-    </p>
+    </p> -->
   </div>
 </template>
 
@@ -50,15 +50,15 @@
   import SectionTitle from '@/components/ui/SectionTitle'
   import Icon from '@/components/ui/Icon'
 
-  import { version } from '../../package.json';
+  // import { version } from '../../package.json';
 
 
   export default {
     components: { SectionTitle, Icon },
 
-    data: () => ({
-      version: version
-    })
+    // data: () => ({
+    //   version: version
+    // })
   }
 </script>
 

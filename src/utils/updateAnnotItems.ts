@@ -52,7 +52,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
         // Get index for annotation badge
         const annotIndex = annotWrapperNode.children.length + 1
         annotWrapperNode.appendChild(generateAnnotItemNode(newItem, annotIndex))
-        figma.notify('🎉 You successfully created your first annotation!')
+        // figma.notify('🎉 You successfully created your first annotation!')
 
         // Get the node for the badge marker item
         const badgeMarkerNode = generateAnnotBadgeNode(annotIndex, newItem.id)
