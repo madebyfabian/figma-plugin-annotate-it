@@ -1,6 +1,6 @@
 <template>
   <div class="aboutView scrollContainer">
-    <a @click="$emit('closeView')" href="#">&larr; Back</a>
+    <a @click="$emit('close-view')" href="#">&larr; Back</a>
 
     <SectionTitle>Help</SectionTitle>
     <ul>
@@ -34,18 +34,14 @@
       </li>
     </ul>
 
-    <SectionTitle>Support</SectionTitle>
+    <SectionTitle>Credits</SectionTitle>
     <p>
-      If you have any ideas for features, issues or perhaps ways to improve the plugin, we would love to hear from you.
-    </p>
-    <br>
-    <p>
-      Feel free to shoot us an email at <a href="mailto:annotate-it@sonaliagrawal.com" target="_blank">annotate-it@sonaliagrawal.com</a>
-    </p>
-    <p>
-      <br>
       <b>Developed by:</b> Fabian – <a href="https://twitter.com/madebyfabian" target="_blank">@madebyfabian on Twitter</a><br>
       <b>Designed by:</b> Sonali – <a href="https://twitter.com/sonaliagrawal" target="_blank">@sonaliagrawal on Twitter</a>
+    </p>
+    <p style="opacity: .75; text-align: right;">
+      <br><br>
+      <i>Annotate it! vx.x.x</i>
     </p>
   </div>
 </template>
@@ -61,13 +57,7 @@
 
 <style lang="scss" scoped>
   .aboutView {
-    padding: 16px;
     overflow-y: scroll;
-    max-height: 100vh;
-   
-    * {
-      user-select: text!important;
-    }
 
     .inlineIconWrap {
       height: 16px; //same as line-height;

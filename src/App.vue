@@ -4,13 +4,27 @@
 
     <transition name="slide" mode="out-in">
       <AboutView 
+        class="view"
         v-if="isAboutViewOpened"
-        @closeView="isAboutViewOpened = false" />
+        @close-view="isAboutViewOpened = false" />
+
+      <FeedbackView 
+        class="view"
+        v-if="isFeedbackViewOpened"
+        @close-view="isFeedbackViewOpened = false" />
     </transition>
 
     <FloatingButton 
+      buttonType="secondary"
+      class="floatingButton-feedback"
+      @click.native="isFeedbackViewOpened = true"
+      v-tooltip.top-left="`Send Feedback & Get Support`"
+    />
+
+    <FloatingButton 
+      class="floatingButton-about"
       @click.native="isAboutViewOpened = true"
-      v-tooltip.top-left="`Help & Support`"
+      v-tooltip.top-left="`Help & Credits`"
     />
   </div>
 </template>
@@ -25,17 +39,21 @@
   // @ts-ignore
   import AboutView from '@/views/About.view.vue'
 
+  // @ts-ignore
+  import FeedbackView from '@/views/Feedback.view.vue'
+
   import FloatingButton from '@/components/ui/FloatingButton'
 
 
   export default {
     name: "App",
 
-    components: { MainView, AboutView, FloatingButton },
+    components: { MainView, AboutView, FeedbackView, FloatingButton },
 
     data: () => ({
       a11yClass: 'using-keyboard',
-      isAboutViewOpened: false
+      isAboutViewOpened: false,
+      isFeedbackViewOpened: false
     }),
 
     methods: {
@@ -55,12 +73,22 @@
 <style lang="scss">
   .floatingButton {
     position: absolute;
-    right: 16px;
     bottom: 16px;
     z-index: 2;
+
+    &-about {
+      right: 16px;
+    }
+
+    &-feedback {
+      right: 60px;
+    }
   }
 
-  .aboutView {
+  .view {
+    height: 100vh;
+    padding: 16px;
+    max-height: 100vh;
     background: #fff;
     position: absolute;
     top: 0;
@@ -68,5 +96,10 @@
     width: 100%;
     height: 100vh;
     z-index: 9999;
+
+    user-select: text!important;
+    /deep/ * {
+      user-select: text!important;
+    }
   }
 </style>
