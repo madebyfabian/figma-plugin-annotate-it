@@ -1,6 +1,7 @@
 const path = require('path'),
       manifest = require('./src/manifest.json'),
-      fs = require('fs')
+      fs = require('fs'),
+      webpack = require('webpack')
 
 const HtmlWebpackPlugin = require('html-webpack-plugin'),
       HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin'),
@@ -100,6 +101,10 @@ module.exports = ( env, argv ) => {
           })
         }
       },
+
+      new webpack.DefinePlugin({
+        VERSION: JSON.stringify(require('./package.json').version)
+      })
     ]
   }
 }

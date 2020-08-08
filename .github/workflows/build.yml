@@ -16,11 +16,6 @@ jobs:
       with:
         node-version: 12
 
-    - name: Install dependencies and run webpack
-      run: |
-        npm install --silent
-        npm run build
-
     - name: Automated Version Bump
       uses: phips28/gh-action-bump-version@master
       with:
@@ -28,9 +23,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Now get the new version in package.json
-    #   id: package-version
-    #   uses: martinbeentjes/npm-get-version-action@master
+    - name: Install dependencies and run webpack
+      run: |
+        npm install --silent
+        npm run build
 
     - name: Now get the new version in package.json
       id: package-version

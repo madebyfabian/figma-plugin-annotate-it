@@ -1,25 +1,22 @@
 <template>
-  <p class="pluginReleaseVersion" v-if="pluginGithubData.version">
+  <p class="pluginReleaseVersion" v-if="version && date">
     <br><br>
-    <i>Annotate it! {{ pluginGithubData.version }}@{{ pluginGithubData.date }}</i>
+    <i>Annotate it! {{ version }}@{{ date }}</i>
   </p>
 </template>
 
 <script>
   export default {
     data: () => ({
-      pluginGithubData: {
-        version: null,
-        date: null
-      }
+      version: `v${VERSION}`, // VERSION is defined in webpack
+      date: null
     }),
 
     async created() {
-      const apiRes = await fetch('https://api.github.com/repos/madebyfabian/figma-plugin-annotate-it/releases/latest')
+      const apiRes = await fetch(`https://api.github.com/repos/madebyfabian/figma-plugin-annotate-it/releases/tags/${this.version}`)
       const apiData = await apiRes.json()
       
-      this.pluginGithubData.version = apiData.name
-      this.pluginGithubData.date = apiData.published_at
+      this.date = apiData.published_at
     }
   }
 </script>

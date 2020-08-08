@@ -22,7 +22,7 @@
     "vue": "^2.6.11",
     "vue-loader": "^15.9.0",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^4.42.0",
+    "webpack": "^4.44.1",
     "webpack-cli": "^3.3.11",
     "webpack-messages": "^2.0.4"
   },
