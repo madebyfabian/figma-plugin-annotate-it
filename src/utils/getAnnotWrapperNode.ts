@@ -63,6 +63,13 @@ export default ({ createOneIfItDoesNotExist = true } = {}) => {
         visible: true
       }
     ]
+
+    figma.viewport.scrollAndZoomIntoView([
+      ...figma.currentPage.selection,
+      annotWrapperNode
+    ])
+
+    figma.notify('🎉 You successfully created your first annotation!')
   }
 
   return annotWrapperNode
