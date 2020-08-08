@@ -1,7 +1,8 @@
 import { 
   config, 
   generateSolidPaint,
-  generateRGBA
+  generateRGBA,
+  generateDefaultRelaunchDataOptions
 } from '@/utils/utils'
 import detectNodeCollisions from '@/utils/detectNodeCollisions'
 
@@ -23,6 +24,7 @@ export default ({ createOneIfItDoesNotExist = true } = {}) => {
           { x, y } = _calculateAnnotWrapperNodePos({ width, height })
 
     annotWrapperNode = figma.createFrame()
+    annotWrapperNode.setRelaunchData(generateDefaultRelaunchDataOptions())
     annotWrapperNode.resize(width, height)
     annotWrapperNode.x = x
     annotWrapperNode.y = y

@@ -3,7 +3,8 @@ import {
   generateSolidPaint, 
   setPluginData,
   generateFontNameConfig,
-  generateAnnotItemTitleOptions
+  generateAnnotItemTitleOptions,
+  generateDefaultRelaunchDataOptions
 } from '@/utils/utils'
 
 
@@ -77,9 +78,10 @@ export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) =
 }
 
 
-export const generateAnnotBadgeNode = ( number = 0, annotId = <string>null) => {
+export const generateAnnotBadgeNode = ( number = 0, annotId = <string>null ) => {
   // Main Frame Node
   const componentNode = figma.createComponent()
+  componentNode.setRelaunchData(generateDefaultRelaunchDataOptions({ singleItem: true }))
   componentNode.name = `${config.annotBadgeNodeName} ${annotId}`
 	componentNode.resize(24, 24)
 	componentNode.cornerRadius = 24

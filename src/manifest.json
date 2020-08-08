@@ -1,5 +1,9 @@
 {
   "name": "Annotate it!",
   "id": "859894273811051899",
-  "api": "1.0.0"
+  "api": "1.0.0",
+  "relaunchButtons": [
+    { "command": "editAnnotations", "name": "Edit Annotations" },
+    { "command": "editAnnotation", "name": "Edit this Annotation" }
+  ]
 }

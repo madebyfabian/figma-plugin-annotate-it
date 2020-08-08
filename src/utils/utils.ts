@@ -81,6 +81,14 @@ export const generateAnnotItemTitleOptions = ( title?: string ) => {
 }
 
 
+export const generateDefaultRelaunchDataOptions = ({ singleItem = false } = {}) => {
+  const str = `${singleItem ? 'Edit this Annotation' : 'Edit the Annotation items inside'} with "Annotate it!"`
+  return singleItem
+    ? { editAnnotation: str }
+    : { editAnnotations: str }
+}
+
+
 
 // ---
 // General Utils
