@@ -119,19 +119,12 @@ export const checkIfNodeIsBadge = ( node: SceneNode, id?: string ) => {
 
 
 /**
- * Returns a Node of a MarkerBadge on the current page.
+ * @returns a list of Marker Badge Nodes for a specific id on the current page.
  */
-export const getAnnotMarkerBadgeNode = ( id: string ) => {
-  // First, try to get it directly as a page child.
-  let annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findChild(node => checkIfNodeIsBadge(node, id))
-
-  // If failed, try to find it on the whole page (meh, performance... :/)
-  if (!annotMarkerBadgeNode)
-    annotMarkerBadgeNode = <InstanceNode>figma.currentPage.findOne(node => {
-      return !node.parent.parent.name.includes(id) && checkIfNodeIsBadge(node, id)
-    })
-
-  return annotMarkerBadgeNode
+export const getAnnotMarkerBadgeNodes = ( id: string ) => {
+  return <InstanceNode[]>figma.currentPage.findAll(node => {
+    return !node.parent.parent.name.includes(id) && checkIfNodeIsBadge(node, id)
+  })
 }
 
 
@@ -150,19 +143,28 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
     annotItemBadgeTextNode.characters = newChars
 
     // Get the Marker Badge node on the page.
-    const annotMarkerBadgeNode = getAnnotMarkerBadgeNode(id)
+    const annotMarkerBadgeNodes = getAnnotMarkerBadgeNodes(id)
 
-    if (!annotMarkerBadgeNode)
+    if (!annotMarkerBadgeNodes.length)
       console.log('Failed to find the annot marker for annot ${id} on the page.')
     else {
-      const annotMarkerBadgeTextNode = <TextNode>annotMarkerBadgeNode.findChild(node => node.type === 'TEXT')
-      annotMarkerBadgeTextNode.characters = newChars
+      for (const badgeNode of annotMarkerBadgeNodes) {
+        const annotMarkerBadgeTextNode = <TextNode>badgeNode.findChild(node => node.type === 'TEXT')
+        annotMarkerBadgeTextNode.characters = newChars
+      }
     }
   }
 }
 
 
 export const updateAnnotItemBadgeColor = ( annotId: string, newColorId: string ) => {
+  const colorThemeData = getUserColorThemes().find(theme => theme.id === newColorId),
+        newFills = [ generateSolidPaint({ 
+          r: colorThemeData.color.r,
+          g: colorThemeData.color.g,
+          b: colorThemeData.color.b
+        }) ]
+
   const annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false })
   if (!annotWrapperNode)
     return
@@ -172,18 +174,14 @@ export const updateAnnotItemBadgeColor = ( annotId: string, newColorId: string )
     return
 
   // Get the Badge node inside the annotation item
-  const annotItemBadgeNode = _getAnnotItemBadgeNode(annotWrapperNode, annotId),
-        annotMarkerBadgeNode = getAnnotMarkerBadgeNode(annotId)
-
-  const colorThemeData = getUserColorThemes().find(theme => theme.id === newColorId),
-        newFills = [ generateSolidPaint({ 
-          r: colorThemeData.color.r,
-          g: colorThemeData.color.g,
-          b: colorThemeData.color.b
-        }) ]
-
+  const annotItemBadgeNode = _getAnnotItemBadgeNode(annotWrapperNode, annotId)
   annotItemBadgeNode.fills = newFills
-  annotMarkerBadgeNode.fills = newFills
+
+  // Get all marker badges on the page.
+  const annotMarkerBadgeNodes = getAnnotMarkerBadgeNodes(annotId)
+  for (const node of annotMarkerBadgeNodes) {
+    node.fills = newFills
+  }
 }
 
 
