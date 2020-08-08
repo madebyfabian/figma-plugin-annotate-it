@@ -27,15 +27,18 @@
     <p>
       Feel free to shoot us an email at <a href="mailto:annotate-it@uxtionary.com" target="_blank">annotate-it@uxtionary.com</a>
     </p>
+
+    <PluginReleaseVersion />
   </div>
 </template>
 
 <script>
   import SectionTitle from '@/components/ui/SectionTitle'
   import Button from '@/components/ui/Button'
+  import PluginReleaseVersion from '@/components/PluginReleaseVersion'
 
   export default {
-    components: { SectionTitle, Button },
+    components: { SectionTitle, Button, PluginReleaseVersion },
 
     data: () => ({
       feedbackData: {
