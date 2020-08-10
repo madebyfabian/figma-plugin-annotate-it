@@ -1,6 +1,6 @@
 ![Plugin Cover Art](plugin-cover-art.png?raw=true "Plugin Cover Art")
 # Annotate it!
-![Build](https://github.com/madebyfabian/figma-plugin-annotate-it/workflows/Build/badge.svg)
+<a href="https://www.producthunt.com/posts/annotate-it?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-annotate-it" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=231572&theme=dark" alt="Annotate It! - Automate the process of documenting your UX workflows | Product Hunt Embed" style="width: 250px; height: 54px;" width="250px" height="54px" /></a>
 
 
 The code for the [Figma](https://figma.com) plugin "Annotate it!" designed by [@sonaliagrawal](https://twitter.com/sonaliagrawal) and developed by [@madebyfabian](https://twitter.com/madebyfabian).<br>
