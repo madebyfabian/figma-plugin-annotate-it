@@ -62,10 +62,39 @@
       }
     },
 
-    mounted() {
+    async mounted() {
       window.addEventListener('keydown', (e) => this.a11yClassChange(true))
       window.addEventListener('mousedown', (e) => this.a11yClassChange(false))
       window.addEventListener('touchstart', (e) => this.a11yClassChange(false))
+
+      // Analytics
+      try {
+        const apiRes = await fetch('https://json.geoiplookup.io/'), // alternative:  https://api.ipdata.co/?api-key=test
+              apiData = await apiRes.json()
+        
+        console.log(apiData)
+        console.log(navigator)
+
+        const newData = {
+          // From IP API
+          user_ip: apiData.ip,
+          user_location: apiData.country_code,
+
+          // From window.navigator
+          user_language: navigator.language,
+
+          // Gets parsed server-side.
+          _userAgent: navigator.userAgent
+        }
+
+        const analyticsRes = await fetch('https://lucid-tesla-62e4f4.netlify.app/.netlify/functions/log-analytics', {
+          method: 'POST',
+          body: JSON.stringify(newData)
+        })
+
+      } catch (error) {
+        console.error(error)
+      }
     }
   };
 </script>
