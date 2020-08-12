@@ -71,9 +71,6 @@
       try {
         const apiRes = await fetch('https://json.geoiplookup.io/'), // alternative:  https://api.ipdata.co/?api-key=test
               apiData = await apiRes.json()
-        
-        console.log(apiData)
-        console.log(navigator)
 
         const newData = {
           // From IP API

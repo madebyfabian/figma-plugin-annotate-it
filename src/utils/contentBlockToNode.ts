@@ -27,28 +27,26 @@ export default ({ contentBlock, contentBlocksAmount }: { contentBlock: ContentBl
 const generateParagraphBlock = ( contentBlock: ContentBlock, contentBlocksAmount: number ) => {
   let totalLength = 0
 
-  const showPlaceholder = contentBlocksAmount === 1 && _showPlaceholder(contentBlock),
-        textNode = generateAnnotItemBodyTextNode({ showPlaceholder })
+  const textNode = generateAnnotItemBodyTextNode()
 
-  if (!showPlaceholder)
-    for (const textPart of contentBlock.content) {
-      let textPartContent = textPart.type === 'hard_break' 
-        ? '\u2028' // Generates a "lsep" (<br> alternative)
-        : textPart.text
+  for (const textPart of contentBlock.content) {
+    let textPartContent = textPart.type === 'hard_break' 
+      ? '\u2028' // Generates a "lsep" (<br> alternative)
+      : textPart.text
 
-      const start = totalLength
-      textNode.insertCharacters(start, textPartContent)
+    const start = totalLength
+    textNode.insertCharacters(start, textPartContent)
 
-      if (textPart.type === 'text') {
-        const end = totalLength + textPartContent.length,
-              { fontName, textDecoration } = _getTextMarkOptions(textPart?.marks)
+    if (textPart.type === 'text') {
+      const end = totalLength + textPartContent.length,
+            { fontName, textDecoration } = _getTextMarkOptions(textPart?.marks)
 
-        textNode.setRangeFontName(start, end, fontName)
-        textNode.setRangeTextDecoration(start, end, textDecoration)
-      }
-
-      totalLength += textPartContent.length
+      textNode.setRangeFontName(start, end, fontName)
+      textNode.setRangeTextDecoration(start, end, textDecoration)
     }
+
+    totalLength += textPartContent.length
+  }
     
   return textNode
 }
@@ -150,14 +148,6 @@ const _getTextMarkOptions = ( marks: Mark[] ) => {
     fontName: generateFontNameConfig({ isBold, isItalic }),
     textDecoration
   }
-}
-
-
-const _showPlaceholder = ( contentBlock: ContentBlock ) => {
-  const onlyOneTextPartInsideBlockExists = contentBlock.content.length === 1,
-        textContentIsEmpty = contentBlock.content[0]?.text === ' '
-
-  return onlyOneTextPartInsideBlockExists && textContentIsEmpty
 }
 
 

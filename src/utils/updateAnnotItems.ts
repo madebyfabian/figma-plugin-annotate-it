@@ -166,12 +166,12 @@ const _handleModifiedItemContent = ( item: any, entryName: string, annotNode: Fr
         const newContentBlock = _generateSafeAddedContentBlock(contentBlock.current),
               newNode = contentBlockToNode({ contentBlock: newContentBlock, contentBlocksAmount })
 
-        // console.log(`ADDED (line ${i + 1})`, newContentBlock)
+        console.log(`ADDED (line ${i + 1})`, newContentBlock)
         bodyNode.insertChild(figmaNodeListIndex, newNode)
         break
     
       case 'DELETED':
-        // console.log(`REMOVED (line ${i + 1})`, contentBlock)
+        console.log(`REMOVED (line ${i + 1})`, contentBlock)
         bodyNode.children[figmaNodeListIndex].remove()
         figmaNodeListIndex--
         break
@@ -180,9 +180,14 @@ const _handleModifiedItemContent = ( item: any, entryName: string, annotNode: Fr
         const modifiedContentBlock = _generateSafeModifiedContentBlock(contentBlock),
               modifiedNode = contentBlockToNode({ contentBlock: modifiedContentBlock, contentBlocksAmount })
 
-        // console.log(`MODIFIED (on line ${i + 1})`, modifiedContentBlock)
-        bodyNode.children[figmaNodeListIndex].remove()
+        console.log(`MODIFIED (on line ${i + 1})`, modifiedContentBlock)
+
+        // Only remove the old block if there is some!
+        if (bodyNode.children.length !== 0)
+          bodyNode.children[figmaNodeListIndex].remove()
+        
         bodyNode.insertChild(figmaNodeListIndex, modifiedNode)
+
         break
     }
 
@@ -190,6 +195,10 @@ const _handleModifiedItemContent = ( item: any, entryName: string, annotNode: Fr
     if (doneContentChanges === expectedContentChanges)
       break
   }
+
+  bodyNode.visible = true
+  if (bodyNode.children.length === 1 && bodyNode.children[0].type === 'TEXT')
+    bodyNode.visible = bodyNode.children[0].characters.trim().length ? true : false
 }
 
 

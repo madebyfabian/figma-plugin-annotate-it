@@ -55,20 +55,18 @@ export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) =
   bodyNode.layoutAlign = 'MAX'
   bodyNode.resize(279, bodyNode.height)
   
-  const bodyPlaceholderNode = generateAnnotItemBodyTextNode()
-  bodyNode.appendChild(bodyPlaceholderNode)
-
   node.appendChild(headerNode)
   node.appendChild(bodyNode)
+
+  // Hide the bodyNode by default, because it will be empty on creation.
+  bodyNode.visible = false
 
   return node
 }
 
 
-export const generateAnnotItemBodyTextNode = ({ showPlaceholder = true } = {}) => {
+export const generateAnnotItemBodyTextNode = () => {
   const textNode = figma.createText()
-  textNode.characters = showPlaceholder ? 'Your annotation description goes here' : ' '
-  textNode.opacity = showPlaceholder ? .25 : 1
   textNode.layoutAlign = 'STRETCH'
   textNode.fontName = generateFontNameConfig()
   textNode.fontSize = config.defaultParagraphTextOptions.fontSize
