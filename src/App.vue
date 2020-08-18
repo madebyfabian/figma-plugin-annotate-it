@@ -33,6 +33,8 @@
   import '@/scss/tooltip.scss'
   import '@/scss/main.scss'
 
+  import { store } from '@/store'
+
   // @ts-ignore
   import MainView from '@/views/Main.view.vue'
 
@@ -84,11 +86,10 @@
           _userAgent: navigator.userAgent
         }
 
-        const analyticsRes = await fetch('https://lucid-tesla-62e4f4.netlify.app/.netlify/functions/log-analytics', {
+        await fetch(store.functionsBaseUrl + '/log-analytics', {
           method: 'POST',
           body: JSON.stringify(newData)
         })
-
       } catch (error) {
         console.error(error)
       }

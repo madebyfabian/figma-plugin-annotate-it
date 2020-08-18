@@ -33,6 +33,8 @@
 </template>
 
 <script>
+  import { store } from '@/store'
+
   import SectionTitle from '@/components/ui/SectionTitle'
   import Button from '@/components/ui/Button'
   import PluginReleaseVersion from '@/components/PluginReleaseVersion'
@@ -66,23 +68,22 @@
           return
         }
         this.isNotFilled = false
+        this.isError = false
 
-        let that = this
+        try {
+          const res = await fetch(store.functionsBaseUrl +  '/send-feedback-email', {
+            method: 'POST',
+            body: JSON.stringify({ template })
+          })
 
-        const res = await fetch(`https://lucid-tesla-62e4f4.netlify.app/.netlify/functions/send-feedback-email`, {
-          method: 'POST',
-          body: JSON.stringify({ template })
-        }).then(response => {
-            if (!response.ok) { throw response }
-            that.isError = false
-            return response.json()
-          })
-          .then(json => {
-            that.isFeedbackSent = true
-          })
-          .catch(err => {
-            that.isError = true
-          })
+          const data = res.json()
+          if (data.error)
+            throw new Error('Something gone wrong with the API Call.')
+
+          this.isFeedbackSent = true
+        } catch (error) {
+          this.isError = true
+        }
       }
     }
   }
