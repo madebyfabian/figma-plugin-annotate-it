@@ -20,7 +20,7 @@ npm run build
 
 to execute webpack once and build all your files.
 
-Webpack will create a folder called `dist`, in which all plugin-related files are. So Figma only needs files from this folder.
+Webpack will create a folder called `build`, in which all plugin-related files are. So Figma only needs files from this folder.
 
 # Use in Figma
 If the plugin is built, you now can import it in Figma, just
@@ -28,4 +28,4 @@ If the plugin is built, you now can import it in Figma, just
 2. Select `Plugins` in the left Sidebar
 3. Click the `+`-Button right next to the Subheadline `Development`
 4. On the popup, click `Click to choose a manifest.json file`
-5. Now select the `manifest.json` from `dist/manifest.json`
+5. Now select the `manifest.json` from `build/manifest.json`
