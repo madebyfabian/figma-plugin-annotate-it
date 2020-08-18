@@ -79,6 +79,9 @@
           user_ip: apiData.ip,
           user_location: apiData.country_code,
 
+          // From Window
+          user_screen_resolution: `${window.screen.width}x${window.screen.height}`,
+
           // From window.navigator
           user_language: navigator.language,
 
