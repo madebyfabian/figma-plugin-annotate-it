@@ -79,11 +79,12 @@ export default ({ createOneIfItDoesNotExist = true } = {}) => {
 /**
  * Helper, Is used when the annotation wrapper is initially created.
  */
-const _calculateAnnotWrapperNodePos = ( wrapperData: { width: number, height: number }, startAtX?: number ) => {
+const _calculateAnnotWrapperNodePos = ( wrapperData: { width: number, height: number }, startAtX?: number ) : { x: number, y: number } => {
   // If there is no current sel, return x = y = 0
-  const currSel = figma.currentPage.selection?.[0]
+  let currSel = figma.currentPage.selection?.[0]
   if (!currSel)
     return { x: 0, y: 0 }
+  currSel = _getNodeParentOnCanvas(currSel)
 
   if (!startAtX)
     startAtX = currSel.x + currSel.width
@@ -123,3 +124,13 @@ const _calculateAnnotWrapperNodePos = ( wrapperData: { width: number, height: nu
     : { x: wantedWrapperPos.x, y: wantedWrapperPos.y }
 }
 
+
+/**
+ * Helper, Climbs up all parents of a node until it finds the node that sits directly on the page.
+ */
+const _getNodeParentOnCanvas = ( node: BaseNode | SceneNode ) => { // BaseNode | Exclude<SceneNode, SliceNode>
+  if (node.parent.type === 'PAGE' || node.parent.type === 'DOCUMENT')
+    return node 
+  else
+    return _getNodeParentOnCanvas(node.parent)
+}
