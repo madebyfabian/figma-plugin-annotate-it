@@ -47,8 +47,18 @@ doInit()
 figma.on('currentpagechange', () => doInit())
 
 
+// let oldCurrSel = null,
+// 		nodesStringify = nodes => !(nodes && nodes.length) ? [] : nodes.map(node => !node.removed ? node.name : 'REMOVED')
+
 pushSelectionChange()
-figma.on('selectionchange', () => pushSelectionChange())
+figma.on('selectionchange', () => {
+	pushSelectionChange()
+
+	// const currSel = figma.currentPage.selection
+
+	// console.log('Selection has changed. Old:', nodesStringify(oldCurrSel), '- New:', nodesStringify(currSel))
+	// oldCurrSel = currSel
+})
 
 
 figma.ui.on('message', async msg => {
