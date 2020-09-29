@@ -89,10 +89,10 @@
           _userAgent: navigator.userAgent
         }
 
-        await fetch(store.functionsBaseUrl + '/log-analytics', {
-          method: 'POST',
-          body: JSON.stringify(newData)
-        })
+        // await fetch(store.functionsBaseUrl + '/log-analytics', {
+        //   method: 'POST',
+        //   body: JSON.stringify(newData)
+        // })
       } catch (error) {
         console.error(error)
       }
