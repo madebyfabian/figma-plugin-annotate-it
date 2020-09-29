@@ -92,7 +92,7 @@
     width: calc(100% - 8px);
     margin: 0 8px 24px 0;
     display: grid;
-    grid-template-columns: 24px 32px 1fr 32px;
+    grid-template-columns: 24px auto 1fr 32px;
     grid-template-rows: 40px 1fr min-content;
     align-items: center;
     gap: 6px 8px;
@@ -123,8 +123,10 @@
     &-number {
       grid-column: 2 / 3;
       margin-left: 0;
-      max-width: 32px;
+      max-width: 24px;
       color: $color--black-8;
+      padding-left: 0;
+      padding-right: 0;
     }
 
     &-inputTitle {
