@@ -1,13 +1,6 @@
 <template>
   <div class="grid">
     <main class="scrollContainer" ref="scrollContainer">
-      <!-- 
-        Hey there, Figma Plugin Approval-Girl/Guy.
-        If you see this, have an awesome day!
-        We love the product and the effort you are putting in it 🎉🥰
-      -->
-
-      <!-- <div class="emptyState" v-if="!annotations || !annotations.length"> -->
       <div class="emptyState" v-if="annotations !== null && annotations.length === 0">
         <div class="emptyState-inner">
           <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
@@ -46,11 +39,6 @@
       </Button>
       <p v-if="userHasNothingSelected">To add annotations, please select a frame.</p>
     </footer>
-
-    <!-- for debugging: -->
-    <!-- <pre style="position: fixed; overflow-y: scroll; bottom: 0; right: 0; 
-    z-index: 999; background: #eee; height: 150px; width: 300px; 
-    box-shadow: 0 5px 10px 0 rgba(0,0,0,.1); padding: 10px; font-size: 9px; border-radius: 8px">{{ JSON.stringify(annotations, null, 2) }}</pre> -->
   </div>
 </template>
 
@@ -60,6 +48,84 @@
   import Button from '@/components/ui/Button'
   import { Container, Draggable } from 'vue-smooth-dnd'
   import { randomId, generateAnnotItemObject } from '@/utils/utils'
+  import { store, mutations } from '@/store'
+
+  export default {
+    components: { Button, Icon, AnnotationItem, Container, Draggable },
+
+    data: () => ({
+      userHasNothingSelected: false
+    }),
+
+    computed: {
+      'annotations': { get: () => store.annotations, set: mutations.setAnnotations },
+      'annotationsStr': () => JSON.stringify(store.annotations),
+      'watchAnnotations': { get: () => store.watchAnnotations, set: mutations.setWatchAnnotations }
+    },
+
+    methods: {
+      updateAnnotation: mutations.updateAnnotation,
+      addAnnotation: mutations.addAnnotation,
+
+      async removeAnnotation( itemId ) {
+        const annotItem = this.annotations.find(item => item.id === itemId)
+        this.updateAnnotation(itemId, { ...annotItem, isDeleted: true })
+        
+        await this.toggleWatcher(false)
+        mutations.removeAnnotation(itemId)
+        await this.toggleWatcher(true)
+      },
+
+      async toggleWatcher( newVal ) {
+        await this.$nextTick()
+        this.watchAnnotations = newVal
+        return Promise.resolve()
+      },
+
+      async createAnnotationItem() {
+        this.addAnnotation(generateAnnotItemObject())
+
+        await this.$nextTick()
+        this.$refs.scrollContainer.scrollTo({ // Scroll to bottom
+          top: this.$refs.scrollContainer.scrollHeight, behavior: 'smooth'
+        })
+      },
+
+      onDrop( dropResult ) {
+        this.annotations = onDrop(this.annotations, dropResult)
+      }
+    },
+
+    async mounted() {
+      onmessage = async event => {
+        if (event.data.length === 0) return
+        const msg = event.data.pluginMessage,
+              msgValue = msg && msg.value
+
+        switch (msg.type) {
+          case 'doInit':
+            await this.toggleWatcher(false)
+            this.annotations = msgValue
+            await this.toggleWatcher(true)
+            break
+
+          case 'selectionUpdated': 
+            this.userHasNothingSelected = !!(msgValue.length === 0)
+            break
+        }
+      }
+    },
+
+    watch: {
+      annotationsStr( newAnnots_str, oldAnnots_str ) {
+        if (!this.watchAnnotations) return
+        parent.postMessage({ pluginMessage: {
+          type: 'pushAnnotChanges', 
+          value: { newAnnots: JSON.parse(newAnnots_str), oldAnnots: JSON.parse(oldAnnots_str) }
+        }}, '*')
+      }
+    }
+  }
 
 
   /**
@@ -83,98 +149,6 @@
       result.splice(addedIndex, 0, itemToAdd)
     
     return result
-  }
-  
-
-  export default {
-    components: { Button, Icon, AnnotationItem, Container, Draggable },
-
-    data: () => ({
-      userHasNothingSelected: false,
-      annotations: null,
-      watchAnnotations: false
-    }),
-
-    methods: {
-      async disableWatcher() {
-        await this.$nextTick()
-        this.watchAnnotations = false
-        return Promise.resolve()
-      },
-
-      async enableWatcher() {
-        await this.$nextTick()
-        this.watchAnnotations = true
-        return Promise.resolve()
-      },
-
-      async createAnnotationItem() {
-        this.annotations.push( generateAnnotItemObject() )
-
-        // Scroll to bottom
-        const scrollContainer = this.$refs.scrollContainer
-        await this.$nextTick()
-        scrollContainer.scrollTo({
-          top: scrollContainer.scrollHeight,
-          behavior: 'smooth'
-        })
-      },
-
-      async removeAnnotation( itemId ) {
-        const itemArrIndex = this.annotations.findIndex(item => item.id === itemId)
-        this.annotations[itemArrIndex].isDeleted = true
-
-        await this.disableWatcher()
-        this.annotations.splice(itemArrIndex, 1)
-        await this.enableWatcher()
-      },
-
-      onDrop( dropResult ) {
-        this.annotations = onDrop(this.annotations, dropResult)
-      }
-    },
-
-    mounted() {
-      onmessage = async event => {
-        if (event.data.length === 0) return
-        const msg = event.data.pluginMessage,
-              msgValue = msg && msg.value
-
-        switch (msg.type) {
-          case 'doInit':
-            await this.disableWatcher()
-            this.annotations = msgValue
-            await this.enableWatcher()
-
-            break
-
-          case 'selectionUpdated': 
-            this.userHasNothingSelected = !!(msgValue.length === 0)
-            break
-        }
-      }
-    },
-
-    computed: {
-      annotations_str() { // For getting the old value inside the watcher
-        return JSON.stringify(this.annotations)
-      }
-    },
-
-    watch: {
-      annotations_str( newAnnots_str, oldAnnots_str ) {
-        if (!this.watchAnnotations)
-          return
-
-        parent.postMessage({ pluginMessage: {
-          type: 'pushAnnotChanges', 
-          value: { 
-            newAnnots: JSON.parse(newAnnots_str), 
-            oldAnnots: JSON.parse(oldAnnots_str)
-          }
-        }}, '*')
-      }
-    }
   }
 </script>
 
