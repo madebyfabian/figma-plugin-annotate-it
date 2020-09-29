@@ -4,7 +4,8 @@ import Vue from "vue"
 export const store = Vue.observable({
   functionsBaseUrl: 'https://annotate-it-functions.netlify.app/.netlify/functions',
   annotations: null,
-  watchAnnotations: false
+  watchAnnotations: false,
+  userSelection: []
 })
 
 
@@ -20,5 +21,7 @@ export const mutations = {
     store.annotations = store.annotations.filter(( item: any ) => item.id !== itemId)
   },
 
-  setWatchAnnotations: ( newVal: boolean ) => store.watchAnnotations = newVal
+  setWatchAnnotations: ( newVal: boolean ) => store.watchAnnotations = newVal,
+  
+  setUserSelection: ( newVal: Array<object> ) => store.userSelection = newVal
 }
