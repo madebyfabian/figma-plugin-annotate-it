@@ -24,21 +24,6 @@
     </div>
 
     <div class="sidebar-emptyState" v-else>No annotation-groups<br>on this page.</div>
-
-    <!-- <div class="sidebar-createGroup" :class="{ 'sidebarIsEmpty': !annotData || !annotData.length }">
-      <Button
-        buttonType="tertiary" 
-        :disabled="!userSelection.length"
-        v-tooltip.right="`Add a new annotation-group`">
-
-        <Icon iconName="plus" />
-        Create new group
-      </Button>
-
-      <div v-if="!userSelection.length" class="sidebar-createGroup-disabledHelper">
-        Select any frame to to create a group.
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -53,8 +38,7 @@
 
     computed: {
       'annotData': () => store.annotData,
-      'selectedWrapperFrameId': { get: () => store.selectedWrapperFrameId, set: mutations.setSelectedWrapperFrameId },
-      'userSelection': () => store.userSelection
+      'selectedWrapperFrameId': { get: () => store.selectedWrapperFrameId, set: mutations.setSelectedWrapperFrameId }
     }
   }
 </script>
