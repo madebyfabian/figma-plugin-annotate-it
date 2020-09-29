@@ -29,7 +29,7 @@
         type: String,
         default: 'standard',
         validator: (value) => {
-          return [ 'primary', 'standard', 'icon', 'iconDraggable' ].includes(value)
+          return [ 'primary', 'standard', 'tertiary', 'icon', 'iconDraggable' ].includes(value)
         }
       },
 
@@ -110,6 +110,19 @@
         color: $color--black-3;
         /deep/ * { color: $color--black-3 }
         box-shadow: inset 0 0 0 1px $color--black-3;
+      }
+    }
+
+    &[buttonType^=tertiary] {
+      background: $color--background-white;
+      transition: opacity 150ms ease;
+      box-shadow: none;
+      cursor: pointer;
+      padding: 0;
+
+      &:disabled {
+        color: $color--black-3;
+        /deep/ * { color: $color--black-3 }
       }
     }
 

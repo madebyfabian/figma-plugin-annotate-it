@@ -6,6 +6,7 @@ import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
 import contentBlockToNode from '@/utils/contentBlockToNode'
 import detectNodeCollisions from '@/utils/detectNodeCollisions'
 import Differy from '@netilon/differify'
+import doInit from '@/utils/doInit'
 const differy = new Differy()
 import { 
   config,
@@ -18,8 +19,8 @@ import {
 } from '@/utils/utils'
 
 
-export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
-  const annotWrapperNode = getAnnotWrapperNode(),
+export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameId: string ) => {
+  const annotWrapperNode = getAnnotWrapperNode({ id: wrapperFrameId }),
         diff = _createAnnotDiff(newAnnots, oldAnnots),
         annotArr = diff._
 
@@ -100,7 +101,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[] ) => {
                 break
 
               case 'colorThemeId':
-                updateAnnotItemBadgeColor(item.id.current, newValue)
+                updateAnnotItemBadgeColor(wrapperFrameId, item.id.current, newValue)
             }
 
             // console.log(`Detected a change in ${entryName}`)
@@ -129,8 +130,13 @@ const _deleteAnnotItem = ( deletedItem: any, annotWrapperNode: FrameNode ) => {
   annotNode.remove()
 
   // If the annotWrapper node is empty after removing the itemNode, remove the wrapper too.
-  if (annotWrapperNode.children.length === 0)
+  if (annotWrapperNode.children.length === 0) {
     annotWrapperNode.remove()
+
+    // Init UI again
+    doInit()
+  }
+    
 
   // Get all badge marker items
   const badgeMarkerNodes = getAnnotMarkerBadgeNodes(annotId)

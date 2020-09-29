@@ -1,15 +1,16 @@
 import { 
 	config, 
 	getPluginData, 
-	generateFontNameConfig
+	setPluginData
 } from '@/utils/utils'
-import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
 import updateAnnotItems from '@/utils/updateAnnotItems'
+import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
+import doInit from '@/utils/doInit'
 
 
 figma.showUI(__html__, { 
   width: 590,
-  height: 446
+  height: 486
 })
 
 
@@ -19,46 +20,12 @@ const pushSelectionChange = () => figma.ui.postMessage({
 })
 
 
-const doInit = async () => {
-	// Load fonts to use on canvas.
-	await Promise.all([
-		figma.loadFontAsync(generateFontNameConfig()),
-		figma.loadFontAsync(generateFontNameConfig({ isItalic: true })),
-		figma.loadFontAsync(generateFontNameConfig({ isBold: true})),
-		figma.loadFontAsync(generateFontNameConfig({ isBold: true, isItalic: true }))
-	])
-
-	const annotData = [],
-				annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false })
-
-	if (annotWrapperNode) 
-		for (const annotItemNode of annotWrapperNode.children) {
-			annotData.push(getPluginData(annotItemNode, config.annotItemNodePluginDataKey))
-		}
-
-	figma.ui.postMessage({
-		type: 'doInit',
-		value: annotData
-	})
-}
-
-
 doInit()
 figma.on('currentpagechange', () => doInit())
 
 
-// let oldCurrSel = null,
-// 		nodesStringify = nodes => !(nodes && nodes.length) ? [] : nodes.map(node => !node.removed ? node.name : 'REMOVED')
-
 pushSelectionChange()
-figma.on('selectionchange', () => {
-	pushSelectionChange()
-
-	// const currSel = figma.currentPage.selection
-
-	// console.log('Selection has changed. Old:', nodesStringify(oldCurrSel), '- New:', nodesStringify(currSel))
-	// oldCurrSel = currSel
-})
+figma.on('selectionchange', () => pushSelectionChange())
 
 
 figma.ui.on('message', async msg => {
@@ -67,14 +34,27 @@ figma.ui.on('message', async msg => {
 	switch (msgType) {
 		case 'pushAnnotChanges': 
 			const { newAnnots, oldAnnots } = msgValue
-			updateAnnotItems(newAnnots, oldAnnots)
-
+			updateAnnotItems(newAnnots, oldAnnots, msgValue.wrapperFrameId)
 			break
+
+		case 'createFirstAnnot':
+			// Create a new wrapperNode
+			getAnnotWrapperNode()
+
+			// Init again 
+			await doInit()
+
+			figma.ui.postMessage({ type: 'wrapperNodeCreated', value: {} })
+			break
+
+		case 'pushAnnotWrapperTitleChange':
+			const { newVal } = msgValue,
+						annotWrapperNode = getAnnotWrapperNode({ id: msgValue.wrapperFrameId }),
+						oldPluginData = getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey)
+						
+			setPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey, <AnnotWrapperPluginData>{ 
+				connectedFrameId: oldPluginData.connectedFrameId || null, 
+				connectedFrameAliasName: newVal
+			})
 	}
 })
-
-
-if (!figma.currentPage.selection.length)
-	figma.notify('Please select a frame to add annotations.')
-
-

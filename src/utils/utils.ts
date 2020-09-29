@@ -173,7 +173,7 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
 }
 
 
-export const updateAnnotItemBadgeColor = ( annotId: string, newColorId: string ) => {
+export const updateAnnotItemBadgeColor = ( annotWrapperId: string, annotId: string, newColorId: string ) => {
   const colorThemeData = getUserColorThemes().find(theme => theme.id === newColorId),
         newFills = [ generateSolidPaint({ 
           r: colorThemeData.color.r,
@@ -181,7 +181,7 @@ export const updateAnnotItemBadgeColor = ( annotId: string, newColorId: string )
           b: colorThemeData.color.b
         }) ]
 
-  const annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false })
+  const annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false, id: annotWrapperId })
   if (!annotWrapperNode)
     return
 

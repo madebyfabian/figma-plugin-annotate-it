@@ -2,7 +2,8 @@ import {
   config, 
   generateSolidPaint,
   generateRGBA,
-  generateDefaultRelaunchDataOptions
+  generateDefaultRelaunchDataOptions, 
+  setPluginData
 } from '@/utils/utils'
 import detectNodeCollisions from '@/utils/detectNodeCollisions'
 
@@ -10,12 +11,14 @@ import detectNodeCollisions from '@/utils/detectNodeCollisions'
 /**
  * Find an already existing annotation wrapper-frame on the current page, or create one.
  */
-export default ({ createOneIfItDoesNotExist = true } = {}) => {
-  let annotWrapperNode = <FrameNode>figma.currentPage.findChild(node => {
-    if (node.type !== 'FRAME') return false
-    if (node.name !== config.annotWrapperNodeName) return false
-    return true
-  })
+export default ({ createOneIfItDoesNotExist = true, id = null } = {}) => {
+  let annotWrapperNode
+  if (id)
+    annotWrapperNode = <FrameNode>figma.currentPage.findChild(node => {
+      return node.type  === 'FRAME'
+          && node.name  === config.annotWrapperNodeName
+          && node.id    === id
+    })
 
   // Create annot wrapper node
   if (!annotWrapperNode && createOneIfItDoesNotExist) {
@@ -63,6 +66,11 @@ export default ({ createOneIfItDoesNotExist = true } = {}) => {
         visible: true
       }
     ]
+
+    setPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey, <AnnotWrapperPluginData>{
+      connectedFrameId: null,
+      connectedFrameAliasName: 'My annotations'
+    })
 
     figma.viewport.scrollAndZoomIntoView([
       ...figma.currentPage.selection,

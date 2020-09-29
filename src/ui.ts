@@ -1,13 +1,11 @@
 import Vue from 'vue'
-
 // @ts-ignore
 import App from './App.vue'
 
 Vue.config.productionTip = false
 Vue.config.devtools = false
 
-
-const vTooltipDirective = {
+Vue.directive('tooltip', {
   inserted: ( el, binding, vnode ) => {
     const modifiers = Object.keys(binding.modifiers)
     const modifier = modifiers && modifiers.length ? modifiers[0] : 'bottom-center'
@@ -29,19 +27,7 @@ const vTooltipDirective = {
       clearTimeout(timeout)
     })
   }
-}
-
-Vue.directive('tooltip', vTooltipDirective)
-
-
-// Vue.use({
-//   install () {
-//     Vue.prototype.$helpers = {
-//       // myHelper: () => { ... }
-//     }
-//   }
-// })
-
+})
 
 export default new Vue({
   render: h => h(App)
