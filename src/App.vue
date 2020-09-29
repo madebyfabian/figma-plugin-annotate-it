@@ -18,13 +18,13 @@
       buttonType="secondary"
       class="floatingButton-feedback"
       @click.native="isFeedbackViewOpened = true"
-      v-tooltip.top-left="`Send Feedback & Get Support`"
+      v-tooltip.top-right="`Send Feedback & Get Support`"
     />
 
     <FloatingButton 
       class="floatingButton-about"
       @click.native="isAboutViewOpened = true"
-      v-tooltip.top-left="`Help & Credits`"
+      v-tooltip.top-right="`Help & Credits`"
     />
   </div>
 </template>
@@ -34,6 +34,7 @@
   import '@/scss/main.scss'
 
   import { store } from '@/store'
+  import FloatingButton from '@/components/ui/FloatingButton'
 
   // @ts-ignore
   import MainView from '@/views/Main.view.vue'
@@ -43,8 +44,6 @@
 
   // @ts-ignore
   import FeedbackView from '@/views/Feedback.view.vue'
-
-  import FloatingButton from '@/components/ui/FloatingButton'
 
 
   export default {
@@ -107,11 +106,11 @@
     z-index: 2;
 
     &-about {
-      right: 16px;
+      left: 16px;
     }
 
     &-feedback {
-      right: 60px;
+      left: 60px;
     }
   }
 
