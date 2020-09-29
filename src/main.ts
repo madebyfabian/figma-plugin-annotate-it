@@ -1,14 +1,17 @@
 import { 
 	config, 
 	getPluginData, 
-	generateFontNameConfig
+	setPluginData,
+	generateFontNameConfig,
+	getNodeRootParent,
+	getAnnotWrapperNodes
 } from '@/utils/utils'
-import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
 import updateAnnotItems from '@/utils/updateAnnotItems'
+import updateAnnotItemsV2 from '@/utils/updateAnnotItemsV2'
 
 
 figma.showUI(__html__, { 
-  width: 487, 
+	width: 590, 
   height: 446
 })
 
@@ -27,18 +30,36 @@ const doInit = async () => {
 		figma.loadFontAsync(generateFontNameConfig({ isBold: true})),
 		figma.loadFontAsync(generateFontNameConfig({ isBold: true, isItalic: true }))
 	])
+	
+	const allAnnotData = [],
+				annotWrappers = getAnnotWrapperNodes()
+			
+	if (annotWrappers.length) {
+		let i = 0 // TEMP
+		for (const annotWrapperNode of annotWrappers) {
+			const annotData = []
+			for (const annotItemNode of annotWrapperNode.children) {
+				annotData.push(getPluginData(annotItemNode, config.annotItemNodePluginDataKey))
+			}
 
-	const annotData = [],
-				annotWrapperNode = getAnnotWrapperNode({ createOneIfItDoesNotExist: false })
+			// setPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey, <AnnotWrapperPluginData>{ 
+			// 	connectedFrameId: !i ? '323:199' : '557:0',
+			// 	connectedFrameAliasName: !i ? 'Dashboard' : 'Overlay'
+			// }) // TEMP
 
-	if (annotWrapperNode) 
-		for (const annotItemNode of annotWrapperNode.children) {
-			annotData.push(getPluginData(annotItemNode, config.annotItemNodePluginDataKey))
+			allAnnotData.push({ 
+				id: annotWrapperNode.id, 
+				pluginData: getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey),
+				annotData,
+			})
+
+			i++ // TEMP
 		}
+	}
 
 	figma.ui.postMessage({
-		type: 'doInit',
-		value: annotData
+		type: 'doInitAll',
+		value: allAnnotData
 	})
 }
 
@@ -65,16 +86,13 @@ figma.ui.on('message', async msg => {
 	const { type: msgType, value: msgValue } = msg
 
 	switch (msgType) {
-		case 'pushAnnotChanges': 
-			const { newAnnots, oldAnnots } = msgValue
-			updateAnnotItems(newAnnots, oldAnnots)
-
+		case 'pushAnnotChanges':
+			// updateAnnotItems(newAnnots, oldAnnots)
+			const { activeWrapperId, data } = msgValue 
+			console.log('updateAnnotItemsV2')
+			updateAnnotItemsV2(activeWrapperId, data)
 			break
 	}
 })
-
-
-if (!figma.currentPage.selection.length)
-	figma.notify('Please select a frame to add annotations.')
 
 

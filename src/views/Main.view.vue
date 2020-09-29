@@ -1,37 +1,41 @@
 <template>
   <div class="grid">
-    <main class="scrollContainer" ref="scrollContainer">
-      <!-- 
-        Hey there, Figma Plugin Approval-Girl/Guy.
-        If you see this, have an awesome day!
-        We love the product and the effort you are putting in it 🎉🥰
-      -->
+    <Sidebar :annotData="NEWannotData" />
 
-      <!-- <div class="emptyState" v-if="!annotations || !annotations.length"> -->
-      <div class="emptyState" v-if="annotations !== null && annotations.length === 0">
+    <main class="scrollContainer" ref="scrollContainer">
+      <div v-if="activeAnnotData !== null && activeAnnotData.length === 0" class="emptyState" >
         <div class="emptyState-inner">
           <p>No annotations found on this page.<br>To add, click on the "Add new" button below.</p>
           <AnnotationItem :showSkeleton="true" />
         </div>
       </div>
 
-      <Container 
-        @drop="onDrop" 
-        drag-handle-selector=".annotationItem-dragHandleButton">
+      <div v-else>
+        <header>
+          header
+        </header>
 
-        <Draggable v-for="(annotation, i) in annotations" :key="annotation.id">
-          <div class="draggable-item">
-            <transition name="slide" :appear="true">
-              <AnnotationItem 
-                v-if="!annotation.isDeleted"
-                :itemKey="i"
-                @removeAnnotation="removeAnnotation"
-                v-model="annotations[i]"
-              />
-            </transition>
-          </div>
-        </Draggable>
-      </Container>
+        <Container 
+          @drop="onDrop" 
+          drag-handle-selector=".annotationItem-dragHandleButton">
+
+          <Draggable 
+            v-for="(annotation, i) in activeAnnotData" 
+            :key="annotation.id">
+
+            <div class="draggable-item">
+              <transition name="slide" :appear="true">
+                <AnnotationItem 
+                  v-if="!annotation.isDeleted"
+                  :itemKey="i"
+                  @removeAnnotation="removeAnnotation"
+                  v-model="activeAnnotData[i]"
+                />
+              </transition>
+            </div>
+          </Draggable>
+        </Container>
+      </div>
     </main>
 
     <footer>
@@ -44,22 +48,129 @@
         <Icon iconName="plus" />
         Add new
       </Button>
-      <p v-if="userHasNothingSelected">To add annotations, please select a frame.</p>
     </footer>
-
-    <!-- for debugging: -->
-    <!-- <pre style="position: fixed; overflow-y: scroll; bottom: 0; right: 0; 
-    z-index: 999; background: #eee; height: 150px; width: 300px; 
-    box-shadow: 0 5px 10px 0 rgba(0,0,0,.1); padding: 10px; font-size: 9px; border-radius: 8px">{{ JSON.stringify(annotations, null, 2) }}</pre> -->
   </div>
 </template>
 
 <script>
+  import { store, mutations } from '@/store'
   import AnnotationItem from '@/components/AnnotationItem'
+  import Sidebar from '@/components/Sidebar'
   import Icon from '@/components/ui/Icon'
   import Button from '@/components/ui/Button'
   import { Container, Draggable } from 'vue-smooth-dnd'
   import { randomId, generateAnnotItemObject } from '@/utils/utils'
+
+
+  export default {
+    components: { Button, Icon, AnnotationItem, Container, Draggable, Sidebar },
+
+    data: () => ({
+      userHasNothingSelected: false,
+      NEWannotData: null // new
+    }),
+
+    computed: {
+      annotations_str() { // For getting the old value inside the watcher
+        return JSON.stringify(this.activeAnnotData)
+      },
+
+      activeWrapperId: () => store.activeWrapperId,
+      watchAnnots: () => store.watchAnnots,
+
+      activeAnnotData: {
+        get() {
+          if (!this.NEWannotData)
+            return null
+          const frameData = this.NEWannotData.find(frame => frame.id === this.activeWrapperId)
+          if (!frameData)
+            return null
+          return ('annotData' in frameData) ? frameData.annotData : null
+        },
+
+        set( newValue ) {
+          const index = this.NEWannotData.findIndex(frame => frame.id === this.activeWrapperId)
+          this.NEWannotData[index] = newValue
+        }
+      }
+    },
+
+    methods: {
+      async watcher( enable = true ) {
+        await this.$nextTick()
+        this.setWatchAnnots(enable)
+        return Promise.resolve()
+      },
+
+      async createAnnotationItem() {
+        this.NEWannotData.push( generateAnnotItemObject() )
+
+        // Scroll to bottom
+        const scrollContainer = this.$refs.scrollContainer
+        await this.$nextTick()
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollHeight,
+          behavior: 'smooth'
+        })
+      },
+
+      async removeAnnotation( itemId ) {
+        const itemArrIndex = this.NEWannotData.findIndex(item => item.id === itemId)
+        this.NEWannotData[itemArrIndex].isDeleted = true
+
+        await this.watcher(false)
+        this.NEWannotData.splice(itemArrIndex, 1)
+        await this.watcher(true)
+      },
+
+      onDrop( dropResult ) {
+        this.NEWannotData = onDrop(this.NEWannotData, dropResult)
+      },
+
+      setActiveWrapperId: mutations.setActiveWrapperId,
+      setWatchAnnots: mutations.setWatchAnnots
+    },
+
+    mounted() {
+      onmessage = async event => {
+        if (event.data.length === 0) return
+        const msg = event.data.pluginMessage,
+              msgValue = msg && msg.value
+
+        switch (msg.type) {
+          case 'doInitAll':
+            await this.watcher(false)
+            this.NEWannotData = msgValue
+            if (msgValue.length)
+              this.setActiveWrapperId(msgValue[0].id)
+            await this.watcher(true)
+            break
+
+          case 'selectionUpdated': 
+            this.userHasNothingSelected = !!(msgValue.length === 0)
+            break
+        }
+      }
+    },
+
+    watch: {
+      annotations_str( newAnnots_str, oldAnnots_str ) {
+        if (!this.watchAnnots)
+          return
+
+        parent.postMessage({ pluginMessage: {
+          type: 'pushAnnotChanges', 
+          value: { 
+            activeWrapperId: this.activeWrapperId,
+            data: {
+              newAnnots: JSON.parse(newAnnots_str), 
+              oldAnnots: JSON.parse(oldAnnots_str)
+            }
+          }
+        }}, '*')
+      }
+    }
+  }
 
 
   /**
@@ -84,98 +195,6 @@
     
     return result
   }
-  
-
-  export default {
-    components: { Button, Icon, AnnotationItem, Container, Draggable },
-
-    data: () => ({
-      userHasNothingSelected: false,
-      annotations: null,
-      watchAnnotations: false
-    }),
-
-    methods: {
-      async disableWatcher() {
-        await this.$nextTick()
-        this.watchAnnotations = false
-        return Promise.resolve()
-      },
-
-      async enableWatcher() {
-        await this.$nextTick()
-        this.watchAnnotations = true
-        return Promise.resolve()
-      },
-
-      async createAnnotationItem() {
-        this.annotations.push( generateAnnotItemObject() )
-
-        // Scroll to bottom
-        const scrollContainer = this.$refs.scrollContainer
-        await this.$nextTick()
-        scrollContainer.scrollTo({
-          top: scrollContainer.scrollHeight,
-          behavior: 'smooth'
-        })
-      },
-
-      async removeAnnotation( itemId ) {
-        const itemArrIndex = this.annotations.findIndex(item => item.id === itemId)
-        this.annotations[itemArrIndex].isDeleted = true
-
-        await this.disableWatcher()
-        this.annotations.splice(itemArrIndex, 1)
-        await this.enableWatcher()
-      },
-
-      onDrop( dropResult ) {
-        this.annotations = onDrop(this.annotations, dropResult)
-      }
-    },
-
-    mounted() {
-      onmessage = async event => {
-        if (event.data.length === 0) return
-        const msg = event.data.pluginMessage,
-              msgValue = msg && msg.value
-
-        switch (msg.type) {
-          case 'doInit':
-            await this.disableWatcher()
-            this.annotations = msgValue
-            await this.enableWatcher()
-
-            break
-
-          case 'selectionUpdated': 
-            this.userHasNothingSelected = !!(msgValue.length === 0)
-            break
-        }
-      }
-    },
-
-    computed: {
-      annotations_str() { // For getting the old value inside the watcher
-        return JSON.stringify(this.annotations)
-      }
-    },
-
-    watch: {
-      annotations_str( newAnnots_str, oldAnnots_str ) {
-        if (!this.watchAnnotations)
-          return
-
-        parent.postMessage({ pluginMessage: {
-          type: 'pushAnnotChanges', 
-          value: { 
-            newAnnots: JSON.parse(newAnnots_str), 
-            oldAnnots: JSON.parse(oldAnnots_str)
-          }
-        }}, '*')
-      }
-    }
-  }
 </script>
 
 <style lang="scss" scoped>
@@ -187,6 +206,13 @@
     height: 100%;
     display: grid;
     grid-template-rows: 1fr min-content;
+    grid-template-columns: 160px 1fr;
+
+    aside.sidebar {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      background: $color--background-grey-f0;
+    }
 
     main {
       overflow: hidden;
@@ -194,6 +220,7 @@
       overflow-y: scroll;
       position: relative;
       z-index: 0;
+      grid-column: 2 / 3;
 
       .emptyState {
         padding: 16px;
@@ -217,6 +244,11 @@
             margin-bottom: 24px;
           }
         }
+      }
+
+      header {
+        height: 56px;
+        background: $color--background-white;
       }
     }
 

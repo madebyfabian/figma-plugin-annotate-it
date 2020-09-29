@@ -2,6 +2,8 @@ import getAnnotWrapperNode from "./getAnnotWrapperNode"
 
 export const config = {
   annotWrapperNodeName: 'Annotate it! – Frame',
+  annotWrapperNodePluginDataKey: 'annotWrapperConnectedFrameId',
+
   annotBadgeNodeName: 'Annotate it! – Badge',
   annotItemNodePluginDataKey: 'annotStore',
 
@@ -46,10 +48,11 @@ export const figmaRGBAToRealRGBA = ({ r = 0, g = 0, b = 0, a = <number>null }) =
 }
 
 
-export const getPluginData = ( node: SceneNode, key: string, isJSON = true ) => {
-  const data = node.getPluginData(key)
+export const getPluginData = ( node: SceneNode, key: string ) => {
+  let data = node.getPluginData(key)
   if (!data) return null
-  if (isJSON) return JSON.parse(data) || null
+  try { data = JSON.parse(data) } catch (_) {}
+  return data
 }
 
 
@@ -93,6 +96,38 @@ export const generateDefaultRelaunchDataOptions = ({ singleItem = false } = {}) 
 // ---
 // General Utils
 // ---
+
+
+/**
+ * Climbs up all parents of a node until it finds the node that sits directly on the page. 
+ * If the given node sits already on the page, it returns it
+ */
+export const getNodeRootParent = ( node: BaseNode | SceneNode ) => { // BaseNode | Exclude<SceneNode, SliceNode>
+  if (node.parent.type === 'PAGE' || node.parent.type === 'DOCUMENT')
+    return node 
+  else
+    return getNodeRootParent(node.parent)
+}
+
+
+export const getAnnotWrapperNodes = () => {
+  return <[FrameNode]>figma.currentPage.findChildren(node => {
+    return node.type === 'FRAME'
+        && node.name === config.annotWrapperNodeName
+        && !!getPluginData(node, config.annotWrapperNodePluginDataKey)
+  })
+}
+
+
+export const getAnnotWrapperNodeById = ( id: string ) => {
+  return <FrameNode>figma.currentPage.findChild(node => {
+    return node.type === 'FRAME'
+        && node.name === config.annotWrapperNodeName
+        && node.id   === id
+        && !!getPluginData(node, config.annotWrapperNodePluginDataKey)
+  })
+}
+
 
 /**
  * Generates a random string and returns it.

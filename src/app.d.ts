@@ -22,6 +22,12 @@ declare global {
     isDeleted: boolean,
     title: string
   }
+
+
+  type AnnotWrapperPluginData = {
+    connectedFrameId: string,
+    connectedFrameAliasName: string
+  }
 }
 
 
