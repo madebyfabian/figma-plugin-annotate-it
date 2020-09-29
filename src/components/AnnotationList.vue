@@ -15,7 +15,7 @@
       </div>
 
       <Button 
-        buttonType="standard" 
+        buttonType="primary" 
         @click="addAnnotDataNewAnnot"
         v-tooltip.left="`Add a new annotation`">
 
