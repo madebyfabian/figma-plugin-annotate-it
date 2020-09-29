@@ -8,7 +8,7 @@ import updateAnnotItems from '@/utils/updateAnnotItems'
 
 
 figma.showUI(__html__, { 
-  width: 487, 
+  width: 590,
   height: 446
 })
 
