@@ -69,6 +69,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    background: transparent;
 
     &:not([buttonType=icon]) {
       svg {
