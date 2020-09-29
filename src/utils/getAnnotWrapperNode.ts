@@ -68,7 +68,7 @@ export default ({ createOneIfItDoesNotExist = true, id = null } = {}) => {
     ]
 
     setPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey, <AnnotWrapperPluginData>{
-      connectedFrameId: null,
+      connectedFrameId: figma.currentPage.selection?.[0].id || null,
       connectedFrameAliasName: 'My annotations'
     })
 
