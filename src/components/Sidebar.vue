@@ -5,6 +5,7 @@
       <Button 
         buttonType="icon" 
         :disabled="!annotData || !annotData.length"
+        @click="createNewAnnotGroup"
         v-tooltip.right="`Create new annotation-group`">
 
         <Icon iconName="plus" />
@@ -39,6 +40,15 @@
     computed: {
       'annotData': () => store.annotData,
       'selectedWrapperFrameId': { get: () => store.selectedWrapperFrameId, set: mutations.setSelectedWrapperFrameId }
+    },
+
+    methods: {
+      createNewAnnotGroup() {
+        parent.postMessage({ pluginMessage: {
+          type: 'createAnnotGroup', 
+          value: {}
+        }}, '*')
+      }
     }
   }
 </script>

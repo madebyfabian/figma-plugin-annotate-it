@@ -4,14 +4,13 @@
       <div class="title">
         <div 
           class="title-content" 
-          contenteditable 
+          contenteditable="false"
           @keydown.enter="handleTitleChangeDone"
           @input="handleTitleChange"
           ref="titleContent"
-          v-once
           v-text="allData.pluginData.connectedFrameAliasName || 'My annotations'" 
         />
-        <Icon class="title-icon" iconName="edit" @click.native="handleEditIconClick" />
+        <!-- <Icon class="title-icon" iconName="edit" @click.native="handleEditIconClick" /> -->
       </div>
 
       <Button 
@@ -96,30 +95,31 @@
       },
 
       handleEditIconClick() {
-        this.$refs.titleContent.focus()
+        // this.$refs.titleContent.focus()
       },
 
       handleTitleChange( e ) {
-        let newVal = e.target.innerText
-        this.allData.pluginData.connectedFrameAliasName = newVal
+        // let newVal = e.target.innerText
+        // this.allData.pluginData.connectedFrameAliasName = newVal
 
-        parent.postMessage({ pluginMessage: {
-          type: 'pushAnnotWrapperTitleChange', 
-          value: { 
-            wrapperFrameId: this.selectedWrapperFrameId,
-            newVal
-          }
-        }}, '*')
+        // parent.postMessage({ pluginMessage: {
+        //   type: 'pushAnnotWrapperTitleChange', 
+        //   value: { 
+        //     wrapperFrameId: this.selectedWrapperFrameId,
+        //     newVal
+        //   }
+        // }}, '*')
       },
 
       handleTitleChangeDone( e ) {
-        e.preventDefault()
-        this.$refs.titleContent.blur()
+        // e.preventDefault()
+        // this.$refs.titleContent.blur()
       }
     },
 
     watch: {
       data_str( newAnnots_str, oldAnnots_str ) {
+        console.log('watch data exectuded', this.watchAnnotations)
         if (!this.watchAnnotations) return
         parent.postMessage({ pluginMessage: {
           type: 'pushAnnotChanges', 
@@ -175,7 +175,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 12px 0 16px;
 
       .title {
         display: flex;
@@ -190,9 +190,9 @@
           position: relative;
           z-index: 1;
 
-          &:hover, &:active, &:focus {
-            box-shadow: inset 0 0 0 1px var(--color--special-black-1);
-          }
+          // &:hover, &:active, &:focus {
+          //   box-shadow: inset 0 0 0 1px var(--color--special-black-1);
+          // }
         }
 
         &-icon {

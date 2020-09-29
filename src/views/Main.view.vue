@@ -92,8 +92,23 @@
             this.userSelection = msgValue
             break
 
-          case 'wrapperNodeCreated':
+          case 'createFirstAnnot_wrapperNodeCreated':
             mutations.addAnnotDataNewAnnot(this.selectedWrapperFrameId, generateAnnotItemObject())
+            break
+
+          case 'createAnnotGroup_wrapperNodeCreated':
+            this.selectedWrapperFrameId = msgValue.createdWrapperNodeId
+
+            let watchAnnotsOriginalState = JSON.parse(JSON.stringify(this.watchAnnotations))
+            if (!watchAnnotsOriginalState)
+              await this.toggleWatcher(true)
+
+            console.log(this.watchAnnotations)
+            mutations.addAnnotDataNewAnnot(msgValue.createdWrapperNodeId, generateAnnotItemObject())
+
+            if (!watchAnnotsOriginalState)
+              await this.toggleWatcher(false)
+
             break
         }
       }

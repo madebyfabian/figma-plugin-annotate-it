@@ -37,17 +37,31 @@ figma.ui.on('message', async msg => {
 			updateAnnotItems(newAnnots, oldAnnots, msgValue.wrapperFrameId)
 			break
 
-		case 'createFirstAnnot':
-			// Create a new wrapperNode
-			getAnnotWrapperNode()
+		case 'createFirstAnnot': {
+			getAnnotWrapperNode() // Create a new wrapperNode
+			await doInit() // Init again 
 
-			// Init again 
-			await doInit()
-
-			figma.ui.postMessage({ type: 'wrapperNodeCreated', value: {} })
+			figma.ui.postMessage({ type: 'createFirstAnnot_wrapperNodeCreated', value: {} })
 			break
+		}
 
-		case 'pushAnnotWrapperTitleChange':
+		case 'createAnnotGroup': {
+			if (figma.currentPage.selection.length !== 1) {
+				figma.notify('😄 Please try again by selecing exactly 1 frame!')
+				break
+			}
+
+			const newWrapperNode = getAnnotWrapperNode() // Create a new wrapperNode
+			await doInit() // Init again 
+
+			figma.ui.postMessage({ type: 'createAnnotGroup_wrapperNodeCreated', value: { 
+				createdWrapperNodeId: newWrapperNode.id
+			}})
+
+			break
+		}
+
+		case 'pushAnnotWrapperTitleChange': {
 			const { newVal } = msgValue,
 						annotWrapperNode = getAnnotWrapperNode({ id: msgValue.wrapperFrameId }),
 						oldPluginData = getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey)
@@ -56,5 +70,7 @@ figma.ui.on('message', async msg => {
 				connectedFrameId: oldPluginData.connectedFrameId || null, 
 				connectedFrameAliasName: newVal
 			})
+			break
+		}
 	}
 })

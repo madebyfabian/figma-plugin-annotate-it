@@ -15,7 +15,8 @@ import {
   updateAnnotItemsBadgeIndex,
   getAnnotMarkerBadgeNodes,
   checkIfNodeIsBadge,
-  updateAnnotItemBadgeColor
+  updateAnnotItemBadgeColor, 
+  getPluginData
 } from '@/utils/utils'
 
 
@@ -56,11 +57,10 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameI
 
         // Get the node for the badge marker item
         const badgeMarkerNode = generateAnnotBadgeNode(annotIndex, newItem.id)
-        if (currSel) {
-          const { x, y } = _calculateAnnotMarkerBadgePosition(currSel, badgeMarkerNode)
-          badgeMarkerNode.x = x
-          badgeMarkerNode.y = y
-        }
+
+        const { x, y } = _calculateAnnotMarkerBadgePosition(annotWrapperNode, currSel, badgeMarkerNode)
+        badgeMarkerNode.x = x
+        badgeMarkerNode.y = y
 
         figma.currentPage.appendChild(badgeMarkerNode)
 
@@ -262,14 +262,32 @@ const _createAnnotDiff_blockContentSectionToString = ( annotArr ) => {
 }
 
 
-const _calculateAnnotMarkerBadgePosition = ( currSel: SceneNode, badgeMarkerNode: SceneNode, startAtY?: number ) => {
-  const spaceBetweenSelAndBadge = badgeMarkerNode.width - 8 // 8px overlap
+const _calculateAnnotMarkerBadgePosition = ( annotWrapperNode: SceneNode, currSel: SceneNode, badgeMarkerNode: SceneNode, startAtY?: number ) => {
+  const spaceBetweenSelAndBadge = badgeMarkerNode.width - 8, // 8px overlap
+        wrapperNodePluginData = getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey) // Get pluginData from the wrapperNode
 
+  let nodeToGlueAnnotMarkerTo = null
+
+  if (!wrapperNodePluginData.connectedFrameId && !currSel)
+    return { x: 0, y: 0 }
+
+  if (currSel)
+    nodeToGlueAnnotMarkerTo = currSel
+  else {
+    let frame = figma.currentPage.findOne(( node: SceneNode ) => {
+      return node.id === wrapperNodePluginData.connectedFrameId
+    })
+    if (!frame) // If connected frame doesn't exist anymore :(
+      return { x: 0, y: 0 }
+    else
+      nodeToGlueAnnotMarkerTo = frame
+  }
+    
   if (!startAtY)
-    startAtY = currSel.absoluteTransform[1][2] + ((currSel.height / 2 - (badgeMarkerNode.width / 2)))
+    startAtY = nodeToGlueAnnotMarkerTo.absoluteTransform[1][2] + ((nodeToGlueAnnotMarkerTo.height / 2 - (badgeMarkerNode.width / 2)))
 
   let wantedPos = {
-    x: currSel.absoluteTransform[0][2] - spaceBetweenSelAndBadge,
+    x: nodeToGlueAnnotMarkerTo.absoluteTransform[0][2] - spaceBetweenSelAndBadge,
     y: startAtY,
     width: badgeMarkerNode.width,
     height: badgeMarkerNode.height
@@ -281,6 +299,6 @@ const _calculateAnnotMarkerBadgePosition = ( currSel: SceneNode, badgeMarkerNode
         })
 
   return detectedCollision
-    ? _calculateAnnotMarkerBadgePosition(currSel, badgeMarkerNode, startAtY + badgeMarkerNode.height + 8)
+    ? _calculateAnnotMarkerBadgePosition(annotWrapperNode, currSel, badgeMarkerNode, startAtY + badgeMarkerNode.height + 8)
     : { x: wantedPos.x, y: wantedPos.y }
 }
