@@ -82,7 +82,8 @@
             this.annotData = msgValue
             if (this.annotData && this.annotData.length) {
               let wrapperFrameId = this.annotData[0].id
-              this.selectedWrapperFrameId = wrapperFrameId
+              if (!this.selectedWrapperFrameId)
+                this.selectedWrapperFrameId = wrapperFrameId
             }
           
             await this.toggleWatcher(true)
@@ -99,15 +100,8 @@
           case 'createAnnotGroup_wrapperNodeCreated':
             this.selectedWrapperFrameId = msgValue.createdWrapperNodeId
 
-            let watchAnnotsOriginalState = JSON.parse(JSON.stringify(this.watchAnnotations))
-            if (!watchAnnotsOriginalState)
-              await this.toggleWatcher(true)
-
-            console.log(this.watchAnnotations)
+            await this.toggleWatcher(true)
             mutations.addAnnotDataNewAnnot(msgValue.createdWrapperNodeId, generateAnnotItemObject())
-
-            if (!watchAnnotsOriginalState)
-              await this.toggleWatcher(false)
 
             break
         }
