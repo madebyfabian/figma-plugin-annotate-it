@@ -3,6 +3,7 @@ import getAnnotWrapperNode from "./getAnnotWrapperNode"
 export const config = {
   annotWrapperNodeName: 'Annotate it! – Frame',
   annotBadgeNodeName: 'Annotate it! – Badge',
+  annotWrapperNodePluginDataKey: 'annotWrapperConnectedFrameId',
   annotItemNodePluginDataKey: 'annotStore',
 
   /**
@@ -100,6 +101,13 @@ export const generateDefaultRelaunchDataOptions = ({ singleItem = false } = {}) 
  */
 export const randomId = ( idLength: number = 16 ) => {
   return [...Array(idLength)].map(() => Math.random().toString(32)[2]).join('')
+}
+
+
+export const getAnnotWrapperNodes = () => {
+  return <[FrameNode]>figma.currentPage.findChildren(node => 
+    node.type === 'FRAME' && node.name === config.annotWrapperNodeName
+  )
 }
 
 
