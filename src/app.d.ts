@@ -1,8 +1,4 @@
 declare global {
-  /**
-   * App-specific types.
-   */
-
   // Text Editor
   type Mark = { type: 'bold' | 'italic' | 'strike' | 'underline' }
   type Attrs = { order: number }
@@ -14,13 +10,18 @@ declare global {
     marks?: Mark[]
   }
 
-
+  // Annotations
   type Annotation = {
     colorThemeId: string,
     content: ContentBlock[],
     id: string,
     isDeleted: boolean,
     title: string
+  }
+
+  type AnnotWrapperPluginData = {
+    connectedFrameId: string,
+    connectedFrameAliasName: string
   }
 }
 
@@ -29,5 +30,6 @@ export {
   Mark,
   Attrs,
   ContentBlock,
-  Annotation
+  Annotation,
+  AnnotWrapperPluginData
 }
