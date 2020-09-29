@@ -7,7 +7,7 @@
 
       <div class="emptyState" v-else>
         <div class="emptyState-inner">
-          <div class="emptyState-step1" :class="{ 'fadeOut': userSelection.length }">
+          <div class="emptyState-step1" :class="{ 'fadeOut': userSelection.length === 1 }">
             <svg class="emptyState-step1-illustration" xmlns="http://www.w3.org/2000/svg" width="252" height="167" fill="none" viewBox="0 0 252 167">
               <rect width="252" height="167" fill="#F0F0F0" rx="8"/><path fill="#fff" stroke="#18A0FB" stroke-width="2" d="M57 39h138v89H57z"/><path fill="#fff" stroke="#18A0FB" stroke-width="1.5" d="M191 124h8v8h-8zM191 35h8v8h-8zM53 35h8v8h-8zM53 124h8v8h-8z"/><path fill="#464646" d="M0 0h252v10H0z"/><path fill="#fff" d="M0 10h40v157H0zM212 10h40v157h-40z"/><rect width="15" height="1" x="216" y="16" fill="#E2E2E2" rx=".5"/><rect width="15" height="1" x="216" y="35" fill="#E2E2E2" rx=".5"/><rect width="19" height="1" x="216" y="20" fill="#E2E2E2" rx=".5"/><rect width="19" height="1" x="216" y="39" fill="#E2E2E2" rx=".5"/><path fill="#F7F7F7" d="M212 28h40v1h-40z"/><rect width="15" height="1" x="216" y="53" fill="#E2E2E2" rx=".5"/><rect width="19" height="1" x="216" y="57" fill="#E2E2E2" rx=".5"/><path fill="#F7F7F7" d="M212 46h40v1h-40z"/><rect width="7" height="2" x="4" y="14" fill="#E2E2E2" rx="1"/><rect width="7" height="2" x="15" y="14" fill="#E2E2E2" rx="1"/><rect width="15" height="1" x="4" y="25" fill="#E2E2E2" rx=".5"/><rect width="15" height="1" x="4" y="45" fill="#E2E2E2" rx=".5"/><rect width="14" height="1" x="4" y="29" fill="#E2E2E2" rx=".5"/><rect width="19" height="1" x="4" y="49" fill="#E2E2E2" rx=".5"/><rect width="14" height="1" x="8" y="33" fill="#E2E2E2" rx=".5"/><rect width="11" height="1" x="8" y="53" fill="#E2E2E2" rx=".5"/><rect width="13" height="1" x="8" y="37" fill="#E2E2E2" rx=".5"/><rect width="13" height="1" x="8" y="57" fill="#E2E2E2" rx=".5"/>
             </svg>
@@ -17,11 +17,11 @@
             </svg>
           </div>
 
-          <div class="emptyState-step2" :class="{ 'fadeOut': !userSelection.length }">
+          <div class="emptyState-step2" :class="{ 'fadeOut': userSelection.length !== 1 }">
             <Button
               class="emptyState-step2-button"
               buttonType="primary"
-              :disabled="!!!userSelection.length"
+              :disabled="userSelection.length !== 1"
               @click="createFirstAnnot">
 
               <Icon iconName="plus" />Create annotation
@@ -81,7 +81,7 @@
             await this.toggleWatcher(false)
             this.annotData = msgValue
             if (this.annotData && this.annotData.length) {
-              let wrapperFrameId = this.annotData[0].id // let wrapperFrameId = this.userSelection.length ?  this.userSelection[0].id : this.annotData[0].id
+              let wrapperFrameId = this.annotData[0].id
               this.selectedWrapperFrameId = wrapperFrameId
             }
           
@@ -95,7 +95,6 @@
           case 'wrapperNodeCreated':
             mutations.addAnnotDataNewAnnot(this.selectedWrapperFrameId, generateAnnotItemObject())
             break
-            
         }
       }
     }
