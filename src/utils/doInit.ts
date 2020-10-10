@@ -2,7 +2,7 @@ import {
 	config, 
 	getPluginData, 
 	generateFontNameConfig,
-	getAnnotWrapperNodes, 
+	getAllAnnotWrapperNodes, 
 	setPluginData
 } from '@/utils/utils'
 
@@ -17,7 +17,7 @@ export default async () => {
 	])
 
 	const value = [],
-				annotWrappers = getAnnotWrapperNodes()
+				annotWrappers = getAllAnnotWrapperNodes()
 
 	if (annotWrappers.length) {
 		for (const wrapperNode of annotWrappers) {
