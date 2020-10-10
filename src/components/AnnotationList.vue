@@ -28,13 +28,13 @@
         @drop="onDrop" 
         drag-handle-selector=".annotationItem-dragHandleButton">
 
-        <Draggable v-for="(annotation, i) in data.filter(annotation => !annotation.isDeleted)" :key="annotation.id">
+        <Draggable v-for="(annotation, i) in allData.annotData.filter(annotation => !annotation.isDeleted)" :key="annotation.id">
           <div class="draggable-item">
             <transition name="slide" :appear="true">
               <AnnotationItem 
                 :itemKey="i"
                 @removeAnnotation="removeAnnotation"
-                v-model="data[i]"
+                v-model="allData.annotData[i]"
               />
             </transition>
           </div>
@@ -58,8 +58,7 @@
 
     computed: {
       'allData'() { return store.annotData.find(el => el.id === this.selectedWrapperFrameId) },
-      'data'() { return this.allData.annotData },
-      'data_str'() { return JSON.stringify(this.data) },
+      'data_str'() { return JSON.stringify(this.allData.annotData) },
       'watchAnnotations': { get: () => store.watchAnnotations, set: mutations.setWatchAnnotations },
       'selectedWrapperFrameId': () => store.selectedWrapperFrameId
     },
@@ -72,7 +71,7 @@
       },
 
       async removeAnnotation( itemId ) {
-        const annotItem = this.data.find(item => item.id === itemId)
+        const annotItem = this.allData.annotData.find(item => item.id === itemId)
         mutations.updateAnnotDataAnnot(this.selectedWrapperFrameId, itemId, { ...annotItem, isDeleted: true })
 
         // Now "really" delete it.
@@ -82,7 +81,7 @@
       },
 
       onDrop( dropResult ) {
-        mutations.updateAnnotDataAnnots(this.selectedWrapperFrameId, onDrop(this.data, dropResult))
+        mutations.updateAnnotDataAnnots(this.selectedWrapperFrameId, onDrop(this.allData.annotData, dropResult))
       },
 
       async addAnnotDataNewAnnot() {
@@ -119,7 +118,7 @@
 
     watch: {
       data_str( newAnnots_str, oldAnnots_str ) {
-        console.log('watch data exectuded', this.watchAnnotations)
+        // console.log('watch data exectuded', this.watchAnnotations)
         if (!this.watchAnnotations) return
         parent.postMessage({ pluginMessage: {
           type: 'pushAnnotChanges', 

@@ -82,7 +82,7 @@
             this.annotData = msgValue
             if (this.annotData && this.annotData.length) {
               let wrapperFrameId = this.annotData[0].id
-              if (!this.selectedWrapperFrameId)
+              // if (!this.selectedWrapperFrameId)
                 this.selectedWrapperFrameId = wrapperFrameId
             }
           
