@@ -1,5 +1,5 @@
 <template>
-  <div :class="a11yClass">
+  <FocusVisible>
     <MainView />
 
     <transition name="slide" mode="out-in">
@@ -26,7 +26,7 @@
       @click.native="isAboutViewOpened = true"
       v-tooltip.top-right="`Help & Credits`"
     />
-  </div>
+  </FocusVisible>
 </template>
 
 <script>
@@ -35,39 +35,25 @@
 
   import { store } from '@/store'
   import FloatingButton from '@/components/ui/FloatingButton'
+  import FocusVisible from 'vue-focus-visible'
 
-  // @ts-ignore
+  // Views
   import MainView from '@/views/Main.view.vue'
-
-  // @ts-ignore
   import AboutView from '@/views/About.view.vue'
-
-  // @ts-ignore
   import FeedbackView from '@/views/Feedback.view.vue'
 
 
   export default {
     name: "App",
 
-    components: { MainView, AboutView, FeedbackView, FloatingButton },
+    components: { FocusVisible, MainView, AboutView, FeedbackView, FloatingButton },
 
     data: () => ({
-      a11yClass: 'using-keyboard',
       isAboutViewOpened: false,
       isFeedbackViewOpened: false
     }),
 
-    methods: {
-      a11yClassChange( usingKeyboard ) {
-        this.a11yClass = usingKeyboard ? 'using-keyboard' : 'using-mouse'
-      }
-    },
-
     async mounted() {
-      window.addEventListener('keydown', (e) => this.a11yClassChange(true))
-      window.addEventListener('mousedown', (e) => this.a11yClassChange(false))
-      window.addEventListener('touchstart', (e) => this.a11yClassChange(false))
-
       // Analytics
       try {
         const apiRes = await fetch('https://json.geoiplookup.io/'), // alternative:  https://api.ipdata.co/?api-key=test

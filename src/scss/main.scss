@@ -74,9 +74,9 @@ p a, ol a, ul a {
   text-decoration: underline;
 }
 
-// .using-keyboard *:focus {
-//   box-shadow: 0 0 0 2px #18a0fb!important;
-// }
+[focus-visible=true] :focus {
+  box-shadow: 0 0 0 2px #18a0fb!important;
+}
 
 .scrollContainer {
   &::-webkit-scrollbar {
