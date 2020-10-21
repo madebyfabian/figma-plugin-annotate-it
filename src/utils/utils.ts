@@ -148,6 +148,15 @@ export const getAnnotMarkerBadgeNodes = ( id: string ) => {
  * Loops through annot item nodes and updates the number inside the badge.
  */
 export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
+  // console.log('calling updateAnnotItemsBadgeIndex with node', annotWrapperNode)
+
+  // figma.currentPage.findAll(node => {
+  //   return node.name.includes()
+  // })
+
+  /**
+   * OLD:
+   */
   for (let i = 0; i < annotWrapperNode.children.length; i++) {
     const newChars = (i + 1).toString(),
           annotItemNode = <FrameNode>annotWrapperNode.children[i],
