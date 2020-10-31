@@ -3,14 +3,28 @@
     <header>
       <div class="title">
         <div 
-          class="title-content" 
-          contenteditable="false"
-          @keydown.enter="handleTitleChangeDone"
-          @input="handleTitleChange"
+          contenteditable
+          class="title-content"
+          spellcheck="false"
           ref="titleContent"
-          v-text="allData.pluginData.connectedFrameAliasName || 'My annotations'" 
-        />
-        <!-- <Icon class="title-icon" iconName="edit" @click.native="handleEditIconClick" /> -->
+          @input="handleTitleChange"
+          @keydown.enter="handleTitleChangeDone"
+          @blur="handleTitleChangeDone"
+          v-tooltip.bottom-right="`Click icon or name to edit frame name`">
+
+          <span 
+            v-if="allData.pluginData.connectedFrameAliasName.length === 0"
+            v-text="`My annotations`"
+            style="position: absolute; left: 0; opacity: .25;"
+          />
+
+          <span v-text="allData.pluginData.connectedFrameAliasName" />
+
+          <Icon 
+            class="title-icon" 
+            iconName="edit"
+          />
+        </div>
       </div>
 
       <Button 
@@ -93,26 +107,27 @@
         })
       },
 
-      handleEditIconClick() {
-        // this.$refs.titleContent.focus()
-      },
-
       handleTitleChange( e ) {
-        // let newVal = e.target.innerText
-        // this.allData.pluginData.connectedFrameAliasName = newVal
+        let newVal = e.target.innerText.trim()
+        this.allData.pluginData.connectedFrameAliasName = newVal
 
-        // parent.postMessage({ pluginMessage: {
-        //   type: 'pushAnnotWrapperTitleChange', 
-        //   value: { 
-        //     wrapperFrameId: this.selectedWrapperFrameId,
-        //     newVal
-        //   }
-        // }}, '*')
+        parent.postMessage({ pluginMessage: {
+          type: 'pushAnnotWrapperTitleChange', 
+          value: { 
+            wrapperFrameId: this.selectedWrapperFrameId,
+            newVal
+          }
+        }}, '*')
       },
 
       handleTitleChangeDone( e ) {
-        // e.preventDefault()
-        // this.$refs.titleContent.blur()
+        e.preventDefault()
+
+        // Empty the user-selection.
+        window.getSelection().empty()
+
+        // Remove focus.
+        this.$refs.titleContent.blur()
       }
     },
 
@@ -182,23 +197,26 @@
 
         &-content {
           // Fake input
-          @include font(13, 'bold');
           border-radius: 3px;
           padding: 4px 8px;
           margin-left: -8px;
           position: relative;
           z-index: 1;
+          display: flex;
+          align-items: center;
 
-          // &:hover, &:active, &:focus {
-          //   box-shadow: inset 0 0 0 1px var(--color--special-black-1);
-          // }
+          span {
+            @include font(13, 'bold');
+          }
         }
 
         &-icon {
           opacity: .33;
-          margin-left: -6px;
+          margin: -8px -10px -8px 0;
           position: relative;
           z-index: 0;
+          pointer-events: none;
+          user-select: none;
         }
       }
     }
