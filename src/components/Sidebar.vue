@@ -83,6 +83,7 @@
       appearance: none;
       color: $color--black-8;
       position: relative;
+      word-wrap: break-word;
 
       &:hover {
         box-shadow: inset 0 0 0 1px $color--special-hover-fill;

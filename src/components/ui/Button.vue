@@ -75,6 +75,7 @@
     align-items: center;
     justify-content: center;
     background: transparent;
+    white-space: nowrap;
 
     &:not([buttonType=icon]) {
       svg {

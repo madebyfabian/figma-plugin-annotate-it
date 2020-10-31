@@ -45,18 +45,14 @@
         </Button>
       </div>
 
-      <div class="buttons">
-        
+      <Button 
+        buttonType="primary" 
+        @click="addAnnotDataNewAnnot"
+        v-tooltip.left="`Add a new annotation`">
 
-        <Button 
-          buttonType="primary" 
-          @click="addAnnotDataNewAnnot"
-          v-tooltip.left="`Add a new annotation`">
-
-          <Icon iconName="plus" />
-          Add new
-        </Button>
-      </div>
+        <Icon iconName="plus" />
+        Add new
+      </Button>
     </header>
 
     <main class="scrollContainer" ref="scrollContainer">
@@ -154,8 +150,6 @@
 
       handleTitleChange( newVal ) {
         newVal = newVal.trim()
-        this.allData.pluginData.connectedFrameAliasName = newVal
-
         parent.postMessage({ pluginMessage: {
           type: 'pushAnnotWrapperTitleChange', 
           value: { 
@@ -238,22 +232,27 @@
       .title {
         display: flex;
         align-items: center;
+        margin-right: .75rem;
 
         &-content {
           // Fake input
           @include font(13, 'bold');
           border-radius: 3px;
-          padding: 4px 32px 4px 8px;
+          padding: .5rem;
+          padding-right: 2rem;
           margin-left: -8px;
           position: relative;
           z-index: 1;
           display: flex;
           align-items: center;
           cursor: text;
+          max-width: 300px;
+          line-height: 1.25;
 
           &:empty:before {
             content: attr(placeholder);
             @include font(13, 'bold');
+            line-height: 1.25;
             opacity: .5;
           }
         }
@@ -271,12 +270,6 @@
           .icon {
             opacity: .5;
           }
-        }
-      }
-
-      .buttons {
-        button {
-          margin-left: .5rem;
         }
       }
     }
