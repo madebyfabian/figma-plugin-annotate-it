@@ -1,40 +1,62 @@
 <template>
   <div class="AnnotationList">
+    <Modal 
+      title="Are you sure?"
+      :confirmLabel="`Yes, delete every annotation (${allData.annotData.length})`"
+      :isOpened="isDeleteConfirmationModalOpened" 
+      @close="isDeleteConfirmationModalOpened = false" 
+      @confirm="removeAllAnnotationsInGroup">
+
+      <p>
+        This will delete all annotations inside this group. There is no way to get them back later!
+      </p>
+    </Modal>
+  
     <header>
       <div class="title">
-        <div 
-          contenteditable
+        <Contenteditable 
           class="title-content"
-          spellcheck="false"
           ref="titleContent"
+          spellcheck="false" 
+          placeholder="My annotations"
+          v-model="allData.pluginData.connectedFrameAliasName"
           @input="handleTitleChange"
           @keydown.enter="handleTitleChangeDone"
           @blur="handleTitleChangeDone"
-          v-tooltip.bottom-right="`Click icon or name to edit frame name`">
+          :key="allData.pluginData.connectedFrameId"
+        />
+     
+        <Button
+          class="title-button"
+          buttonType="icon"
+          @click.native="handleTitleChangeIconClick"
+          v-tooltip.bottom-right="`Click icon or name to edit group name`">
 
-          <span 
-            v-if="allData.pluginData.connectedFrameAliasName.length === 0"
-            v-text="`My annotations`"
-            style="position: absolute; left: 0; opacity: .25;"
-          />
+          <Icon iconName="edit" />
+        </Button>
 
-          <span v-text="allData.pluginData.connectedFrameAliasName" />
+        <Button
+          class="title-button"
+          buttonType="icon"
+          @click.native="isDeleteConfirmationModalOpened = true"
+          v-tooltip.bottom-right="`Delete this group`">
 
-          <Icon 
-            class="title-icon" 
-            iconName="edit"
-          />
-        </div>
+          <Icon iconName="trash" />
+        </Button>
       </div>
 
-      <Button 
-        buttonType="primary" 
-        @click="addAnnotDataNewAnnot"
-        v-tooltip.left="`Add a new annotation`">
+      <div class="buttons">
+        
 
-        <Icon iconName="plus" />
-        New annotation
-      </Button>
+        <Button 
+          buttonType="primary" 
+          @click="addAnnotDataNewAnnot"
+          v-tooltip.left="`Add a new annotation`">
+
+          <Icon iconName="plus" />
+          Add new
+        </Button>
+      </div>
     </header>
 
     <main class="scrollContainer" ref="scrollContainer">
@@ -65,10 +87,12 @@
   import { Container, Draggable } from 'vue-smooth-dnd'
   import { store, mutations } from '@/store'
   import { generateAnnotItemObject } from '@/utils/utils'
+  import Contenteditable from '@/components/ui/Contenteditable'
+  import Modal from '@/components/ui/Modal'
 
 
   export default {
-    components: { AnnotationItem, Container, Draggable, Button, Icon },
+    components: { AnnotationItem, Container, Draggable, Button, Icon, Contenteditable, Modal },
 
     computed: {
       'allData'() { return store.annotData.find(el => el.id === this.selectedWrapperFrameId) },
@@ -76,6 +100,10 @@
       'watchAnnotations': { get: () => store.watchAnnotations, set: mutations.setWatchAnnotations },
       'selectedWrapperFrameId': () => store.selectedWrapperFrameId
     },
+
+    data: () => ({
+      isDeleteConfirmationModalOpened: false
+    }),
 
     methods: {
       async toggleWatcher( newVal ) {
@@ -94,6 +122,14 @@
         await this.toggleWatcher(true)
       },
 
+      async removeAllAnnotationsInGroup() {
+        const wrapperFrameId = this.selectedWrapperFrameId
+
+        for (const annot of this.allData.annotData) {
+          await this.removeAnnotation(annot.id)
+        }
+      },
+
       onDrop( dropResult ) {
         mutations.updateAnnotDataAnnots(this.selectedWrapperFrameId, onDrop(this.allData.annotData, dropResult))
       },
@@ -107,8 +143,17 @@
         })
       },
 
-      handleTitleChange( e ) {
-        let newVal = e.target.innerText.trim()
+
+      // Contenteditable-related
+      handleTitleChangeIconClick() {
+        this.$setFocusVisible(true)
+        const $el = this.$refs.titleContent.$el
+        $el.focus()
+        document.getSelection().collapse($el.firstChild, $el.firstChild.length)
+      },
+
+      handleTitleChange( newVal ) {
+        newVal = newVal.trim()
         this.allData.pluginData.connectedFrameAliasName = newVal
 
         parent.postMessage({ pluginMessage: {
@@ -127,13 +172,12 @@
         window.getSelection().empty()
 
         // Remove focus.
-        this.$refs.titleContent.blur()
+        this.$refs.titleContent.$el.blur()
       }
     },
 
     watch: {
       data_str( newAnnots_str, oldAnnots_str ) {
-        // console.log('watch data exectuded', this.watchAnnotations)
         if (!this.watchAnnotations) return
         parent.postMessage({ pluginMessage: {
           type: 'pushAnnotChanges', 
@@ -197,26 +241,42 @@
 
         &-content {
           // Fake input
+          @include font(13, 'bold');
           border-radius: 3px;
-          padding: 4px 8px;
+          padding: 4px 32px 4px 8px;
           margin-left: -8px;
           position: relative;
           z-index: 1;
           display: flex;
           align-items: center;
+          cursor: text;
 
-          span {
+          &:empty:before {
+            content: attr(placeholder);
             @include font(13, 'bold');
+            opacity: .5;
           }
         }
 
-        &-icon {
-          opacity: .33;
-          margin: -8px -10px -8px 0;
+        &-button {
+          margin: -8px 0;
+          z-index: 2;
           position: relative;
-          z-index: 0;
-          pointer-events: none;
-          user-select: none;
+
+          &:first-of-type {
+            margin-left: -32px;
+            margin-right: 8px;
+          }
+
+          .icon {
+            opacity: .5;
+          }
+        }
+      }
+
+      .buttons {
+        button {
+          margin-left: .5rem;
         }
       }
     }

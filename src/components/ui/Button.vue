@@ -2,7 +2,7 @@
   <button 
     :type="type"
     :buttonType="buttonType"
-    :class="{ isActive }"
+    :class="{ isActive, isDanger }"
     :tabindex="type === 'tertiary' ? 1 : 0"
     ref="button"
     :disabled="disabled"
@@ -39,6 +39,11 @@
       },
 
       'disabled': {
+        type: Boolean,
+        default: false
+      },
+
+      'isDanger': {
         type: Boolean,
         default: false
       }
@@ -81,6 +86,10 @@
       background: $color--blue;
       color: $color--white;
       box-shadow: none;
+
+      &.isDanger {
+        background: $color--red;
+      }
 
       /deep/ * {
         color: $color--white;

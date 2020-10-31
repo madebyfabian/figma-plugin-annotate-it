@@ -151,70 +151,18 @@
       position: relative;
 
       /deep/ .editor {
-        padding: 12px 8px;
+        // padding: 12px 8px;
         
         *[contenteditable=true] {
-          min-height: calc(72px - 12px * 2)
+          padding: 12px 8px;
+          min-height: calc(calc(12px * 2) + calc(16px * 3)); // padding + 3 line-heights
+          border-radius: 3px;
+          box-shadow: inset 0 0 0 1px $color--special-black-1;;
         }
       }
-
-      // &.showSkeleton::after, &.showSkeleton::before {
-      //   content: '';
-      //   height: 8px;
-      //   border-radius: 12px;
-      //   background: $color--black-3;
-      //   position: absolute;
-      //   left: 8px;
-      //   z-index: 1;
-      // }
-
-      // &.showSkeleton::before {
-      //   width: 80%;
-      //   top: 14px;
-      // }
-
-      // &.showSkeleton::after {
-      //   width: 60%;
-      //   top: calc(14px * 2 + 2px);
-      // }
-
-      // &-codeMirror {
-      //   min-height: 72px;
-      //   border-top: none;
-      //   @include font(11, regular);
-      //   margin-top: -1px;
-      //   width: 100%;
-
-      //   /deep/ .CodeMirror {
-      //     height: auto;
-      //     min-height: 72px;
-
-      //     &-code {
-      //       padding: 8px 0;
-      //     }
-
-      //     &-line {
-      //       padding: 0 8px;
-      //     }
-
-      //     &-placeholder {
-      //       // padding: 8px;
-      //       transform: translate(4px, 8px);
-      //       color: $color--black-3;
-      //     }
-      //   }
-
-      //   &:empty::after {
-      //     content: attr(placeholder);
-      //   }
-
-      //   * {
-      //     @include font(11, bold);
-      //   }
-      // }
     }
 
-    &-inputTitle, &-inputEditor {
+    &-inputTitle {
       box-shadow: inset 0 0 0 1px $color--special-black-1;
       border-radius: 3px;
     }

@@ -74,7 +74,7 @@ p a, ol a, ul a {
   text-decoration: underline;
 }
 
-[focus-visible=true] :focus {
+[v-focus-visible=true] :focus {
   box-shadow: 0 0 0 2px #18a0fb!important;
 }
 

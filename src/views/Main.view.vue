@@ -72,7 +72,9 @@
 
     async mounted() {
       onmessage = async event => {
-        if (event.data.length === 0) return
+        if (!event.data || !event.data.pluginMessage) 
+          return
+
         const msg = event.data.pluginMessage,
               msgValue = msg && msg.value
 

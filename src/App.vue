@@ -1,5 +1,5 @@
 <template>
-  <FocusVisible>
+  <div id="app" v-focus-visible>
     <MainView />
 
     <transition name="slide" mode="out-in">
@@ -26,7 +26,7 @@
       @click.native="isAboutViewOpened = true"
       v-tooltip.top-right="`Help & Credits`"
     />
-  </FocusVisible>
+  </div>
 </template>
 
 <script>
@@ -35,7 +35,7 @@
 
   import { store } from '@/store'
   import FloatingButton from '@/components/ui/FloatingButton'
-  import FocusVisible from 'vue-focus-visible'
+  
 
   // Views
   import MainView from '@/views/Main.view.vue'
@@ -46,7 +46,7 @@
   export default {
     name: "App",
 
-    components: { FocusVisible, MainView, AboutView, FeedbackView, FloatingButton },
+    components: { MainView, AboutView, FeedbackView, FloatingButton },
 
     data: () => ({
       isAboutViewOpened: false,

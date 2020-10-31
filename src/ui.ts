@@ -1,9 +1,13 @@
 import Vue from 'vue'
 // @ts-ignore
 import App from './App.vue'
+import FocusVisible from 'vue-focus-visible'
+
 
 Vue.config.productionTip = false
 Vue.config.devtools = false
+Vue.use(FocusVisible, { defaultValue: false })
+
 
 Vue.directive('tooltip', {
   inserted: ( el, binding, vnode ) => {
