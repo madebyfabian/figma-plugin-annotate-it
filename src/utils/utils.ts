@@ -2,6 +2,7 @@ import getAnnotWrapperNode from "./getAnnotWrapperNode"
 
 export const config = {
   annotWrapperNodeName: 'Annotate it! – Frame',
+  annotWrapperNodeTitleName: 'Title',
   annotBadgeNodeName: 'Annotate it! – Badge',
   annotWrapperNodePluginDataKey: 'annotWrapperConnectedFrameId',
   annotItemNodePluginDataKey: 'annotStore',
@@ -144,6 +145,11 @@ export const getAnnotMarkerBadgeNodes = ( id: string ) => {
 }
 
 
+export const getAnnotItemNodesFromWrapper = ( wrapperNode: FrameNode ) => {
+  return wrapperNode.findChildren(child => child.name !== config.annotWrapperNodeTitleName)
+}
+
+
 /**
  * Loops through annot item nodes and updates the number inside the badge.
  */
@@ -154,12 +160,17 @@ export const updateAnnotItemsBadgeIndex = ( annotWrapperNode: FrameNode ) => {
   //   return node.name.includes()
   // })
 
+  
+
   /**
    * OLD:
    */
-  for (let i = 0; i < annotWrapperNode.children.length; i++) {
+
+  const annotItemNodes = getAnnotItemNodesFromWrapper(annotWrapperNode)
+
+  for (let i = 0; i < annotItemNodes.length; i++) {
     const newChars = (i + 1).toString(),
-          annotItemNode = <FrameNode>annotWrapperNode.children[i],
+          annotItemNode = <FrameNode>annotItemNodes[i],
           id = annotItemNode.name.replace('Annotation ', '')
 
     // Get the Badge node inside the annotation item

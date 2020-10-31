@@ -3,7 +3,8 @@ import {
 	getPluginData, 
 	generateFontNameConfig,
 	getAllAnnotWrapperNodes, 
-	setPluginData
+	setPluginData,
+	getAnnotItemNodesFromWrapper
 } from '@/utils/utils'
 
 
@@ -21,7 +22,7 @@ export default async () => {
 
 	if (annotWrappers.length) {
 		for (const wrapperNode of annotWrappers) {
-			let annotData = wrapperNode.children.map(itemNode => getPluginData(itemNode, config.annotItemNodePluginDataKey)),
+			let annotData = getAnnotItemNodesFromWrapper(wrapperNode).map(itemNode => getPluginData(itemNode, config.annotItemNodePluginDataKey)),
 					pluginData = getPluginData(wrapperNode, config.annotWrapperNodePluginDataKey)
 
 			if (!pluginData) {

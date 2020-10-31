@@ -103,3 +103,28 @@ export const generateAnnotBadgeNode = ( number = 0, annotId = <string>null ) => 
   componentNode.remove()
   return instanceNode
 }
+
+
+export const generateAnnotWrapperTitleNode = ( titleValue: string ) => {
+  // Frame Node
+  const frameNode = figma.createFrame()
+  frameNode.name = config.annotWrapperNodeTitleName
+  frameNode.locked = true
+  frameNode.layoutMode = 'HORIZONTAL'
+  frameNode.counterAxisSizingMode = 'AUTO'
+  frameNode.verticalPadding = 12
+  frameNode.horizontalPadding = 16  
+  frameNode.layoutAlign = 'STRETCH'
+  frameNode.fills = []
+
+  // Text node
+  const textNode = figma.createText()
+  textNode.layoutAlign = 'STRETCH'
+  textNode.name = 'Label'
+  textNode.fontName = generateFontNameConfig()
+  textNode.fontSize = 19
+  textNode.letterSpacing = <LetterSpacing>{ value: -1, unit: 'PERCENT' }
+
+  frameNode.appendChild(textNode)
+  return frameNode
+}

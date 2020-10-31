@@ -16,12 +16,14 @@ import {
   getAnnotMarkerBadgeNodes,
   checkIfNodeIsBadge,
   updateAnnotItemBadgeColor, 
-  getPluginData
+  getPluginData,
+  getAnnotItemNodesFromWrapper
 } from '@/utils/utils'
 
 
 export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameId: string ) => {
   const annotWrapperNode = getAnnotWrapperNode({ id: wrapperFrameId }),
+        annotItemNodes = getAnnotItemNodesFromWrapper(annotWrapperNode),
         diff = _createAnnotDiff(newAnnots, oldAnnots),
         annotArr = diff._
 
@@ -41,7 +43,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameI
 
     // Handle annotation items reordering
     if (reorderingMode) {
-      const annotNode = annotWrapperNode.findChild(node => node.name.includes(annotDiffObj._.id.current))  
+      const annotNode = annotItemNodes.find(node => node.name.includes(annotDiffObj._.id.current))  
       annotWrapperNode.appendChild(annotNode)
       continue
     }    
@@ -52,7 +54,7 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameI
               currSel = figma.currentPage.selection?.[0]
 
         // Get index for annotation badge
-        const annotIndex = annotWrapperNode.children.length + 1
+        const annotIndex = annotItemNodes.length + 1
         annotWrapperNode.appendChild(generateAnnotItemNode(newItem, annotIndex))
 
         // Get the node for the badge marker item
@@ -71,10 +73,10 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameI
         const { _: item } = annotDiffObj
 
         if (item.isDeleted.current === true)
-          _deleteAnnotItem(item, annotWrapperNode)
+          _deleteAnnotItem(item, annotWrapperNode, annotItemNodes)
         else {
           // Update annot item
-          const annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(item.id.original))
+          const annotNode = <FrameNode>annotItemNodes.find(node => node.name.includes(item.id.original))
 
           // Save the "real" modified annot item object (wihout diff-things)
           const modifiedItemWithoutDiff = newAnnots[i]
@@ -123,14 +125,17 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameI
 }
 
 
-const _deleteAnnotItem = ( deletedItem: any, annotWrapperNode: FrameNode ) => {
+const _deleteAnnotItem = ( deletedItem: any, annotWrapperNode: FrameNode, annotItemNodes: SceneNode[] ) => {
   const annotId = deletedItem.id.current,
-        annotNode = <FrameNode>annotWrapperNode.findChild(node => node.name.includes(annotId))
+        annotNode = <FrameNode>annotItemNodes.find(node => node.name.includes(annotId))
 
   annotNode.remove()
 
+  // After removing the annotItemNode, get the rest of them.
+  annotItemNodes = getAnnotItemNodesFromWrapper(annotWrapperNode)
+
   // If the annotWrapper node is empty after removing the itemNode, remove the wrapper too.
-  if (annotWrapperNode.children.length === 0) {
+  if (!annotItemNodes.length) {
     annotWrapperNode.remove()
 
     // Init UI again
