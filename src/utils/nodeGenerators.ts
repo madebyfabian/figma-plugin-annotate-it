@@ -3,7 +3,7 @@ import {
   generateSolidPaint, 
   setPluginData,
   generateFontNameConfig,
-  generateAnnotItemTitleOptions,
+  toggleTextNodePlaceholderStyles,
   generateDefaultRelaunchDataOptions
 } from '@/utils/utils'
 
@@ -35,10 +35,8 @@ export const generateAnnotItemNode = ( data: Annotation, badgeNumber: number ) =
 
   const headerAnnotBadgeNode = generateAnnotBadgeNode(badgeNumber, data.id)
 
-  const titleOptions = generateAnnotItemTitleOptions(data.title)
   const headerTextNode = figma.createText()
-  headerTextNode.characters = titleOptions.characters
-  headerTextNode.opacity = titleOptions.opacity
+  toggleTextNodePlaceholderStyles(headerTextNode, data.title, 'annotItemTitle')
   headerTextNode.name = 'Header/Text'
   headerTextNode.resize(279, headerTextNode.height)
   headerTextNode.layoutAlign = 'CENTER'
@@ -110,9 +108,9 @@ export const generateAnnotWrapperTitleNode = ( titleValue: string ) => {
   const frameNode = figma.createFrame()
   frameNode.name = config.annotWrapperNodeTitleName
   frameNode.locked = true
-  frameNode.layoutMode = 'HORIZONTAL'
+  frameNode.layoutMode = 'VERTICAL'
   frameNode.counterAxisSizingMode = 'AUTO'
-  frameNode.verticalPadding = 12
+  frameNode.verticalPadding = 8
   frameNode.horizontalPadding = 16  
   frameNode.layoutAlign = 'STRETCH'
   frameNode.fills = []
@@ -121,9 +119,11 @@ export const generateAnnotWrapperTitleNode = ( titleValue: string ) => {
   const textNode = figma.createText()
   textNode.layoutAlign = 'STRETCH'
   textNode.name = 'Label'
-  textNode.fontName = generateFontNameConfig()
-  textNode.fontSize = 19
-  textNode.letterSpacing = <LetterSpacing>{ value: -1, unit: 'PERCENT' }
+  textNode.fontName = generateFontNameConfig({ isBold: true })
+  textNode.fontSize = 20
+  textNode.letterSpacing = <LetterSpacing>{ value: -1.5, unit: 'PERCENT' }
+  textNode.characters = titleValue
+  textNode.fills = [ generateSolidPaint({ a: .5 }) ]
 
   frameNode.appendChild(textNode)
   return frameNode

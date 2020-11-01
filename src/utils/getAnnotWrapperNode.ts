@@ -5,6 +5,7 @@ import {
   generateDefaultRelaunchDataOptions, 
   setPluginData
 } from '@/utils/utils'
+import { generateAnnotWrapperTitleNode } from '@/utils/nodeGenerators'
 import detectNodeCollisions from '@/utils/detectNodeCollisions'
 
 
@@ -12,7 +13,7 @@ import detectNodeCollisions from '@/utils/detectNodeCollisions'
  * Find an already existing annotation wrapper-frame on the current page, or create one.
  */
 export default ({ createOneIfItDoesNotExist = true, id = null } = {}) => {
-  let annotWrapperNode
+  let annotWrapperNode = <FrameNode>null
   if (id)
     annotWrapperNode = <FrameNode>figma.currentPage.findChild(node => {
       return node.type  === 'FRAME'
@@ -67,9 +68,17 @@ export default ({ createOneIfItDoesNotExist = true, id = null } = {}) => {
       }
     ]
 
+    const currSel = figma.currentPage.selection?.[0]
+    const frameToBeConnectedWith = currSel ? _getNodeParentOnCanvas(figma.currentPage.selection?.[0]) : null
+    const title = frameToBeConnectedWith?.name || config.placeholders.annotWrapperTitle
+
+    // Add title node.
+    annotWrapperNode.appendChild(generateAnnotWrapperTitleNode(title))
+
+    // Add the pluginData.
     setPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey, <AnnotWrapperPluginData>{
-      connectedFrameId: figma.currentPage.selection?.[0].id || null,
-      connectedFrameAliasName: 'My annotations'
+      connectedFrameId: frameToBeConnectedWith?.id || null,
+      connectedFrameAliasName: title
     })
 
     figma.viewport.scrollAndZoomIntoView([

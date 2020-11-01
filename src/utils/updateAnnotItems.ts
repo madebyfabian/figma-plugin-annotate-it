@@ -11,7 +11,7 @@ const differy = new Differy()
 import { 
   config,
   setPluginData,
-  generateAnnotItemTitleOptions,
+  toggleTextNodePlaceholderStyles,
   updateAnnotItemsBadgeIndex,
   getAnnotMarkerBadgeNodes,
   checkIfNodeIsBadge,
@@ -92,10 +92,9 @@ export default ( newAnnots: Annotation[], oldAnnots: Annotation[], wrapperFrameI
 
             switch (entryName) {
               case 'title':
-                const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Header/Text'),
-                      titleOptions = generateAnnotItemTitleOptions(newValue)
-                titleNode.characters = titleOptions.characters
-                titleNode.opacity = titleOptions.opacity
+                const titleNode = <TextNode>annotNode.findOne(node => node.name === 'Header/Text')
+                toggleTextNodePlaceholderStyles(titleNode, newValue, 'annotItemTitle')
+              
                 break
             
               case 'content':

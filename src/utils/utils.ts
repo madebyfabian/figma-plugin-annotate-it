@@ -19,6 +19,11 @@ export const config = {
     fontSize: 14,
     lineHeight: <LineHeight>{ value: 19, unit: 'PIXELS' },
     letterSpacing: <LetterSpacing>{ value: 0.5, unit: 'PERCENT' }
+  },
+
+  placeholders: {
+    annotItemTitle: 'Title',
+    annotWrapperTitle: 'Annotations'
   }
 }
 
@@ -28,9 +33,11 @@ export const config = {
 // Figma API Extensions
 // ---
 
-export const generateSolidPaint = ({ r = 0, g = 0, b = 0 }) => {
-  return <SolidPaint>{ type: 'SOLID', color: generateRGBA({ r, g, b }) }
-}
+export const generateSolidPaint = ( { r = 0, g = 0, b = 0, a = 1 } ) => <SolidPaint>({ 
+  type: 'SOLID', 
+  color: generateRGBA({ r, g, b }),
+  opacity: a 
+})
 
 
 export const generateRGBA = ({ r = 0, g = 0, b = 0, a = <number>null }) : RGB | RGBA => {
@@ -75,11 +82,16 @@ export const generateFontNameConfig = ({ isBold = false, isItalic = false } = {}
 }
 
 
-export const generateAnnotItemTitleOptions = ( title?: string ) => {
-  return {
-    opacity: title.length ? 1 : .25,
-    characters: title.length ? title : 'Title'
-  }
+/**
+ * Depending on the length of the given title, it styles the given textnode.
+ */
+export const toggleTextNodePlaceholderStyles = ( textNode: TextNode, title: string, placeholderType: string ) => {
+  const placeholder = config.placeholders?.[placeholderType]
+  if (!placeholder)
+    throw new Error(`The given placeholder type "${placeholderType}" does not exist in the config.placeholders list!`)
+
+  textNode.opacity = title.length ? 1 : .25
+  textNode.characters = title || placeholder
 }
 
 
@@ -147,6 +159,15 @@ export const getAnnotMarkerBadgeNodes = ( id: string ) => {
 
 export const getAnnotItemNodesFromWrapper = ( wrapperNode: FrameNode ) => {
   return wrapperNode.findChildren(child => child.name !== config.annotWrapperNodeTitleName)
+}
+
+
+export const getAnnotWrapperTitleTextNode = ( wrapperNode: FrameNode ) => {
+  const textWrapperFrame = <FrameNode>wrapperNode.findChild(child => child.name === config.annotWrapperNodeTitleName)
+  if (!textWrapperFrame)
+    return null
+
+  return <TextNode>textWrapperFrame.findChild(child => child.type === 'TEXT')
 }
 
 

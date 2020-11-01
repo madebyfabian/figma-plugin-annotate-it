@@ -20,7 +20,7 @@
         @click="selectedWrapperFrameId = annotWrapperFrame.id"
         :class="annotWrapperFrame.id === selectedWrapperFrameId ? 'isActive' : null">
 
-        {{ annotWrapperFrame.pluginData.connectedFrameAliasName || 'My annotations' }}
+        {{ annotWrapperFrame.pluginData.connectedFrameAliasName || placeholders.annotWrapperTitle }}
       </div>
     </div>
 
@@ -33,9 +33,14 @@
   import SectionTitle from '@/components/ui/SectionTitle'
   import Button from '@/components/ui/Button'
   import Icon from '@/components/ui/Icon'
+  import { config } from '@/utils/utils'
 
   export default {
     components: { SectionTitle, Button, Icon },
+
+    data: () => ({
+      placeholders: config.placeholders
+    }),
 
     computed: {
       'annotData': () => store.annotData,

@@ -18,7 +18,7 @@
           class="title-content"
           ref="titleContent"
           spellcheck="false" 
-          placeholder="My annotations"
+          :placeholder="placeholders.annotWrapperTitle"
           v-model="allData.pluginData.connectedFrameAliasName"
           @input="handleTitleChange"
           @keydown.enter="handleTitleChangeDone"
@@ -85,6 +85,7 @@
   import { generateAnnotItemObject } from '@/utils/utils'
   import Contenteditable from '@/components/ui/Contenteditable'
   import Modal from '@/components/ui/Modal'
+  import { config } from '@/utils/utils'
 
 
   export default {
@@ -98,7 +99,8 @@
     },
 
     data: () => ({
-      isDeleteConfirmationModalOpened: false
+      isDeleteConfirmationModalOpened: false,
+      placeholders: config.placeholders
     }),
 
     methods: {

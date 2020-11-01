@@ -1,7 +1,9 @@
 import { 
 	config, 
 	getPluginData, 
-	setPluginData
+	setPluginData,
+	getAnnotWrapperTitleTextNode,
+	toggleTextNodePlaceholderStyles
 } from '@/utils/utils'
 import updateAnnotItems from '@/utils/updateAnnotItems'
 import getAnnotWrapperNode from '@/utils/getAnnotWrapperNode'
@@ -65,11 +67,17 @@ figma.ui.on('message', async msg => {
 			const { newVal } = msgValue,
 						annotWrapperNode = getAnnotWrapperNode({ id: msgValue.wrapperFrameId }),
 						oldPluginData = getPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey)
-						
+			
+			// Update PluginData.
 			setPluginData(annotWrapperNode, config.annotWrapperNodePluginDataKey, <AnnotWrapperPluginData>{ 
 				connectedFrameId: oldPluginData.connectedFrameId || null, 
 				connectedFrameAliasName: newVal
 			})
+
+			// Update visible title textNode.
+			const titleTextNode = getAnnotWrapperTitleTextNode(annotWrapperNode)
+			toggleTextNodePlaceholderStyles(titleTextNode, newVal, 'annotWrapperTitle')
+
 			break
 		}
 	}
